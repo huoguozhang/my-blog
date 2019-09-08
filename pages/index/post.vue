@@ -1,0 +1,1290 @@
+<template>
+  <div class="post-comp-ct">
+    <div class="article">
+      <h1 class="title">深入理解Nginx及使用Nginx实现负载均衡</h1>
+      <div class="author">
+        <div class="avatar">
+          <Avatar style="width: 48px;height: 48px;line-height: 48px;border-radius: 24px;"
+                  size="large"
+                  icon="ios-person">
+          </Avatar>
+        </div>
+        <div class="info">
+          <div class="nickname">火锅小王子</div>
+          <div class="meta">
+            <!-- 简书钻 -->
+            <span class="jsd-meta">
+                  <i class="iconfont ic-paid1"></i> 4.8
+                </span>
+            <!-- 如果文章更新时间大于发布时间，那么使用 tooltip 显示更新时间 -->
+            <span class="publish-time" data-toggle="tooltip" data-placement="bottom" title=""
+                  data-original-title="最后编辑于 2019.08.22 13:48">2019.08.21 15:15*</span>
+            <span class="wordage">字数 2536</span>
+            <span class="views-count">阅读 331</span><span class="comments-count">评论 0</span><span class="likes-count">喜欢 15</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-content markdown-body Dark">
+        <div><p>new Vue的时候：执行 initComputed (vm, computed)</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initComputed</span> (<span class="hljs-params">vm, computed</span>) </span>{
+...
+for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> computed) {
+    <span class="hljs-keyword">var</span> userDef = computed[key];
+    <span class="hljs-keyword">var</span> getter = <span class="hljs-keyword">typeof</span> userDef === <span class="hljs-string">'function'</span> ? userDef : userDef.get;
+    <span class="hljs-keyword">if</span> (!isSSR) {
+      <span class="hljs-comment">// create internal watcher for the computed property.</span>
+      watchers[key] = <span class="hljs-keyword">new</span> Watcher(
+        vm,
+        getter || noop, <span class="hljs-comment">// 这个值就是用户定义的computed: {key: val} 的val</span>
+        noop,
+        computedWatcherOptions
+      );
+}
+...
+}</code></pre><p>所以本质上computed是一个watcher</p>
+<pre><code> <span class="hljs-keyword">constructor</span> (<span class="hljs-params">
+    vm: Component,
+    expOrFn: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">Function</span>,
+    cb: <span class="hljs-built_in">Function</span>,
+    options?: ?<span class="hljs-built_in">Object</span>,
+    isRenderWatcher?: <span class="hljs-built_in">boolean</span>
+  </span>) {
+...
+ <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> expOrFn === <span class="hljs-string">'function'</span>) {
+<span class="hljs-comment">// 这里的expOrFn就是用户定义的computed{key: val}中的val</span>
+      <span class="hljs-keyword">this</span>.getter = expOrFn
+    }
+...
+
+}</code></pre><p>假设用户computed中定义为</p>
+<pre><code>用户的computed中: {
+    fullName () {
+     <span class="hljs-comment">// 'aa' + 'bb'</span>
+     return this<span class="hljs-selector-class">.firstName</span> + this<span class="hljs-selector-class">.lastName</span>
+  }
+}</code></pre><p>假设这个时候firstName变成了'a' , lastName变成了'abb'<br>这两个值的变化都会触发派发更新<br>会触发watcher.update，当前的watcher为computed</p>
+<pre><code> update () {
+    <span class="hljs-comment">/* istanbul ignore else */</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.computed) {
+      <span class="hljs-comment">// A computed property watcher has two modes: lazy and activated.</span>
+      <span class="hljs-comment">// It initializes as lazy by default, and only becomes activated when</span>
+      <span class="hljs-comment">// it is depended on by at least one subscriber, which is typically</span>
+      <span class="hljs-comment">// another computed property or a component's render function.</span>
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.dep.subs.length === <span class="hljs-number">0</span>) {
+        <span class="hljs-comment">// 当你并没有使用过这个computed的时候，其实就可以啥都不做</span>
+        <span class="hljs-comment">// In lazy mode, we don't want to perform computations until necessary,</span>
+        <span class="hljs-comment">// so we simply mark the watcher as dirty. The actual computation is</span>
+        <span class="hljs-comment">// performed just-in-time in this.evaluate() when the computed property</span>
+        <span class="hljs-comment">// is accessed.</span>
+        <span class="hljs-keyword">this</span>.dirty = <span class="hljs-literal">true</span>
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-comment">// In activated mode, we want to proactively perform the computation</span>
+        <span class="hljs-comment">// but only notify our subscribers when the value has indeed changed.</span>
+       <span class="hljs-comment">// 有使用的case</span>
+        <span class="hljs-keyword">this</span>.getAndInvoke(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+          <span class="hljs-keyword">this</span>.dep.notify()
+        })
+      }
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.sync) {
+      <span class="hljs-keyword">this</span>.run()
+    } <span class="hljs-keyword">else</span> {
+      queueWatcher(<span class="hljs-keyword">this</span>)
+    }
+  }</code></pre><p>上一步分析到：会执行</p>
+<pre><code><span class="hljs-keyword">this</span>.getAndInvoke(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">this</span>.dep.notify()  <span class="hljs-comment">// this为当前的wacther</span>
+})</code></pre><p>getAndInvoke</p>
+<pre><code>getAndInvoke (cb: <span class="hljs-built_in">Function</span>) {
+    <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">this</span>.get()
+    <span class="hljs-keyword">if</span> (
+    <span class="hljs-comment">//  这里会做一个比较，相同就是会走缓存，不会派发更新，但是会每次求值</span>
+      value !== <span class="hljs-keyword">this</span>.value ||
+      <span class="hljs-comment">// Deep watchers and watchers on Object/Arrays should fire even</span>
+      <span class="hljs-comment">// when the value is the same, because the value may</span>
+      <span class="hljs-comment">// have mutated.</span>
+      isObject(value) ||
+      <span class="hljs-keyword">this</span>.deep
+    ) {
+      <span class="hljs-comment">// set new value</span>
+      <span class="hljs-keyword">const</span> oldValue = <span class="hljs-keyword">this</span>.value
+      <span class="hljs-keyword">this</span>.value = value
+      <span class="hljs-keyword">this</span>.dirty = <span class="hljs-literal">false</span>
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.user) {
+      <span class="hljs-comment">// 我们在new Vue({watch: {}})写的watch</span>
+        <span class="hljs-keyword">try</span> {
+          cb.call(<span class="hljs-keyword">this</span>.vm, value, oldValue)
+        } <span class="hljs-keyword">catch</span> (e) {
+          handleError(e, <span class="hljs-keyword">this</span>.vm, <span class="hljs-string">`callback for watcher "<span class="hljs-subst">${<span class="hljs-keyword">this</span>.expression}</span>"`</span>)
+        }
+      } <span class="hljs-keyword">else</span> {
+         <span class="hljs-comment">// 这里执行上一步的 () =&gt; {this.dep.notify()}</span>
+        cb.call(<span class="hljs-keyword">this</span>.vm, value, oldValue)
+        <span class="hljs-comment">// 这里会派发更新，像普通的data.fullName值一样，会重新渲染vue</span>
+      }
+    }
+  }</code></pre><p>wacther.get</p>
+<pre><code><span class="hljs-keyword">get</span> () {
+    pushTarget(<span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">let</span> value
+    <span class="hljs-keyword">const</span> vm = <span class="hljs-keyword">this</span>.vm
+    <span class="hljs-keyword">try</span> {
+      value = <span class="hljs-keyword">this</span>.getter.call(vm, vm)
+
+    } <span class="hljs-keyword">catch</span> (e) {
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.user) {
+        handleError(e, vm, <span class="hljs-string">`getter for watcher "<span class="hljs-subst">${<span class="hljs-keyword">this</span>.expression}</span>"`</span>)
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">throw</span> e
+      }
+    } <span class="hljs-keyword">finally</span> {
+      <span class="hljs-comment">// "touch" every property so they are all tracked as</span>
+      <span class="hljs-comment">// dependencies for deep watching</span>
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.deep) {
+        traverse(value)
+      }
+      popTarget()
+      <span class="hljs-keyword">this</span>.cleanupDeps()
+    }
+    <span class="hljs-keyword">return</span> value
+  }</code></pre><h4 id="结论：">结论：</h4>
+<p>computed初始化的时候做了一个get求值，执行了一次用户定义的表达式，这个computed watcher会订阅firstName和lastName的（执行过程中有其他的响应式数据也会订阅）,firtName或者lastName变化会触发computed表达式执行，但是当新值和旧值相等时，不会触订阅了fullName的watcher更新。所以会有缓存一说。</p>
+<h4 id="附录1：响应式梳理">附录1：响应式梳理</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/6036420-a9403f4216259632.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="响应式梳理 "></p>
+</div>
+      </div>
+      <div class="meta-bottom">
+        <div class="like cursor-p">
+          <div class="btn-like">
+            <Icon style="margin-right: 8px;" type="ios-heart-outline" />喜欢
+          </div>
+        </div>
+      </div>
+      <div class="comment-list">
+        <form class="new-comment">
+          <div class="comment-input-ct">
+            <a class="avatar">
+              <Avatar icon="ios-person" size="large"></Avatar>
+            </a>
+            <textarea
+              class="comment-input"
+              placeholder="写下你的评论...">
+          </textarea>
+          </div>
+          <div class="write-function-block">
+            <Button style="border: none;" type="text">取消</Button>
+            <Button>发送</Button>
+          </div>
+        </form>
+        <div class="normal-comment-list">
+           <div class="top-title">
+             2条评论
+           </div>
+          <div v-for="item in 5" :key="item" class="comment">
+            <div>
+              <div class="author">
+                <div class="v-tooltip-container"
+                     style="z-index: 0;">
+                  <div
+                    class="v-tooltip-content">
+                    <a
+                      target="_blank"
+                      class="avatar">
+                      <Avatar size="large" icon="ios-person"></Avatar>
+                    </a>
+                  </div> <!----></div>
+                <div class="info"><a href="/u/902d44e549ed" target="_blank" class="name">心生能量</a> <!----> <!---->
+                  <div class="meta"><span>3楼 · 2019.08.23 15:21</span></div>
+                </div>
+              </div>
+              <div class="comment-wrap">
+                <p>c2h1aXd1eW91NzIy 如果符合 加我</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
+import { Avatar, Icon, Button } from 'iview'
+@Component({
+  name: 'post',
+  components: {
+    Avatar, Icon, Button
+  }
+})
+export default class post extends Vue {
+}
+</script>
+<style lang="scss" scoped>
+  .post-comp-ct{
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    width: 620px;
+    .article{
+      .title{
+        /*word-break: break-word!important;*/
+        word-break: break-all;
+        margin: 20px 0 0;
+        font-family: Kai,Kaiti SC,KaiTi,BiauKai,\\6977\4F53,\\6977\4F53_GB2312,Songti SC,serif;
+        font-size: 34px;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      .author{
+        display: flex;
+        margin: 30px 0 40px;
+        .avatar{}
+        .info{
+          margin-left: 16px;
+          .nickname{
+            color: #333;
+            font-size: 16px;
+          }
+          .meta{
+            color: #969696;
+          }
+        }
+      }
+      .article-content{
+        color: #2f2f2f;
+        word-break: break-word!important;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.7;
+      }
+      .meta-bottom{
+        margin: 40px 0 80px;
+        .like{
+          position: relative;
+          width: 123px;
+          height: 57px;
+          border: 1px solid #EA6F5A;
+          border-radius: 40px;
+          text-align: center;
+          line-height: 57px;
+          .btn-like{
+            color: #EA6F5A;
+            font-size: 19px;
+          }
+        }
+      }
+      .comment-list{
+        padding-top: 20px;
+        .new-comment{
+          .comment-input-ct{
+            display: flex;
+            .avatar{
+              width: 40px;
+              height: 40px;
+              margin-right: 16px;
+            }
+            .comment-input{
+              padding: 10px 15px;
+              width: 100%;
+              height: 80px;
+              font-size: 13px;
+              border: 1px solid #dcdcdc;
+              border-radius: 4px;
+              background-color: hsla(0,0%,71%,.1);
+              resize: none;
+              display: inline-block;
+              vertical-align: top;
+              outline-style: none;
+            }
+          }
+          .write-function-block{
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+          }
+        }
+        .normal-comment-list{
+          margin-top: 30px;
+          .top-title{
+            padding-bottom: 20px;
+            font-size: 17px;
+            font-weight: 700;
+            border-bottom: 1px solid #f0f0f0
+          }
+          .comment{
+            padding: 20px 0 30px;
+            border-bottom: 1px solid #f0f0f0;
+            &:last-child {
+              border-bottom: none;
+            }
+            .comment-wrap{
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
+<style>
+@font-face {
+  font-family: octicons-link;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+.markdown-body .octicon {
+  display: inline-block;
+  fill: currentColor;
+  vertical-align: text-bottom;
+}
+
+.markdown-body .anchor {
+  float: left;
+  line-height: 1;
+  margin-left: -20px;
+  padding-right: 4px;
+}
+
+.markdown-body .anchor:focus {
+  outline: none;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+  color: #1b1f23;
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+
+.markdown-body {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  color: #24292e;
+  line-height: 1.5;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.markdown-body .pl-c {
+  color: #6a737d;
+}
+
+.markdown-body .pl-c1,
+.markdown-body .pl-s .pl-v {
+  color: #005cc5;
+}
+
+.markdown-body .pl-e,
+.markdown-body .pl-en {
+  color: #6f42c1;
+}
+
+.markdown-body .pl-s .pl-s1,
+.markdown-body .pl-smi {
+  color: #24292e;
+}
+
+.markdown-body .pl-ent {
+  color: #22863a;
+}
+
+.markdown-body .pl-k {
+  color: #d73a49;
+}
+
+.markdown-body .pl-pds,
+.markdown-body .pl-s,
+.markdown-body .pl-s .pl-pse .pl-s1,
+.markdown-body .pl-sr,
+.markdown-body .pl-sr .pl-cce,
+.markdown-body .pl-sr .pl-sra,
+.markdown-body .pl-sr .pl-sre {
+  color: #032f62;
+}
+
+.markdown-body .pl-smw,
+.markdown-body .pl-v {
+  color: #e36209;
+}
+
+.markdown-body .pl-bu {
+  color: #b31d28;
+}
+
+.markdown-body .pl-ii {
+  background-color: #b31d28;
+  color: #fafbfc;
+}
+
+.markdown-body .pl-c2 {
+  background-color: #d73a49;
+  color: #fafbfc;
+}
+
+.markdown-body .pl-c2:before {
+  content: "^M";
+}
+
+.markdown-body .pl-sr .pl-cce {
+  color: #22863a;
+  font-weight: 700;
+}
+
+.markdown-body .pl-ml {
+  color: #735c0f;
+}
+
+.markdown-body .pl-mh,
+.markdown-body .pl-mh .pl-en,
+.markdown-body .pl-ms {
+  color: #005cc5;
+  font-weight: 700;
+}
+
+.markdown-body .pl-mi {
+  color: #24292e;
+  font-style: italic;
+}
+
+.markdown-body .pl-mb {
+  color: #24292e;
+  font-weight: 700;
+}
+
+.markdown-body .pl-md {
+  background-color: #ffeef0;
+  color: #b31d28;
+}
+
+.markdown-body .pl-mi1 {
+  background-color: #f0fff4;
+  color: #22863a;
+}
+
+.markdown-body .pl-mc {
+  background-color: #ffebda;
+  color: #e36209;
+}
+
+.markdown-body .pl-mi2 {
+  background-color: #005cc5;
+  color: #f6f8fa;
+}
+
+.markdown-body .pl-mdr {
+  color: #6f42c1;
+  font-weight: 700;
+}
+
+.markdown-body .pl-ba {
+  color: #586069;
+}
+
+.markdown-body .pl-sg {
+  color: #959da5;
+}
+
+.markdown-body .pl-corl {
+  color: #032f62;
+  text-decoration: underline;
+}
+
+.markdown-body details {
+  display: block;
+}
+
+.markdown-body summary {
+  display: list-item;
+}
+
+.markdown-body a {
+  background-color: transparent;
+}
+
+.markdown-body a:active,
+.markdown-body a:hover {
+  outline-width: 0;
+}
+
+.markdown-body strong {
+  font-weight: inherit;
+  font-weight: bolder;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  margin: .67em 0;
+}
+
+.markdown-body img {
+  border-style: none;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre {
+  font-family: monospace,monospace;
+  font-size: 1em;
+}
+
+.markdown-body hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+
+.markdown-body input {
+  font: inherit;
+  margin: 0;
+}
+
+.markdown-body input {
+  overflow: visible;
+}
+
+.markdown-body [type=checkbox] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body * {
+  box-sizing: border-box;
+}
+
+.markdown-body input {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.markdown-body a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body hr {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #dfe2e5;
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.markdown-body hr:before {
+  content: "";
+  display: table;
+}
+
+.markdown-body hr:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body details summary {
+  cursor: pointer;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.markdown-body h1 {
+  font-size: 32px;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+  font-weight: 600;
+}
+
+.markdown-body h2 {
+  font-size: 24px;
+}
+
+.markdown-body h3 {
+  font-size: 20px;
+}
+
+.markdown-body h3,
+.markdown-body h4 {
+  font-weight: 600;
+}
+
+.markdown-body h4 {
+  font-size: 16px;
+}
+
+.markdown-body h5 {
+  font-size: 14px;
+}
+
+.markdown-body h5,
+.markdown-body h6 {
+  font-weight: 600;
+}
+
+.markdown-body h6 {
+  font-size: 12px;
+}
+
+.markdown-body p {
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+}
+
+.markdown-body ol,
+.markdown-body ul {
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ol ol ol,
+.markdown-body ol ul ol,
+.markdown-body ul ol ol,
+.markdown-body ul ul ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body code,
+.markdown-body pre {
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.markdown-body input::-webkit-inner-spin-button,
+.markdown-body input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.markdown-body .border {
+  border: 1px solid #e1e4e8!important;
+}
+
+.markdown-body .border-0 {
+  border: 0!important;
+}
+
+.markdown-body .border-bottom {
+  border-bottom: 1px solid #e1e4e8!important;
+}
+
+.markdown-body .rounded-1 {
+  border-radius: 3px!important;
+}
+
+.markdown-body .bg-white {
+  background-color: #fff!important;
+}
+
+.markdown-body .bg-gray-light {
+  background-color: #fafbfc!important;
+}
+
+.markdown-body .text-gray-light {
+  color: #6a737d!important;
+}
+
+.markdown-body .mb-0 {
+  margin-bottom: 0!important;
+}
+
+.markdown-body .my-2 {
+  margin-bottom: 8px!important;
+  margin-top: 8px!important;
+}
+
+.markdown-body .pl-0 {
+  padding-left: 0!important;
+}
+
+.markdown-body .py-0 {
+  padding-bottom: 0!important;
+  padding-top: 0!important;
+}
+
+.markdown-body .pl-1 {
+  padding-left: 4px!important;
+}
+
+.markdown-body .pl-2 {
+  padding-left: 8px!important;
+}
+
+.markdown-body .py-2 {
+  padding-bottom: 8px!important;
+  padding-top: 8px!important;
+}
+
+.markdown-body .pl-3,
+.markdown-body .px-3 {
+  padding-left: 16px!important;
+}
+
+.markdown-body .px-3 {
+  padding-right: 16px!important;
+}
+
+.markdown-body .pl-4 {
+  padding-left: 24px!important;
+}
+
+.markdown-body .pl-5 {
+  padding-left: 32px!important;
+}
+
+.markdown-body .pl-6 {
+  padding-left: 40px!important;
+}
+
+.markdown-body .f6 {
+  font-size: 12px!important;
+}
+
+.markdown-body .lh-condensed {
+  line-height: 1.25!important;
+}
+
+.markdown-body .text-bold {
+  font-weight: 600!important;
+}
+
+.markdown-body:before {
+  content: "";
+  display: table;
+}
+
+.markdown-body:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.markdown-body>:first-child {
+  margin-top: 0!important;
+}
+
+.markdown-body>:last-child {
+  margin-bottom: 0!important;
+}
+
+.markdown-body a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown-body blockquote,
+.markdown-body dl,
+.markdown-body ol,
+.markdown-body p,
+.markdown-body pre,
+.markdown-body table,
+.markdown-body ul {
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.markdown-body hr {
+  background-color: #e1e4e8;
+  border: 0;
+  height: .25em;
+  margin: 24px 0;
+  padding: 0;
+}
+
+.markdown-body blockquote {
+  border-left: .25em solid #dfe2e5;
+  color: #6a737d;
+  padding: 0 1em;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body kbd {
+  background-color: #fafbfc;
+  border: 1px solid #c6cbd1;
+  border-bottom-color: #959da5;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #959da5;
+  color: #444d56;
+  display: inline-block;
+  font-size: 11px;
+  line-height: 10px;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  margin-top: 24px;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: .3em;
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-size: .875em;
+}
+
+.markdown-body h6 {
+  color: #6a737d;
+  font-size: .85em;
+}
+
+.markdown-body ol,
+.markdown-body ul {
+  padding-left: 2em;
+}
+
+.markdown-body ol ol,
+.markdown-body ol ul,
+.markdown-body ul ol,
+.markdown-body ul ul {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.markdown-body li {
+  word-wrap: break-all;
+}
+
+.markdown-body li>p {
+  margin-top: 16px;
+}
+
+.markdown-body li+li {
+  margin-top: .25em;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  font-size: 1em;
+  font-style: italic;
+  font-weight: 600;
+  margin-top: 16px;
+  padding: 0;
+}
+
+.markdown-body dl dd {
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.markdown-body table {
+  display: block;
+  overflow: auto;
+  width: 100%;
+}
+
+.markdown-body table th {
+  font-weight: 600;
+}
+
+.markdown-body table td,
+.markdown-body table th {
+  border: 1px solid #dfe2e5;
+  padding: 6px 13px;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.markdown-body img {
+  background-color: #fff;
+  box-sizing: content-box;
+  max-width: 100%;
+}
+
+.markdown-body img[align=right] {
+  padding-left: 20px;
+}
+
+.markdown-body img[align=left] {
+  padding-right: 20px;
+}
+
+.markdown-body code {
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+  font-size: 85%;
+  margin: 0;
+  padding: .2em .4em;
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+}
+
+.markdown-body pre>code {
+  background: transparent;
+  border: 0;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  word-break: normal;
+}
+
+.markdown-body .highlight {
+  margin-bottom: 16px;
+}
+
+.markdown-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  border: 0;
+  display: inline;
+  line-height: inherit;
+  margin: 0;
+  max-width: auto;
+  overflow: visible;
+  padding: 0;
+  word-wrap: normal;
+}
+
+.markdown-body .commit-tease-sha {
+  color: #444d56;
+  display: inline-block;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 90%;
+}
+
+.markdown-body .blob-wrapper {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.markdown-body .blob-wrapper-embedded {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.markdown-body .blob-num {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  color: rgba(27,31,35,.3);
+  cursor: pointer;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 12px;
+  line-height: 20px;
+  min-width: 50px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: right;
+  user-select: none;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.markdown-body .blob-num:hover {
+  color: rgba(27,31,35,.6);
+}
+
+.markdown-body .blob-num:before {
+  content: attr(data-line-number);
+}
+
+.markdown-body .blob-code {
+  line-height: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  vertical-align: top;
+}
+
+.markdown-body .blob-code-inner {
+  color: #24292e;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 12px;
+  overflow: visible;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.markdown-body .pl-token.active,
+.markdown-body .pl-token:hover {
+  background: #ffea7f;
+  cursor: pointer;
+}
+
+.markdown-body kbd {
+  background-color: #fafbfc;
+  border: 1px solid #d1d5da;
+  border-bottom-color: #c6cbd1;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #c6cbd1;
+  color: #444d56;
+  display: inline-block;
+  font: 11px SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  line-height: 10px;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+
+.markdown-body :checked+.radio-label {
+  border-color: #0366d6;
+  position: relative;
+  z-index: 1;
+}
+
+.markdown-body .tab-size[data-tab-size="1"] {
+  -moz-tab-size: 1;
+  tab-size: 1;
+}
+
+.markdown-body .tab-size[data-tab-size="2"] {
+  -moz-tab-size: 2;
+  tab-size: 2;
+}
+
+.markdown-body .tab-size[data-tab-size="3"] {
+  -moz-tab-size: 3;
+  tab-size: 3;
+}
+
+.markdown-body .tab-size[data-tab-size="4"] {
+  -moz-tab-size: 4;
+  tab-size: 4;
+}
+
+.markdown-body .tab-size[data-tab-size="5"] {
+  -moz-tab-size: 5;
+  tab-size: 5;
+}
+
+.markdown-body .tab-size[data-tab-size="6"] {
+  -moz-tab-size: 6;
+  tab-size: 6;
+}
+
+.markdown-body .tab-size[data-tab-size="7"] {
+  -moz-tab-size: 7;
+  tab-size: 7;
+}
+
+.markdown-body .tab-size[data-tab-size="8"] {
+  -moz-tab-size: 8;
+  tab-size: 8;
+}
+
+.markdown-body .tab-size[data-tab-size="9"] {
+  -moz-tab-size: 9;
+  tab-size: 9;
+}
+
+.markdown-body .tab-size[data-tab-size="10"] {
+  -moz-tab-size: 10;
+  tab-size: 10;
+}
+
+.markdown-body .tab-size[data-tab-size="11"] {
+  -moz-tab-size: 11;
+  tab-size: 11;
+}
+
+.markdown-body .tab-size[data-tab-size="12"] {
+  -moz-tab-size: 12;
+  tab-size: 12;
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 3px;
+}
+
+.markdown-body .task-list-item input {
+  margin: 0 .2em .25em -1.6em;
+  vertical-align: middle;
+}
+
+.markdown-body hr {
+  border-bottom-color: #eee;
+}
+
+.markdown-body .pl-0 {
+  padding-left: 0!important;
+}
+
+.markdown-body .pl-1 {
+  padding-left: 4px!important;
+}
+
+.markdown-body .pl-2 {
+  padding-left: 8px!important;
+}
+
+.markdown-body .pl-3 {
+  padding-left: 16px!important;
+}
+
+.markdown-body .pl-4 {
+  padding-left: 24px!important;
+}
+
+.markdown-body .pl-5 {
+  padding-left: 32px!important;
+}
+
+.markdown-body .pl-6 {
+  padding-left: 40px!important;
+}
+
+.markdown-body .pl-7 {
+  padding-left: 48px!important;
+}
+
+.markdown-body .pl-8 {
+  padding-left: 64px!important;
+}
+
+.markdown-body .pl-9 {
+  padding-left: 80px!important;
+}
+
+.markdown-body .pl-10 {
+  padding-left: 96px!important;
+}
+
+.markdown-body .pl-11 {
+  padding-left: 112px!important;
+}
+
+.markdown-body .pl-12 {
+  padding-left: 128px!important;
+}
+
+</style>
+<style lang="less" scoped>
+@import "../../components/markdown/css/dark";
+</style>
