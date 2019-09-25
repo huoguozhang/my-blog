@@ -1,3 +1,4 @@
+const Joi = require('@hapi/joi')
 const Routes = [
   {
     method: ['GET', 'POST'],

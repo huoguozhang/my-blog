@@ -8,8 +8,6 @@ module.exports = [
   inert,
   vision,
   {
-    name: 'zlj',
-    pkg: package,
     plugin: hapiSwagger,
     options: {
       documentationPath: '/docs',

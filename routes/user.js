@@ -1,7 +1,8 @@
+const Joi = require('@hapi/joi')
 module.exports = [
   {
-    method: ['GET', 'POST'],
-    path: '/user',
+    method: 'GET',
+    path: '/api/user',
     handler: (request, reply) => {
       return ('hello hapi')
     },
@@ -11,14 +12,53 @@ module.exports = [
     }
   },
   {
-    method: ['GET', 'PUT', 'PATCH', 'DELETE'],
-    path: '/user/{uid}',
+    method: 'POST',
+    path: '/api/user',
     handler: (request, reply) => {
       return ('hello hapi')
     },
     config: {
       tags: ['api', 'user'],
-      description: '用户'
+      description: '增加用户',
+      validate: {
+        payload: {
+          username: Joi.string().required(),
+          password: Joi.string().required()
+        }
+      }
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/user/login',
+    handler: (request, reply) => {
+      return ('hello hapi')
+    },
+    config: {
+      tags: ['api', 'user'],
+      description: '用户登录',
+      validate: {
+        payload: {
+          username: Joi.string().required(),
+          password: Joi.string().required()
+        }
+      }
+    }
+  },
+  {
+    method: ['GET', 'PUT', 'PATCH', 'DELETE'],
+    path: '/api/user/{uid}',
+    handler: (request, reply) => {
+      return ('hello hapi')
+    },
+    config: {
+      tags: ['api', 'user'],
+      description: '用户',
+      validate: {
+        params: {
+          uid: Joi.string().required()
+        }
+      }
     }
   }
 ]
