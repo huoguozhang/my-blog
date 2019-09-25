@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <div class="header-ct">
+    <div class="header-ct m-b-24">
       <div class="header-main">
         <div class="logo-ct" title="本站技术栈:vue vuex vue-router typescript iView ssr node.js mysql">
           Z-blog

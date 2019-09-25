@@ -13,20 +13,21 @@
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
+    "@hapi/hapi": "^18.4.0",
+    "@nuxtjs/hapi": "^2.2.1",
     "cross-env": "^5.2.0",
-    "express": "^4.16.4",
     "highlight.js": "^9.15.10",
     "iview": "^3.1.5",
     "less-loader": "^5.0.0",
     "marked": "^0.7.0",
     "nuxt": "~2.8.0",
-    "ts-node": "^8.3.0",
+    "ts-node": "^8.4.1",
     "typescript": "^3.6.2",
     "vue-property-decorator": "^8.2.2"
   },
   "devDependencies": {
     "@nuxt/typescript": "^2.8.1",
-    "@typescript-eslint/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@vue/test-utils": "^1.0.0-beta.27",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
