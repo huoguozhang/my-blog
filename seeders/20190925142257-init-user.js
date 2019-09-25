@@ -21,6 +21,6 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     const {Op} = Sequelize;
     // 删除 shop 表 id 为 1，2，3，4 的记录
-    return queryInterface.bulkDelete('shops', {id: {[Op.in]: [1, 2, 3, 4]}}, {});
+    return queryInterface.bulkDelete('user', {id: {[Op.in]: [1, 2, 3, 4]}}, {});
   },
 };
