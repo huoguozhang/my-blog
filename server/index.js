@@ -5,6 +5,7 @@ const routesArticle = require('../routes/article')
 const routesUser = require('../routes/user')
 // 引入自定义的 hapi-swagger 插件配置
 const pluginHapiSwagger = require('../plugins/hapi-swagger')
+const pluginHapiPagination = require('../plugins/hapi-pagination')
 async function start () {
   const server = new Hapi.Server({
     host: process.env.HOST || '127.0.0.1',
@@ -28,6 +29,9 @@ async function start () {
     ...pluginHapiSwagger
     ]
   )
+  await server.register([
+    pluginHapiPagination
+  ])
 
   server.route(
     // 创建一个简单的hello hapi接口

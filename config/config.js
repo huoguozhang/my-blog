@@ -16,7 +16,7 @@ module.exports = {
     "port": env.MYSQL_PORT,
     "dialect": "mysql",
     timezone: '+08:00',
-    charset: 'utf8'
+    charset: 'utf8',
     // "operatorsAliases": false,  // 此参数为自行追加，解决高版本 sequelize 连接警告
   },
   "production": {

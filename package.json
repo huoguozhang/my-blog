@@ -20,6 +20,7 @@
     "@nuxtjs/hapi": "^2.2.1",
     "cross-env": "^5.2.0",
     "env2": "^2.2.2",
+    "hapi-pagination": "^3.0.0",
     "hapi-pino": "^6.1.0",
     "hapi-swagger": "^10.1.2",
     "highlight.js": "^9.15.10",

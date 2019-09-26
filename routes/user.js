@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi')
+const models = require('../models')
 module.exports = [
   {
     method: 'GET',
