@@ -15,7 +15,9 @@ module.exports = {
       {uid: uuid(), username: 'zlj4', id: ++id, password: '123', nickname: '火锅04',  ...timestamps},
 
     ],
-    {},
+    {
+      charset: 'utf-8'
+    },
   ),
 
   down: (queryInterface, Sequelize) => {
