@@ -4,15 +4,15 @@ const timestamps = {
   created_time: new Date(),
   updated_time: new Date(),
 }
-let id = 0
+let id = 10000
 module.exports = {
   up: queryInterface => queryInterface.bulkInsert(
     'user',
     [
-      {uid: uuid(), username: 'zlj1', id: ++id, password: '123', nickname: '火锅哥01',  ...timestamps},
-      {uid: uuid(), username: 'zlj2', id: ++id, password: '123', nickname: '火锅哥02',  ...timestamps},
-      {uid: uuid(), username: 'zlj3', id: ++id, password: '123', nickname: '火锅哥03',  ...timestamps},
-      {uid: uuid(), username: 'zlj4', id: ++id, password: '123', nickname: '火锅哥04',  ...timestamps},
+      {uid: uuid(), username: 'zlj1', id: ++id, password: '123', nickname: '火锅01',  ...timestamps},
+      {uid: uuid(), username: 'zlj2', id: ++id, password: '123', nickname: '火锅02',  ...timestamps},
+      {uid: uuid(), username: 'zlj3', id: ++id, password: '123', nickname: '火锅03',  ...timestamps},
+      {uid: uuid(), username: 'zlj4', id: ++id, password: '123', nickname: '火锅04',  ...timestamps},
 
     ],
     {},
