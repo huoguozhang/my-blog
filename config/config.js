@@ -14,9 +14,12 @@ module.exports = {
     "database": env.MYSQL_DB_NAME,
     "host": env.MYSQL_HOST,
     "port": env.MYSQL_PORT,
-    "dialect": "mysql",
+    dialect: 'mysql',
     timezone: '+08:00',
-    charset: 'utf8',
+    define: {
+      // underscored: true,
+      // timestamps: true
+    }
     // "operatorsAliases": false,  // 此参数为自行追加，解决高版本 sequelize 连接警告
   },
   "production": {
@@ -25,9 +28,12 @@ module.exports = {
     "database": env.MYSQL_DB_NAME,
     "host": env.MYSQL_HOST,
     "port": env.MYSQL_PORT,
+    dialect: 'mysql',
     timezone: '+08:00',
-    "dialect": "mysql",
-    charset: 'utf8'
+    define: {
+      underscored: true,
+      timestamps: true
+    }
     // "operatorsAliases": false, // 此参数为自行追加，解决高版本 sequelize 连接警告
   }
 }

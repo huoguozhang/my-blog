@@ -4,8 +4,9 @@ module.exports = [
   {
     method: 'GET',
     path: '/api/user',
-    handler: (request, reply) => {
-      return ('hello hapi')
+    handler: async (request, h) => {
+      const result = await models.user.findAll()
+      h.response(result)
     },
     config: {
       tags: ['api', 'user'],
