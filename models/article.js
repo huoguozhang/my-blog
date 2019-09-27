@@ -26,8 +26,8 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
       allowNull: false
     },
     summary: DataTypes.STRING,
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
+    created_time: DataTypes.DATE,
+    updated_time: DataTypes.DATE
     },
   {
     tableName: 'article'

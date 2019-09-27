@@ -1,9 +1,9 @@
 'use strict';
 const uuid = require('uuid')
-let id = 10000
+let id = Math.floor(Math.random() * 10000)
 const timeStamp = {
-  createdAt: new Date(),
-  updatedAt: new Date()
+  created_time: new Date(),
+  updated_time: new Date()
 }
 module.exports = {
   up: queryInterface => queryInterface.bulkInsert(

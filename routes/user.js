@@ -6,7 +6,7 @@ module.exports = [
     path: '/api/user',
     handler: async (request, h) => {
       const result = await models.user.findAll()
-      h.response(result)
+      return result
     },
     config: {
       tags: ['api', 'user'],

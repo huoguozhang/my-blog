@@ -21,8 +21,8 @@ module.exports = {
       allowNull: false
     },
     summary: Sequelize.STRING,
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE
+    created_time: Sequelize.DATE,
+    updated_time: Sequelize.DATE
   },
   {
     charset: 'utf8'
