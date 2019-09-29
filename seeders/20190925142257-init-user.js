@@ -9,10 +9,10 @@ module.exports = {
   up: queryInterface => queryInterface.bulkInsert(
     'user',
     [
-      {uid: uuid(), username: 'zlj1', id: ++id, password: '123', nickname: '火锅1', ...timeStamp},
-      {uid: uuid(), username: 'zlj2', id: ++id, password: '123', nickname: '火锅2', ...timeStamp},
-      {uid: uuid(), username: 'zlj3', id: ++id, password: '123', nickname: '火锅3', ...timeStamp},
-      {uid: uuid(), username: 'zlj4', id: ++id, password: '123', nickname: '火锅4', ...timeStamp},
+      {uid: uuid(), username: 'zlj1', password: '123', nickname: '火锅1', ...timeStamp},
+      {uid: uuid(), username: 'zlj2', password: '123', nickname: '火锅2', ...timeStamp},
+      {uid: uuid(), username: 'zlj3', password: '123', nickname: '火锅3', ...timeStamp},
+      {uid: uuid(), username: 'zlj4', password: '123', nickname: '火锅4', ...timeStamp},
 
     ],
     {

@@ -5,7 +5,11 @@ module.exports = [
     method: 'GET',
     path: '/api/user',
     handler: async (request, h) => {
-      const result = await models.user.findAll()
+      const result = await models.user.findAll({
+        attributes: {
+          exclude: ['password']
+        }
+      })
       return result
     },
     config: {
@@ -18,7 +22,7 @@ module.exports = [
     path: '/api/user',
     handler: async (request, h) => {
       const res = await models.user.create(request.payload)
-      return ('创建成功！')
+      return h.response('created').code(201)
     },
     config: {
       tags: ['api', 'user'],
