@@ -5,11 +5,7 @@ module.exports = {
   'article',
   {
     uid: {
-      type: Sequelize.UUID
-    },
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
+      type: Sequelize.UUID,
       primaryKey: true
     },
     title: {

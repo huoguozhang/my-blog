@@ -5,16 +5,11 @@ module.exports = {
   'user',
   {
     uid: {
-      type: Sequelize.UUID
-    },
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
+      type: Sequelize.UUID,
       primaryKey: true
     },
     nickname: {
-      type: Sequelize.STRING,
-      allowNull: false
+      type: Sequelize.STRING
     },
     username: {
       type: Sequelize.STRING,

@@ -1,5 +1,5 @@
 'use strict';
-
+const uuid = require('uuid')
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -11,7 +11,14 @@ const config = {
   ...configs[env],
   define: {
     underscored: true,
-    timestamps: true
+    timestamps: true,
+    updatedAt: 'updated_time',
+    createdAt: 'created_time',
+    hooks: {
+      beforeCreate (model) {
+        model.uid = uuid()
+      }
+    }
   }
 }
 let sequelize;
@@ -29,7 +36,7 @@ fs
   .forEach(file => {
     const model = sequelize['import'](path.join(__dirname, file))
     db[model.name] = model
-  
+
   })
 
 Object.keys(db).forEach(modelName => {

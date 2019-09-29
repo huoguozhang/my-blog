@@ -16,8 +16,9 @@ module.exports = [
   {
     method: 'POST',
     path: '/api/user',
-    handler: (request, reply) => {
-      return ('hello hapi')
+    handler: async (request, h) => {
+      const res = await models.user.create(request.payload)
+      return ('创建成功！')
     },
     config: {
       tags: ['api', 'user'],

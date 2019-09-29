@@ -2,16 +2,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
   'article',
   {
     uid: {
-      type: DataTypes.UUID
-    },
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
       primaryKey: true
     },
     nickname: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     username: {
       type: DataTypes.STRING,

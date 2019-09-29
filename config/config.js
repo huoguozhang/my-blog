@@ -6,7 +6,6 @@ if (process.env.NODE_ENV === 'production') {
 
 
 const { env } = process;
-console.log('config')
 module.exports = {
   "development": {
     "username": env.MYSQL_USERNAME,
@@ -15,12 +14,7 @@ module.exports = {
     "host": env.MYSQL_HOST,
     "port": env.MYSQL_PORT,
     dialect: 'mysql',
-    timezone: '+08:00',
-    dialectOptions: {
-      useUTC: false //for reading from database
-    },
-      underscored: true,
-      timestamps: true
+    timezone: '+08:00'
     // "operatorsAliases": false,  // 此参数为自行追加，解决高版本 sequelize 连接警告
   },
   "production": {
@@ -30,14 +24,7 @@ module.exports = {
     "host": env.MYSQL_HOST,
     "port": env.MYSQL_PORT,
     dialect: 'mysql',
-    timezone: '+08:00',
-    dialectOptions: {
-      useUTC: false //for reading from database
-    },
-    define: {
-      underscored: true,
-      timestamps: true
-    }
+    timezone: '+08:00'
     // "operatorsAliases": false, // 此参数为自行追加，解决高版本 sequelize 连接警告
   }
 }

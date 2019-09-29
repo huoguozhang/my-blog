@@ -17,13 +17,13 @@ async function start () {
     options: {}
   }) */
   // 日志
-  /*await server.register({
+  await server.register({
     plugin: require('hapi-pino'),
     options: {
       prettyPrint: false,
       logEvents: ['response', 'onPostStart']
     }
-  })*/
+  })
   await server.register([
     // 为系统使用 hapi-swagger
     ...pluginHapiSwagger
