@@ -1,5 +1,7 @@
 const Joi = require('@hapi/joi')
 const models = require('../models')
+const JWT = require('jsonwebtoken')
+
 module.exports = [
   {
     method: 'GET',
@@ -49,6 +51,15 @@ module.exports = [
           username: Joi.string().required(),
           password: Joi.string().required()
         }
+      },
+      handler: async (request, h) => {
+        let res = await models.user.findAll({
+          where: {
+            username: request.payload.username,
+            password: request.payload.password
+          }
+        })
+        console.log(res)
       }
     }
   },
