@@ -20,6 +20,7 @@ async function start () {
     plugin: HapiNuxt,
     options: {}
   }) */
+
   // 日志
   /*await server.register({
     plugin: require('hapi-pino'),
@@ -28,21 +29,23 @@ async function start () {
       logEvents: ['response', 'onPostStart']
     }
   })*/
+
   await server.register([
     // 为系统使用 hapi-swagger
     ...pluginHapiSwagger
     ]
   )
+  // 分页
   await server.register([
     pluginHapiPagination
   ])
-
+  // 鉴权
   await server.register(hapiAuthJWT2)
 
   pluginHapiAuthJWT2(server)
 
   server.route(
-    // 创建一个简单的hello hapi接口
+    // 创建路由
     [...routesArticle, ...routesUser]
   )
 
