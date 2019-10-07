@@ -1,6 +1,7 @@
 const validate = (decoded, request, h) => {
   // decoded 为 JWT payload 被解码后的数据
   const { userId } = decoded
+  console.log(decoded)
   return { isValid: true }
 }
 

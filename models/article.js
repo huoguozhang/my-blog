@@ -5,13 +5,6 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
       type: DataTypes.UUID,
       primaryKey: true
     },
-    nickname: {
-      type: DataTypes.STRING
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     title: {
       type: DataTypes.STRING,
       allowNull: false
