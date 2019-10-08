@@ -7,7 +7,9 @@ const Routes = [
     method: 'POST',
     path: '/api/upload',
     handler: (request, h) => {
-      request.payload['output'].pipe(fs.createWriteStream("test"))
+      console.log('upload')
+      console.log(request.payload)
+      return h.response(request.payload)
     },
     config: {
       auth: false,
@@ -15,8 +17,8 @@ const Routes = [
       description: '文件上传',
       validate: {
         payload: {
-          output: 'stream',
-          allow: 'multipart/form-data' // important
+          filefield: Joi.object(),
+          output: 'file'
         }
       }
     }

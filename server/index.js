@@ -21,13 +21,14 @@ async function start () {
   }) */
 
   // 日志
-  /*await server.register({
+  await server.register({
     plugin: require('hapi-pino'),
     options: {
-      prettyPrint: false,
+      prettyPrint: true,
+      // logPayload: true,
       logEvents: ['response', 'onPostStart']
     }
-  })*/
+  })
 
   await server.register([
     // 为系统使用 hapi-swagger
@@ -46,6 +47,21 @@ async function start () {
   server.route(
     // 创建路由
     routes
+  )
+
+  await server.register(require('inert'))
+
+  server.route({
+      method: 'GET',
+      path: '/',
+      handler: async (request, h) => {
+        console.log('index.html')
+        return h.file('./index.html');
+      },
+      config: {
+        auth: false
+      }
+    }
   )
 
   // 404
