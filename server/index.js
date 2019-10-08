@@ -1,8 +1,7 @@
 const consola = require('consola')
 const Hapi = require('@hapi/hapi')
 const HapiNuxt = require('@nuxtjs/hapi')
-const routesArticle = require('../routes/article')
-const routesUser = require('../routes/user')
+const routes = require('../routes')
 // 引入自定义的 hapi-swagger 插件配置
 const pluginHapiSwagger = require('../plugins/hapi-swagger')
 const pluginHapiPagination = require('../plugins/hapi-pagination')
@@ -46,8 +45,33 @@ async function start () {
 
   server.route(
     // 创建路由
-    [...routesArticle, ...routesUser]
+    routes
   )
+
+  // 404
+  server.route({
+    method: '*',
+    path: '/{any*}',
+    config: {
+      auth: false
+    },
+    handler: function (request, h) {
+
+      return '404 Error! Page Not Found!'
+    }
+  })
+
+  // 请求生命周期-在路由handler之后再包装一下response 返回的结果为 { code: number, message: string, data: any }
+  server.ext('onPostHandler', function (request, h) {
+    if (!/^\/api/.test(request.path)) {
+      // 非api开头的接口不在处理范围内
+      return h.response(request.response)
+    }
+    const routeResponse = request.response.source
+    let useOriginResponse = routeResponse.hasOwnProperty('code')
+    const result =  useOriginResponse ? routeResponse : { code: 0, message: '成功', data: routeResponse }
+    return h.response(result)
+  })
 
   await server.start()
 

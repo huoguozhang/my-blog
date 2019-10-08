@@ -37,7 +37,7 @@ const Routes = [
         offset: (request.query.page - 1) * request.query.limit,
       });
       // 开启分页的插件，返回的数据结构里，需要带上 result 与 totalCount 两个字段
-      return h.response({results, totalCount});
+      return h.response({results, totalCount})
     },
     config: {
       auth: false,

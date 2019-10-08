@@ -37,7 +37,7 @@ module.exports = [
     path: '/api/user',
     handler: async (request, h) => {
       const res = await models.user.create(request.payload)
-      return h.response('created').code(201)
+      return h.response({ code: 0, message: '注册成功!', data: res }).code(201)
     },
     config: {
       tags: ['api', 'user'],
@@ -67,7 +67,7 @@ module.exports = [
       if (res.length > 0) {
         return h.response({
           code: 0,
-          message: '成功',
+          message: '登录成功!',
           data: {
             token: generateJWT(data.uid),
             ...data.dataValues
