@@ -82,11 +82,11 @@ async function start () {
 
   // 请求生命周期-在路由handler之后再包装一下response 返回的结果为 { code: number, message: string, data: any }
   server.ext('onPostHandler', function (request, h) {
-    if (!/^\/api/.test(request.path)) {
-      // 非api开头的接口不在处理范围内
+    const routeResponse = request.response.source
+    if (!/^\/api/.test(request.path) || (routeResponse.hasOwnProperty('path') && routeResponse.hasOwnProperty('file'))) {
+      // 非api开头的接口不在处理范围内 或者接口返回h.file()
       return h.response(request.response)
     }
-    const routeResponse = request.response.source
     let useOriginResponse = routeResponse.hasOwnProperty('code')
     const result =  useOriginResponse ? routeResponse : { code: 0, message: '成功', data: routeResponse }
     return h.response(result)

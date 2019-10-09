@@ -32,7 +32,7 @@ const _fileHandler = function (file, options = fileOptions) {
         filename,
         mimetype: file.hapi.headers['content-type'],
         destination: `${options.dest}`,
-        path,
+        path: '/api/' + path,
         size: fs.statSync(path).size
       }
 

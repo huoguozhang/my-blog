@@ -24,9 +24,8 @@ const Routes = [
   },
   {
     method: 'GET',
-    path: '/uploads/{fileName}',
+    path: '/api/uploads/{fileName}',
     handler: (request, h) => {
-     console.log(request.params.fileName)
       return h.file('./uploads/' +  request.params.fileName)
     },
     config: {
