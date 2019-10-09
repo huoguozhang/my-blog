@@ -10,6 +10,10 @@ const uploader = function (file, options) {
   return _fileHandler(file, options)
 }
 
+if (!fs.existsSync(UPLOAD_PATH)){
+    fs.mkdirSync(UPLOAD_PATH)
+}
+
 const _fileHandler = function (file, options = fileOptions) {
   if (!file) throw new Error('no file')
 
