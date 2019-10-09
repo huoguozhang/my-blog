@@ -1,12 +1,14 @@
 const consola = require('consola')
 const Hapi = require('@hapi/hapi')
 const HapiNuxt = require('@nuxtjs/hapi')
+const Inert = require('inert')
+// auth
+const hapiAuthJWT2 = require('hapi-auth-jwt2')
+
 const routes = require('../routes')
 // 引入自定义的 hapi-swagger 插件配置
 const pluginHapiSwagger = require('../plugins/hapi-swagger')
 const pluginHapiPagination = require('../plugins/hapi-pagination')
-// auth
-const hapiAuthJWT2 = require('hapi-auth-jwt2')
 const pluginHapiAuthJWT2 = require('../plugins/hapi-auth-jwt2')
 
 async function start () {
@@ -21,7 +23,7 @@ async function start () {
   }) */
 
   // 日志
-  await server.register({
+  /*await server.register({
     plugin: require('hapi-pino'),
     options: {
       prettyPrint: true,
@@ -29,6 +31,9 @@ async function start () {
       logEvents: ['response', 'onPostStart']
     }
   })
+*/
+
+  await server.register(Inert)
 
   await server.register([
     // 为系统使用 hapi-swagger
@@ -48,8 +53,6 @@ async function start () {
     // 创建路由
     routes
   )
-
-  await server.register(require('inert'))
 
   server.route({
       method: 'GET',

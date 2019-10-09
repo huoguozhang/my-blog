@@ -1,26 +1,36 @@
 const routesArticle = require('./article')
 const routesUser = require('./user')
-const Joi = require('@hapi/joi')
+
+const { uploader } = require('../utils/upload')
 
 const Routes = [
   {
     method: 'POST',
     path: '/api/upload',
-    handler: (request, h) => {
-      console.log('upload')
-      console.log(request.payload)
-      return h.response(request.payload)
+    handler: async (request, h) => {
+      // fs.writeFile('test.png',  request.payload.file.hapi, () => {},)
+      const file = await uploader(request.payload.file)
+      return h.response(file)
     },
     config: {
       auth: false,
+      payload: {
+        output: 'stream',
+        allow: 'multipart/form-data' // important
+      },
       tags: ['api', 'upload'],
-      description: '文件上传',
-      validate: {
-        payload: {
-          filefield: Joi.object(),
-          output: 'file'
-        }
-      }
+      description: '文件上传'
+    }
+  },
+  {
+    method: 'GET',
+    path: '/uploads/{fileName}',
+    handler: (request, h) => {
+     console.log(request.params.fileName)
+      return h.file('./uploads/' +  request.params.fileName)
+    },
+    config: {
+      auth: false
     }
   }
 ]
