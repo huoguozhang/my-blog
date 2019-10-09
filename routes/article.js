@@ -11,11 +11,11 @@ const Routes = [
       return h.response('created').code(201)
     },
     config: {
-      auth: 'jwt',
+      auth: false, // 'jwt',
       tags: ['api', 'article'],
       description: '创建文章',
       validate: {
-        ...jwtHeaderDefine,
+        // ...jwtHeaderDefine,
         payload: {
           title: Joi.string().required(),
           content: Joi.string().required()
@@ -51,14 +51,50 @@ const Routes = [
     }
   },
   {
-    method: ['PUT', 'DELETE', 'PATCH', 'GET'],
+    method: 'GET',
     path: '/api/article/{uid}/',
-    handler (request, h) {
-      return 'hello'
+    handler: async (request, h) => {
+      const res = await models.article.findAll({
+        where: {
+          uid: request.params.uid
+        }
+      })
+      return h.response(res)
     },
     config: {
+      auth: false,
       tags: ['api', 'article'],
-      description: '文章'
+      description: '获取某一篇文章',
+      validate: {
+        params: {
+          uid: Joi.string().required()
+        }
+      }
+    }
+  },
+  {
+    method: 'DELETE',
+    path: '/api/article/{uid}/',
+    handler: async (request, h) => {
+      const uid = request.params.uid
+      const count = await models.article.destroy({
+        where: {
+          uid
+        }
+      })
+      let successRes = { code: 0, message: '删除成功', data: null }
+      let errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
+      return h.response(count > 0 ? successRes : errorRes)
+    },
+    config: {
+      auth: false,
+      tags: ['api', 'article'],
+      description: '删除一篇文章',
+      validate: {
+        params: {
+          uid: Joi.string().required()
+        }
+      }
     }
   }
 ]

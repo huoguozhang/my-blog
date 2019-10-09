@@ -54,19 +54,6 @@ async function start () {
     routes
   )
 
-  server.route({
-      method: 'GET',
-      path: '/',
-      handler: async (request, h) => {
-        console.log('index.html')
-        return h.file('./index.html');
-      },
-      config: {
-        auth: false
-      }
-    }
-  )
-
   // 404
   server.route({
     method: '*',
