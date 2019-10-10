@@ -1,14 +1,16 @@
 const Joi = require('@hapi/joi')
 const { paginationDefine, jwtHeaderDefine } = require('../utils/router-helper')
 const models = require('../models')
+const { extractTextFormMD } = require('../utils/stringHelp')
 
 const Routes = [
   {
     path: '/api/article',
     method: 'POST',
     handler: async (request, h) => {
-      const res = await models.article.create(request.payload)
-      return h.response('created').code(201)
+      const summary = extractTextFormMD(request.payload.content)
+      const res = await models.article.create({...request.payload, summary})
+      return h.response(res).code(201)
     },
     config: {
       auth: false, // 'jwt',
@@ -31,7 +33,7 @@ const Routes = [
         attributes: [
           'uid',
           'title',
-          'content'
+          'summary'
         ],
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit,
@@ -93,6 +95,47 @@ const Routes = [
       validate: {
         params: {
           uid: Joi.string().required()
+        }
+      }
+    }
+  },
+  {
+    method: 'PUT',
+    path: '/api/article/{uid}/',
+    handler: async (request, h) => {
+      const uid = request.params.uid
+      const { title, content } = request.payload
+      const data = await models.article.update(
+        {
+          title, content
+        },
+        {
+        where: {
+          uid
+        }
+      })
+      let effectCount = data[0]
+      let successRes = { code: 0, message: '修改成功', data: null }
+      if (effectCount > 0) {
+        let item = await models.article.findAll({
+          where: { uid}
+        })
+        successRes.data = item[0]
+      }
+      let errorRes = { code: 7, message: `删除错误，uid:${uid}不存在`, data: null }
+      return h.response(effectCount > 0 ? successRes : errorRes)
+    },
+    config: {
+      auth: false,
+      tags: ['api', 'article'],
+      description: '修改文章',
+      validate: {
+        params: {
+          uid: Joi.string().required()
+        },
+        payload: {
+          title: Joi.string(),
+          content: Joi.string()
         }
       }
     }

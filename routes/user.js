@@ -24,11 +24,11 @@ module.exports = [
       return h.response(result)
     },
     config: {
-      auth: 'jwt',
+      auth: false, //'jwt',
       tags: ['api', 'user'],
       description: '用户',
       validate: {
-        ...jwtHeaderDefine
+        // ...jwtHeaderDefine
       }
     }
   },
@@ -45,7 +45,8 @@ module.exports = [
       validate: {
         payload: {
           username: Joi.string().required(),
-          password: Joi.string().required()
+          password: Joi.string().required(),
+          nickname: Joi.string()
         }
       }
     }
@@ -93,17 +94,50 @@ module.exports = [
     }
   },
   {
-    method: ['GET', 'PUT', 'PATCH', 'DELETE'],
+    method: 'GET',
     path: '/api/user/{uid}',
-    handler: (request, reply) => {
-      return ('hello hapi')
+    handler: async (request, h) => {
+      const res = await models.user.findAll({
+        where: {
+          uid: request.params.uid
+        },
+        exclude: ['password']
+      })
+      return h.response(res[0])
     },
     config: {
+      auth: false,
       tags: ['api', 'user'],
-      description: '用户',
+      description: '获取用户信息',
       validate: {
         params: {
           uid: Joi.string().required()
+        }
+      }
+    }
+  },
+  {
+    method: 'PUT',
+    path: '/api/user/{uid}',
+    handler: async (request, h) => {
+      const { uid }= request.payload
+      const count = await models.user.update(request.payload, { where: { uid } })
+      let successRes = { code: 0, message: '修改成功', data: null }
+      let errorRes = { code: 9, message: `修改错误，uid:${uid}不存在`, data: null }
+      return h.response(count > 0 ? successRes : errorRes)
+    },
+    config: {
+      auth: false,
+      tags: ['api', 'user'],
+      description: '修改用户信息',
+      validate: {
+        params: {
+          uid: Joi.string().required()
+        },
+        payload: {
+          username: Joi.string(),
+          password: Joi.string(),
+          nickname: Joi.string()
         }
       }
     }
