@@ -13,11 +13,11 @@ const Routes = [
       return h.response(res).code(201)
     },
     config: {
-      auth: false, // 'jwt',
+      auth: 'jwt',
       tags: ['api', 'article'],
       description: '创建文章',
       validate: {
-        // ...jwtHeaderDefine,
+        ...jwtHeaderDefine,
         payload: {
           title: Joi.string().required(),
           content: Joi.string().required()
@@ -89,10 +89,11 @@ const Routes = [
       return h.response(count > 0 ? successRes : errorRes)
     },
     config: {
-      auth: false,
+      auth: 'jwt',
       tags: ['api', 'article'],
       description: '删除一篇文章',
       validate: {
+        ...jwtHeaderDefine,
         params: {
           uid: Joi.string().required()
         }
@@ -126,10 +127,11 @@ const Routes = [
       return h.response(effectCount > 0 ? successRes : errorRes)
     },
     config: {
-      auth: false,
+      auth: 'jwt',
       tags: ['api', 'article'],
       description: '修改文章',
       validate: {
+        ...jwtHeaderDefine,
         params: {
           uid: Joi.string().required()
         },

@@ -7,11 +7,14 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
       primaryKey: true
     },
     nickname: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
     },
     username: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     password: {
       type: DataTypes.STRING,

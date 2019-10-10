@@ -18,7 +18,8 @@ module.exports = {
     },
     summary: Sequelize.STRING,
     created_time: Sequelize.DATE,
-    updated_time: Sequelize.DATE
+    updated_time: Sequelize.DATE,
+    author: Sequelize.UUID
   },
   {
     charset: 'utf8'

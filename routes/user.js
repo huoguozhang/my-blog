@@ -1,3 +1,4 @@
+const Op = require('sequelize').Op
 const Joi = require('@hapi/joi')
 const models = require('../models')
 const JWT = require('jsonwebtoken')
@@ -24,11 +25,11 @@ module.exports = [
       return h.response(result)
     },
     config: {
-      auth: false, //'jwt',
+      auth: 'jwt',
       tags: ['api', 'user'],
       description: '用户',
       validate: {
-        // ...jwtHeaderDefine
+        ...jwtHeaderDefine
       }
     }
   },
@@ -36,17 +37,46 @@ module.exports = [
     method: 'POST',
     path: '/api/user',
     handler: async (request, h) => {
+      const nickname = request.payload.nickname
+      const username = request.payload.username
+      const exist = await models.user.findAll({
+        where: {
+          [Op.or]: [{ nickname }, { username }]
+        }
+      })
+
+      let message = ''
+
+      let conflic = exist.some(v => {
+        if (v.nickname === nickname) {
+          message = '昵称已经存在'
+          return true
+        }
+        if (v.username === username) {
+          message = '用户名已经存在'
+          return true
+        }
+        return false
+      })
+      if (conflic) {
+        return h.response({
+          code: 8,
+          message,
+          data: null
+        })
+      }
       const res = await models.user.create(request.payload)
       return h.response({ code: 0, message: '注册成功!', data: res }).code(201)
     },
     config: {
+      auth: false,
       tags: ['api', 'user'],
       description: '增加用户',
       validate: {
         payload: {
           username: Joi.string().required(),
           password: Joi.string().required(),
-          nickname: Joi.string()
+          nickname: Joi.string().required()
         }
       }
     }
@@ -120,14 +150,14 @@ module.exports = [
     method: 'PUT',
     path: '/api/user/{uid}',
     handler: async (request, h) => {
-      const { uid }= request.payload
+      const { uid } = request.params
       const count = await models.user.update(request.payload, { where: { uid } })
       let successRes = { code: 0, message: '修改成功', data: null }
       let errorRes = { code: 9, message: `修改错误，uid:${uid}不存在`, data: null }
       return h.response(count > 0 ? successRes : errorRes)
     },
     config: {
-      auth: false,
+      auth: 'jwt',
       tags: ['api', 'user'],
       description: '修改用户信息',
       validate: {
@@ -138,6 +168,28 @@ module.exports = [
           username: Joi.string(),
           password: Joi.string(),
           nickname: Joi.string()
+        }
+      }
+    }
+  },
+  {
+    method: 'DELETE',
+    path: '/api/user/{uid}',
+    handler: async (request, h) => {
+      const { uid } = request.params
+      const count = await models.user.destroy({ where: { uid } })
+      let successRes = { code: 0, message: '删除成功', data: null }
+      let errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
+      return h.response(count > 0 ? successRes : errorRes)
+    },
+    config: {
+      auth: 'jwt',
+      tags: ['api', 'user'],
+      description: '删除用户',
+      validate: {
+        ...jwtHeaderDefine,
+        params: {
+          uid: Joi.string().required()
         }
       }
     }
