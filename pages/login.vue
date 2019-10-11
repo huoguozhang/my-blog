@@ -7,6 +7,9 @@
       <Tabs v-model="tabActive">
         <TabPane :label="tab.label" v-for="tab in tabs" :key="tab.name" :name="tab.name">
           <Form :rules="formRules" :model="userForm" :ref="'userForm' + tab.name">
+            <Form-item label="昵称" prop="nickname" v-if="tab.name === 'signUp'">
+              <Input v-model="userForm.nickname" prop="nickname" />
+            </Form-item>
             <Form-item label="用户名" prop="username">
               <Input v-model="userForm.username" />
             </Form-item>
@@ -25,9 +28,11 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { Tabs, TabPane, Form, FormItem, Input, Button } from 'iview'
+import request from '~/api/index'
 interface UserForm {
-  username: string,
+  username: string
   password: string
+  nickname: string
 }
 const SIGNIN = 'signIn'
 const SIGNUP = 'signUp'
@@ -51,7 +56,8 @@ export default class Login extends Vue {
     this.tabActive = SIGNIN
     this.userForm = {
       username: '',
-      password: ''
+      password: '',
+      nickname: ''
     }
     this.tabs = [
       {
@@ -72,17 +78,24 @@ export default class Login extends Vue {
         ],
         password: [
           { required: true, message: '请填写密码', trigger: 'blur' }
+        ],
+        nickname: [
+          { required: true, message: '请填写用户昵称', trigger: 'blur' }
         ]
       }
     }
   }
 
   submitForm (formName: string): any {
-    this.$refs[formName][0].validate((valid: any) => {
+    this.$refs[formName][0].validate(async (valid: any) => {
       if (valid) {
-        this.$router.push({
-          path: '/recommend'
+        const { username, nickname, password } = this.userForm
+        await request.userLogin({ username, password }).then((res: any) => {
+          console.log(res)
         })
+        /* this.$router.push({
+          path: '/recommend'
+        }) */
       } else {
       }
     })
@@ -91,11 +104,13 @@ export default class Login extends Vue {
 </script>
 <style lang="scss" scoped>
 .login-comp-ct {
-  height: 100%;
-  min-height: 750px;
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
   text-align: center;
   font-size: 14px;
-  background-color: #f1f1f1;
+  background: url("../assets/image/login-bg.jpg");
+  background-size: cover;
   .header{
     padding: 80px 0 0 80px;
     text-align: left;
@@ -104,8 +119,10 @@ export default class Login extends Vue {
     color: orange;
   }
   .main{
+    position: absolute;
+    top: 80px;
+    right: 160px;
     width: 400px;
-    margin: 60px auto 0;
     padding: 50px 50px 30px;
     background-color: #fff;
     border-radius: 4px;

@@ -17,10 +17,10 @@ async function start () {
     port: process.env.PORT || 3000
   })
 
-  /* await server.register({
+  await server.register({
     plugin: HapiNuxt,
     options: {}
-  }) */
+  })
 
   // 日志
   /*await server.register({
@@ -53,19 +53,6 @@ async function start () {
     // 创建路由
     routes
   )
-
-  // 404
-  server.route({
-    method: '*',
-    path: '/{any*}',
-    config: {
-      auth: false
-    },
-    handler: function (request, h) {
-
-      return '404 Error! Page Not Found!'
-    }
-  })
 
   // 请求生命周期-在路由handler之后再包装一下response 返回的结果为 { code: number, message: string, data: any }
   server.ext('onPostHandler', function (request, h) {
