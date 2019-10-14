@@ -3,7 +3,8 @@
     <MarkDown
       theme="Dark"
       :toolbars="{
-       }">
+      }"
+    >
       <a slot="header-right">发布文章</a>
     </MarkDown>
   </div>
@@ -12,7 +13,7 @@
 /* tslint:disable-next-line */
 import MarkDown from '~/components/markdown'
 export default {
-  name: 'writer',
+  name: 'Writer',
   components: {
     MarkDown
   }

@@ -4,31 +4,43 @@
       Z-blog
     </div>
     <div class="main">
-      <Tabs v-model="tabActive">
-        <TabPane :label="tab.label" v-for="tab in tabs" :key="tab.name" :name="tab.name">
-          <Form :rules="formRules" :model="userForm" :ref="'userForm' + tab.name">
-            <Form-item label="昵称" prop="nickname" v-if="tab.name === 'signUp'">
-              <Input v-model="userForm.nickname" prop="nickname" />
-            </Form-item>
-            <Form-item label="用户名" prop="username">
-              <Input v-model="userForm.username" />
-            </Form-item>
-            <Form-item label="密码" prop="password">
-              <Input v-model="userForm.password" type="password" />
-            </Form-item>
-            <Form-item>
-              <Button type="primary" @click="submitForm('userForm' + tab.name)">{{tab.label}}</Button>
-            </Form-item>
-          </Form>
-        </TabPane>
-    </Tabs>
+      <el-radio-group v-model="tabActive">
+        <el-radio v-for="tab in tabs" :key="tab.name" :label="tab.name">
+          {{ tab.label }}
+        </el-radio>
+      </el-radio-group>
+      <el-form
+        ref="userForm"
+        align="left"
+        class="my-form"
+        label-position="left"
+        label-width="80px"
+        :rules="formRules"
+        :model="userForm"
+      >
+        <el-form-item v-if="tabActive === 'signUp'" label="昵称" prop="nickname">
+          <el-input v-model="userForm.nickname" class="w-200" prop="nickname" />
+        </el-form-item>
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="userForm.username" class="w-200" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="userForm.password" class="w-200" type="password" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm">
+            {{ tabs.find(v => v.name === tabActive).label }}
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { Tabs, TabPane, Form, FormItem, Input, Button } from 'iview'
-import request from '~/api/index'
+import request from '~/client/api/index'
+import { saveToken } from '~/client/utils/token'
+
 interface UserForm {
   username: string
   password: string
@@ -40,11 +52,8 @@ type TAbActive = 'signIn' | 'signUp'
 interface TabsArray {
   [index:number]: {name: string, label: string}
 }
-@Component({
-  components: {
-    Tabs, TabPane, Form, FormItem, Input, Button
-  }
-})
+
+@Component({})
 export default class Login extends Vue {
   userForm!: UserForm
   tabActive!: TAbActive
@@ -85,17 +94,24 @@ export default class Login extends Vue {
       }
     }
   }
-
-  submitForm (formName: string): any {
-    this.$refs[formName][0].validate(async (valid: any) => {
+  login (username: string, password: string) {
+    request.userLogin({ username, password }).then((res: any) => {
+      saveToken(res.token)
+      this.$router.push({
+        path: '/recommend'
+      })
+    })
+  }
+  submitForm (): any {
+    this.$refs.userForm.validate(async (valid: any) => {
       if (valid) {
-        const { username, nickname, password } = this.userForm
-        await request.userLogin({ username, password }).then((res: any) => {
-          console.log(res)
-        })
-        /* this.$router.push({
-          path: '/recommend'
-        }) */
+        const { username, password, nickname } = this.userForm
+        if (this.tabActive === SIGNIN) {
+          this.login(username, password)
+        } else {
+          await request.userRegister({ username, password, nickname })
+          this.login(username, password)
+        }
       } else {
       }
     })
@@ -129,6 +145,9 @@ export default class Login extends Vue {
     box-shadow: 0 0 8px rgba(0, 0, 0, .1);
     vertical-align: middle;
     display: inline-block;
+    .my-form{
+      margin-top: 24px;
+    }
   }
 }
 </style>

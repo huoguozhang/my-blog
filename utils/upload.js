@@ -1,21 +1,21 @@
-const uuid = require('uuid')
 const fs = require('fs')
+const uuid = require('uuid')
 
 const UPLOAD_PATH = 'uploads'
 const fileOptions = { dest: `${UPLOAD_PATH}/` }
 
 const uploader = function (file, options) {
-  if (!file) throw new Error('no file(s)')
+  if (!file) { throw new Error('no file(s)') }
 
   return _fileHandler(file, options)
 }
 
-if (!fs.existsSync(UPLOAD_PATH)){
-    fs.mkdirSync(UPLOAD_PATH)
+if (!fs.existsSync(UPLOAD_PATH)) {
+  fs.mkdirSync(UPLOAD_PATH)
 }
 
 const _fileHandler = function (file, options = fileOptions) {
-  if (!file) throw new Error('no file')
+  if (!file) { throw new Error('no file') }
 
   const orignalname = file.hapi.filename
   const filename = uuid.v1()
@@ -30,6 +30,9 @@ const _fileHandler = function (file, options = fileOptions) {
     file.pipe(fileStream)
 
     file.on('end', function (err) {
+      if (err) {
+        throw new Error(err)
+      }
       const fileDetails = {
         fieldname: file.hapi.name,
         originalname: file.hapi.filename,

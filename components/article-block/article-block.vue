@@ -12,23 +12,27 @@
           火锅小王子
         </span>
         <span class="comments info-item">
-          <icon icon="pinglun" color=" #409EFF"></icon>
-        999+
+          <Icon icon="pinglun" color=" #409EFF" />
+          999+
         </span>
         <span class="like info-item">
-          <icon icon="xihuan" color="#F56C6C"></icon>
-        999+
+          <Icon icon="xihuan" color="#F56C6C" />
+          999+
         </span>
       </div>
     </div>
     <a href="#" class="cover-img-ct">
-      <img class="cover" src="../../assets/image/photo.jpeg" />
+      <img class="cover" src="../../assets/image/photo.jpeg">
     </a>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
+import { Icon } from 'element-ui'
 @Component({
+  components: {
+    Icon
+  },
   methods: {
     goPost () {
       this.$router.push({

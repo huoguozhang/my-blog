@@ -23,7 +23,7 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    'iview/dist/styles/iview.css',
+    'element-ui/lib/theme-chalk/index.css',
     '@/assets/css/reset.css',
     '@/assets/css/common.scss'
   ],
@@ -31,7 +31,7 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/iview'
+    '@/plugins/element.js'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -50,7 +50,8 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-    extend (config, ctx) {
+    extend () {
+      /* eslint-disable */
     }
   }
 }

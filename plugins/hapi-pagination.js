@@ -1,4 +1,4 @@
-const hapiPagination = require('hapi-pagination');
+const hapiPagination = require('hapi-pagination')
 
 const options = {
   query: {
@@ -7,7 +7,7 @@ const options = {
     },
     limit: {
       name: 'per_page', // The limit will now be called per_page
-      default: 10       // The default value will be 10
+      default: 10 // The default value will be 10
     }
   },
   meta: {
@@ -31,11 +31,11 @@ const options = {
     }
   },
   routes: {
-    include: ['/article'],
+    include: ['/article']
   }
 }
 
 module.exports = {
   plugin: hapiPagination,
   options
-};
+}
