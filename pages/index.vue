@@ -19,7 +19,7 @@
             {{ item.label }}
           </div>
         </div>
-        <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <icon icon="edit" /></a>
+        <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <i class="el-icon-edit-outline"></i></a>
       </div>
     </div>
     <div class="index-content-ct">

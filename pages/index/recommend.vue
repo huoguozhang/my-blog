@@ -2,18 +2,14 @@
   <div>
     <div class="recommend-comp-ct">
       <div class="article-ct">
-        <Carousel height="270" loop autoplay>
-          <Carousel-item v-for="(item,i) in 4" :key="item">
+        <el-carousel height="270" loop autoplay>
+          <el-carousel-item v-for="(item,i) in 4" :key="item">
             <div :style="{height: '100%'}">
               <img :src="imgs[i]" style="width: 100%;">
             </div>
-          </Carousel-item>
-        </Carousel>
-<<<<<<< HEAD
-        <article-block a="1" b="2" v-for="item in 10" :key="item"></article-block>
-=======
+          </el-carousel-item>
+        </el-carousel>
         <article-block v-for="item in 10" :key="item" />
->>>>>>> b589a31e18f4cc7b742be591d65ed4c17015ef50
       </div>
       <div class="right-content">
         <div class="board-ct">
@@ -31,7 +27,7 @@
         <div class="recommend-user-list">
           <div class="header">
             <span class="title">推荐作者</span>
-            <span class="change"><Icon type="ios-sync" />换一批</span>
+            <span class="change"><i class="el-icon-refresh"></i> 换一批</span>
           </div>
           <ul class="user-list-ct">
             <li v-for="item in userList" :key="item.uid" class="list-item">
@@ -44,8 +40,8 @@
                   写了338.k字 · 1.8k 喜欢
                 </p>
               </div>
-              <a class="follow">
-                <Icon type="md-add" />关注
+              <a class="follow cursor-p">
+                <i class="el-icon-plus"></i>关注
               </a>
             </li>
           </ul>
@@ -59,9 +55,6 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-// import Carousel from '../components/carousel.vue'
-// import CarouselItem from '../components/carouselItem.vue'
-import { Carousel, CarouselItem, Icon } from 'element-ui'
 import articleBlock from '~/components/article-block/article-block.vue'
 interface Board {
   label: string
@@ -81,10 +74,7 @@ interface Board {
     }
   },
   components: {
-    articleBlock,
-    Carousel,
-    CarouselItem,
-    Icon
+    articleBlock
   }
 })
 export default class recommend extends Vue {
@@ -173,11 +163,13 @@ export default class recommend extends Vue {
               font-size: 14px;
             }
             .level{
+              margin-top: 16px;
               color: #969696;
               font-size: 12px;
             }
           }
           .follow{
+            margin-top: 16px;
             padding-top: 6px;
             height: 48px;
             color: #42c02e;

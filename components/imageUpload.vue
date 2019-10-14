@@ -1,17 +1,16 @@
 <template>
-  <Upload class="upload-comp-ct" :action="action">
+  <el-upload class="upload-comp-ct" :action="action">
     <img v-if="path" class="avatar" src="../assets/image/photo.jpeg">
     <div v-else class="avatar no-photo">
-      <Icon type="ios-person" />
+      <i class="el-icon-user-solid"></i>
     </div>
     <div class="desc">
       点击{{ path?'修改':'设置' }}头像
     </div>
-  </Upload>
+  </el-upload>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { Upload, Icon } from 'element-ui'
 @Component({
   props: {
     value: {
@@ -21,9 +20,6 @@ import { Upload, Icon } from 'element-ui'
       type: String,
       default: ''
     }
-  },
-  components: {
-    Upload, Icon
   }
 })
 export default class upload extends Vue {

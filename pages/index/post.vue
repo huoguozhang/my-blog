@@ -170,7 +170,7 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
       <div class="meta-bottom">
         <div class="like cursor-p">
           <div class="btn-like">
-            <Icon style="margin-right: 8px;" type="ios-heart-outline" />喜欢
+            <i class="el-icon-star-on"></i>喜欢
           </div>
         </div>
       </div>
@@ -234,11 +234,9 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { Avatar, Icon, Button } from 'iview'
 @Component({
   name: 'post',
   components: {
-    Avatar, Icon, Button
   }
 })
 export default class post extends Vue {

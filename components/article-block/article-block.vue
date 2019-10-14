@@ -12,11 +12,11 @@
           火锅小王子
         </span>
         <span class="comments info-item">
-          <Icon icon="pinglun" color=" #409EFF" />
+          <i class="el-icon-s-comment"></i>
           999+
         </span>
         <span class="like info-item">
-          <Icon icon="xihuan" color="#F56C6C" />
+          <i class="el-icon-star-on"></i>
           999+
         </span>
       </div>

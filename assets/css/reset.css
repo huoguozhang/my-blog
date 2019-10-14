@@ -141,7 +141,9 @@ a:active,
 a:hover {
   outline: 0;
 }
-
+a{
+  text-decoration: none;
+}
 /**
  * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
  * 2. Improve image quality when scaled in IE 7.

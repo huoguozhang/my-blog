@@ -10,6 +10,69 @@
 .w-200{
   width: 200px !important;
 }
+.single-row-ellipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.two-row-ellipsis{
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.float-left{
+  float: left;
+}
+.float-right{
+  float: right;
+}
+.m-t-20{
+  margin-top: 20px !important;
+}
+.m-b-20{
+  margin-bottom: 20px !important;
+}
+.m-b-16{
+  margin-bottom: 16px !important;
+}
+.p-b-20{
+  padding-bottom: 20px !important;
+}
+.m-r-20{
+  margin-right: 20px !important;
+}
+.m-r-16{
+  margin-right: 16px !important;
+}
+.m-l-16{
+  margin-left: 16px !important;
+}
+.m-l-24{
+  margin-left: 24px !important;
+}
+.m-l-20{
+  margin-left: 20px !important;
+}
+.m-t-10{
+  margin-top: 10px !important;
+}
+.m-l-8{
+  margin-left: 8px !important;
+}
+.m-r-8{
+  margin-right: 8px !important;
+}
+.m-b-8{
+  margin-bottom: 8px !important;
+}
+.p-b-24{
+  padding-bottom: 24px !important;
+}
+.p-t-24{
+  padding-top: 24px !important;
+}
 body.reader-song-font, body.reader-song-font .container .article .title, body.reader-song-font .history-mode .view-area, body.reader-song-font .history-mode .view-area pre, body.reader-song-font .main .kalamu-area, body.reader-song-font .main .markdown .text, body.reader-song-font .main .title, body.reader-song-font .preview .title, body.reader-song-font input, body.reader-song-font select, body.reader-song-font textarea {
   font-family: Georgia,Times New Roman,Times,Songti SC,serif;
 }

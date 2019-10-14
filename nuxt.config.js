@@ -23,7 +23,6 @@ module.exports = {
     */
   css: [
     'element-ui/lib/theme-chalk/index.css',
-    'iview/dist/styles/iview.css',
     '@/assets/css/reset.css',
     '@/assets/css/common.scss'
   ],
@@ -31,7 +30,6 @@ module.exports = {
     ** Plugins to load before mounting the App
     */
   plugins: [
-    '@/plugins/iview',
     '@/plugins/element'
   ],
   /*

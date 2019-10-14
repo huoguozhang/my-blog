@@ -23,11 +23,11 @@
           </div>
         </div>
       </div>
-      <Tabs>
-        <TabPane icon="md-document" label="文章">
+      <el-tabs>
+        <el-tab-pane icon="md-document" label="文章">
           <article-block v-for="item in 10" :key="item" />
-        </TabPane>
-      </Tabs>
+        </el-tab-pane>
+      </el-tabs>
     </div>
     <div class="right">
       <div class="title">
@@ -43,36 +43,36 @@
         喜欢折腾
         <br>
         本站技术栈:
-        vue vuex vue-router typescript nuxt.js iView nodejs express.js my-sql
+        typescript nuxt.js element-ui nodejs hapi.js my-sql
         目前正在开发中
       </div>
     </div>
-    <Modal v-model="showEditForm" title="编辑资料">
-      <Form :label-width="80">
-        <FormItem label="头像" :model="userForm" :rules="userFormRules">
-          <imageUpload />
-        </FormItem>
-        <FormItem label="登录名" prop="username">
-          <Input :value="userForm.username" disabled />
-        </FormItem>
-        <FormItem label="昵称" prop="nickname">
-          <Input v-model="userForm.nickname" />
-        </FormItem>
-        <FormItem label="密码" prop="password">
-          <Input v-model="userForm.password" />
-        </FormItem>
-        <FormItem label="简介">
-          <Input v-model="userForm.brief" class="my-textarea" type="textarea" />
-        </FormItem>
-      </Form>
-    </Modal>
+    <el-dialog :visible.sync="showEditForm" title="编辑资料">
+      <el-form label-width="80px">
+        <el-form-item label="头像" :model="userForm" :rules="userFormRules">
+          <imageUpload/>
+        </el-form-item>
+        <el-form-item label="登录名" prop="username">
+          <el-input :value="userForm.username" class="w-200" disabled/>
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="userForm.nickname" class="w-200" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="userForm.password" class="w-200" />
+        </el-form-item>
+        <el-form-item label="简介">
+          <el-input v-model="userForm.brief" class="my-textarea w-200" type="textarea"/>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { Tabs, TabPane, Dialog, Form, FormItem, Avatar, Input } from 'element-ui'
 import articleBlock from '~/components/article-block/article-block.vue'
 import imageUpload from '~/components/imageUpload.vue'
+
 interface UserForm {
   username: string
   nickname: string
@@ -81,26 +81,22 @@ interface UserForm {
   avatar: string
 }
 @Component({
-  data () {
-    return {
-      userFormRules: {
-        username: [
-          { required: true, message: '请填写用户名', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '请填写密码', trigger: 'blur' }
-        ],
-        nickname: [
-          { required: true, message: '请填写昵称', trigger: 'blur' }
-        ]
-      }
-    }
-  },
   components: {
-    Tabs, TabPane, articleBlock, Dialog, Form, FormItem, Avatar, Input, imageUpload
+    articleBlock, imageUpload
   }
 })
 export default class My extends Vue {
+  userFormRules: any = {
+    username: [
+      {required: true, message: '请填写用户名', trigger: 'blur'}
+    ],
+    password: [
+      {required: true, message: '请填写密码', trigger: 'blur'}
+    ],
+    nickname: [
+      {required: true, message: '请填写昵称', trigger: 'blur'}
+    ]
+  }
   showEditForm: boolean = false
   userForm: UserForm = {
     username: 'huoguozhang',
@@ -171,7 +167,7 @@ export default class My extends Vue {
 <style lang="scss">
   .my-comp-ct{
     .my-textarea{
-      .ivu-input{
+      .ivu-el-input{
         min-height: 200px !important;
       }
     }
