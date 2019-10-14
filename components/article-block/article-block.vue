@@ -29,6 +29,9 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 @Component({
+  mounted (){
+    console.log(this.$attrs)
+  },
   methods: {
     goPost () {
       this.$router.push({

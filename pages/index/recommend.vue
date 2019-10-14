@@ -9,7 +9,7 @@
             </div>
           </Carousel-item>
         </Carousel>
-        <article-block v-for="item in 10" :key="item"></article-block>
+        <article-block a="1" b="2" v-for="item in 10" :key="item"></article-block>
       </div>
       <div class="right-content">
         <div class="board-ct">
