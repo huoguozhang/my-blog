@@ -23,7 +23,7 @@ async function start () {
   })
 
   // 日志
-  /*await server.register({
+  /* await server.register({
     plugin: require('hapi-pino'),
     options: {
       prettyPrint: true,
@@ -38,7 +38,7 @@ async function start () {
   await server.register([
     // 为系统使用 hapi-swagger
     ...pluginHapiSwagger
-    ]
+  ]
   )
   // 分页
   await server.register([
@@ -61,8 +61,8 @@ async function start () {
       // 非api开头的接口不在处理范围内 或者接口返回h.file()
       return h.response(request.response)
     }
-    let useOriginResponse = routeResponse.hasOwnProperty('code')
-    const result =  useOriginResponse ? routeResponse : { code: 0, message: '成功', data: routeResponse }
+    const useOriginResponse = routeResponse.hasOwnProperty('code')
+    const result = useOriginResponse ? routeResponse : { code: 0, message: '成功', data: routeResponse }
     return h.response(result)
   })
 

@@ -9,7 +9,7 @@ const Routes = [
     method: 'POST',
     handler: async (request, h) => {
       const summary = extractTextFormMD(request.payload.content)
-      const res = await models.article.create({...request.payload, summary})
+      const res = await models.article.create({ ...request.payload, summary })
       return h.response(res).code(201)
     },
     config: {
@@ -29,17 +29,17 @@ const Routes = [
     method: 'GET',
     path: '/api/article',
     handler: async (request, h) => {
-      const {rows: results, count: totalCount} = await models.article.findAndCountAll({
+      const { rows: results, count: totalCount } = await models.article.findAndCountAll({
         attributes: [
           'uid',
           'title',
           'summary'
         ],
         limit: request.query.limit,
-        offset: (request.query.page - 1) * request.query.limit,
-      });
+        offset: (request.query.page - 1) * request.query.limit
+      })
       // 开启分页的插件，返回的数据结构里，需要带上 result 与 totalCount 两个字段
-      return h.response({results, totalCount})
+      return h.response({ results, totalCount })
     },
     config: {
       auth: false,
@@ -84,8 +84,8 @@ const Routes = [
           uid
         }
       })
-      let successRes = { code: 0, message: '删除成功', data: null }
-      let errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
+      const successRes = { code: 0, message: '删除成功', data: null }
+      const errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
       return h.response(count > 0 ? successRes : errorRes)
     },
     config: {
@@ -111,19 +111,19 @@ const Routes = [
           title, content
         },
         {
-        where: {
-          uid
-        }
-      })
-      let effectCount = data[0]
-      let successRes = { code: 0, message: '修改成功', data: null }
+          where: {
+            uid
+          }
+        })
+      const effectCount = data[0]
+      const successRes = { code: 0, message: '修改成功', data: null }
       if (effectCount > 0) {
-        let item = await models.article.findAll({
-          where: { uid}
+        const item = await models.article.findAll({
+          where: { uid }
         })
         successRes.data = item[0]
       }
-      let errorRes = { code: 7, message: `删除错误，uid:${uid}不存在`, data: null }
+      const errorRes = { code: 7, message: `删除错误，uid:${uid}不存在`, data: null }
       return h.response(effectCount > 0 ? successRes : errorRes)
     },
     config: {

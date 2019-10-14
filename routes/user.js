@@ -1,13 +1,13 @@
 const Op = require('sequelize').Op
 const Joi = require('@hapi/joi')
-const models = require('../models')
 const JWT = require('jsonwebtoken')
+const models = require('../models')
 const { jwtHeaderDefine } = require('../utils/router-helper')
 
 const generateJWT = (uid) => {
   const payload = {
     userId: uid,
-    exp: Math.floor(new Date().getTime() / 1000) + 7 * 24 * 60 * 60,
+    exp: Math.floor(new Date().getTime() / 1000) + 7 * 24 * 60 * 60
   }
   return JWT.sign(payload, process.env.JWT_SECRET)
 }
@@ -47,7 +47,7 @@ module.exports = [
 
       let message = ''
 
-      let conflic = exist.some(v => {
+      const conflic = exist.some((v) => {
         if (v.nickname === nickname) {
           message = '昵称已经存在'
           return true
@@ -85,7 +85,7 @@ module.exports = [
     method: 'POST',
     path: '/api/user/login',
     handler: async (request, h) => {
-      let res = await models.user.findAll({
+      const res = await models.user.findAll({
         attributes: {
           exclude: ['password', 'created_time', 'updated_time']
         },
@@ -94,7 +94,7 @@ module.exports = [
           password: request.payload.password
         }
       })
-      let data = res[0]
+      const data = res[0]
       if (res.length > 0) {
         return h.response({
           code: 0,
@@ -152,8 +152,8 @@ module.exports = [
     handler: async (request, h) => {
       const { uid } = request.params
       const count = await models.user.update(request.payload, { where: { uid } })
-      let successRes = { code: 0, message: '修改成功', data: null }
-      let errorRes = { code: 9, message: `修改错误，uid:${uid}不存在`, data: null }
+      const successRes = { code: 0, message: '修改成功', data: null }
+      const errorRes = { code: 9, message: `修改错误，uid:${uid}不存在`, data: null }
       return h.response(count > 0 ? successRes : errorRes)
     },
     config: {
@@ -178,8 +178,8 @@ module.exports = [
     handler: async (request, h) => {
       const { uid } = request.params
       const count = await models.user.destroy({ where: { uid } })
-      let successRes = { code: 0, message: '删除成功', data: null }
-      let errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
+      const successRes = { code: 0, message: '删除成功', data: null }
+      const errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
       return h.response(count > 0 ? successRes : errorRes)
     },
     config: {

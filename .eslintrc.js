@@ -7,6 +7,8 @@ module.exports = {
     '@nuxtjs'
   ],
   rules: {
-    '@typescript-eslint/no-unused-vars': 'error'
+    '@typescript-eslint/no-unused-vars': 1,
+    'vue/no-v-html': 0,
+    'vue/html-self-closing': 0
   }
 }

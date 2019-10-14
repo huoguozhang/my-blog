@@ -6,23 +6,24 @@
           Z-blog
         </div>
         <div class="input-ct">
-          <input class="search-input" v-model="search" type="text" placeholder="搜索">
+          <input v-model="search" class="search-input" type="text" placeholder="搜索">
         </div>
         <div class="menu-ct">
           <div
-            @click="activeMenu(item)"
+            v-for="item in menus"
+            :key="item.value"
             :class="{'menu-active': item.value===menuActive}"
             class="menu-item"
-            v-for="item in menus"
-            :key="item.value">
-            {{item.label}}
+            @click="activeMenu(item)"
+          >
+            {{ item.label }}
           </div>
         </div>
-        <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <icon icon="edit"></icon></a>
+        <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <icon icon="edit" /></a>
       </div>
     </div>
     <div class="index-content-ct">
-      <nuxt-child/>
+      <nuxt-child />
     </div>
   </div>
 </template>
@@ -54,7 +55,7 @@ export default class index extends Vue {
   }
   created (): void {
     // console.log(this.$router)
-    let path:string = this.$route.path
+    const path:string = this.$route.path
     let item = this.menus.find(menu => menu.path === path)
     if (item) {
       this.activeMenu(item)
@@ -65,7 +66,7 @@ export default class index extends Vue {
   }
   @Watch('$route')
   function (route: any) {
-    let item = this.menus.find(menu => menu.path === route.path)
+    const item = this.menus.find(menu => menu.path === route.path)
     if (!item) {
       this.menuActive = -1
     }

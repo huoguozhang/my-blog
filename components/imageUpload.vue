@@ -2,14 +2,16 @@
   <Upload class="upload-comp-ct" :action="action">
     <img v-if="path" class="avatar" src="../assets/image/photo.jpeg">
     <div v-else class="avatar no-photo">
-      <Icon type="ios-person"></Icon>
+      <Icon type="ios-person" />
     </div>
-    <div class="desc">点击{{path?'修改':'设置'}}头像</div>
+    <div class="desc">
+      点击{{ path?'修改':'设置' }}头像
+    </div>
   </Upload>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { Upload, Icon } from 'iview'
+import { Upload, Icon } from 'element-ui'
 @Component({
   props: {
     value: {

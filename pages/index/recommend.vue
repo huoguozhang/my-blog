@@ -2,19 +2,30 @@
   <div>
     <div class="recommend-comp-ct">
       <div class="article-ct">
-        <Carousel  :height="270" loop autoplay>
+        <Carousel height="270" loop autoplay>
           <Carousel-item v-for="(item,i) in 4" :key="item">
             <div :style="{height: '100%'}">
               <img :src="imgs[i]" style="width: 100%;">
             </div>
           </Carousel-item>
         </Carousel>
+<<<<<<< HEAD
         <article-block a="1" b="2" v-for="item in 10" :key="item"></article-block>
+=======
+        <article-block v-for="item in 10" :key="item" />
+>>>>>>> b589a31e18f4cc7b742be591d65ed4c17015ef50
       </div>
       <div class="right-content">
         <div class="board-ct">
-          <a class="board-item" :style="{background: item.bg}" target="_blank" :href="item.link" v-for="(item, i) in boardList" :key="i">
-            {{item.label}}
+          <a
+            v-for="(item, i) in boardList"
+            :key="i"
+            class="board-item"
+            :style="{background: item.bg}"
+            target="_blank"
+            :href="item.link"
+          >
+            {{ item.label }}
           </a>
         </div>
         <div class="recommend-user-list">
@@ -23,11 +34,15 @@
             <span class="change"><Icon type="ios-sync" />换一批</span>
           </div>
           <ul class="user-list-ct">
-            <li class="list-item" v-for="item in userList" :key="item.uid">
-              <img :src="item.avatar"  class="avatar">
+            <li v-for="item in userList" :key="item.uid" class="list-item">
+              <img :src="item.avatar" class="avatar">
               <div class="info">
-                <p class="nickname">{{item.nickname}}</p>
-                <p class="level">写了338.k字 · 1.8k 喜欢</p>
+                <p class="nickname">
+                  {{ item.nickname }}
+                </p>
+                <p class="level">
+                  写了338.k字 · 1.8k 喜欢
+                </p>
               </div>
               <a class="follow">
                 <Icon type="md-add" />关注
@@ -43,11 +58,11 @@
   </div>
 </template>
 <script lang="ts">
-import articleBlock from '~/components/article-block/article-block.vue'
 import { Vue, Component } from 'vue-property-decorator'
 // import Carousel from '../components/carousel.vue'
 // import CarouselItem from '../components/carouselItem.vue'
-import { Carousel, CarouselItem, Icon } from 'iview'
+import { Carousel, CarouselItem, Icon } from 'element-ui'
+import articleBlock from '~/components/article-block/article-block.vue'
 interface Board {
   label: string
   link: string

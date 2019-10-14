@@ -1,5 +1,6 @@
-import hljs from './js/hljs'
 import marked from 'marked'
+import _ from 'lodash'
+import hljs from './js/hljs'
 import {
   saveFile
 } from './js/utils'
@@ -16,7 +17,7 @@ marked.setOptions({
   pedantic: false,
   sanitize: false,
   smartLists: true,
-  highlight: function (code) {
+  highlight (code) {
     return hljs.highlightAuto(code).value
   }
 })
@@ -90,6 +91,9 @@ export default {
     }
   },
   computed: {
+    pureHtml () {
+      return _.template(this.html)
+    },
     tools () {
       const {
         toolbars = {}
@@ -105,7 +109,7 @@ export default {
     setTimeout(() => {
       const textarea = this.$refs.textarea
       textarea.focus()
-      textarea.addEventListener('keydown', e => {
+      textarea.addEventListener('keydown', (e) => {
         if (e.keyCode === 83) {
           if (e.metaKey || e.ctrlKey) {
             e.preventDefault()
@@ -208,7 +212,7 @@ export default {
       let cursorPos = 0
       if (document.selection) {
         textDom.focus()
-        let selectRange = document.selection.createRange()
+        const selectRange = document.selection.createRange()
         selectRange.moveStart('character', -this.value.length)
         cursorPos = selectRange.text.length
       } else if (textDom.selectionStart || parseInt(textDom.selectionStart, 0) === 0) {
@@ -245,7 +249,7 @@ export default {
         textDom.focus()
         textDom.setSelectionRange(position, position)
       } else if (textDom.createTextRange) {
-        let range = textDom.createTextRange()
+        const range = textDom.createTextRange()
         range.collapse(true)
         range.moveEnd('character', position)
         range.moveStart('character', position)

@@ -1,32 +1,43 @@
 <template>
   <div class="post-comp-ct">
     <div class="article">
-      <h1 class="title">深入理解Nginx及使用Nginx实现负载均衡</h1>
+      <h1 class="title">
+        深入理解Nginx及使用Nginx实现负载均衡
+      </h1>
       <div class="author">
         <div class="avatar">
-          <Avatar style="width: 48px;height: 48px;line-height: 48px;border-radius: 24px;"
-                  size="large"
-                  icon="ios-person">
-          </Avatar>
+          <Avatar
+            style="width: 48px;height: 48px;line-height: 48px;border-radius: 24px;"
+            size="large"
+            icon="ios-person"
+          />
         </div>
         <div class="info">
-          <div class="nickname">火锅小王子</div>
+          <div class="nickname">
+            火锅小王子
+          </div>
           <div class="meta">
             <!-- 简书钻 -->
             <span class="jsd-meta">
-                  <i class="iconfont ic-paid1"></i> 4.8
-                </span>
+              <i class="iconfont ic-paid1" /> 4.8
+            </span>
             <!-- 如果文章更新时间大于发布时间，那么使用 tooltip 显示更新时间 -->
-            <span class="publish-time" data-toggle="tooltip" data-placement="bottom" title=""
-                  data-original-title="最后编辑于 2019.08.22 13:48">2019.08.21 15:15*</span>
+            <span
+              class="publish-time"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title=""
+              data-original-title="最后编辑于 2019.08.22 13:48"
+            >2019.08.21 15:15*</span>
             <span class="wordage">字数 2536</span>
             <span class="views-count">阅读 331</span><span class="comments-count">评论 0</span><span class="likes-count">喜欢 15</span>
           </div>
         </div>
       </div>
       <div class="article-content markdown-body Dark">
-        <div><p>new Vue的时候：执行 initComputed (vm, computed)</p>
-<pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initComputed</span> (<span class="hljs-params">vm, computed</span>) </span>{
+        <div>
+          <p>new Vue的时候：执行 initComputed (vm, computed)</p>
+          <pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initComputed</span> (<span class="hljs-params">vm, computed</span>) </span>{
 ...
 for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> computed) {
     <span class="hljs-keyword">var</span> userDef = computed[key];
@@ -42,7 +53,7 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
 }
 ...
 }</code></pre><p>所以本质上computed是一个watcher</p>
-<pre><code> <span class="hljs-keyword">constructor</span> (<span class="hljs-params">
+          <pre><code> <span class="hljs-keyword">constructor</span> (<span class="hljs-params">
     vm: Component,
     expOrFn: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">Function</span>,
     cb: <span class="hljs-built_in">Function</span>,
@@ -57,13 +68,13 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
 ...
 
 }</code></pre><p>假设用户computed中定义为</p>
-<pre><code>用户的computed中: {
+          <pre><code>用户的computed中: {
     fullName () {
      <span class="hljs-comment">// 'aa' + 'bb'</span>
      return this<span class="hljs-selector-class">.firstName</span> + this<span class="hljs-selector-class">.lastName</span>
   }
 }</code></pre><p>假设这个时候firstName变成了'a' , lastName变成了'abb'<br>这两个值的变化都会触发派发更新<br>会触发watcher.update，当前的watcher为computed</p>
-<pre><code> update () {
+          <pre><code> update () {
     <span class="hljs-comment">/* istanbul ignore else */</span>
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.computed) {
       <span class="hljs-comment">// A computed property watcher has two modes: lazy and activated.</span>
@@ -91,10 +102,10 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
       queueWatcher(<span class="hljs-keyword">this</span>)
     }
   }</code></pre><p>上一步分析到：会执行</p>
-<pre><code><span class="hljs-keyword">this</span>.getAndInvoke(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+          <pre><code><span class="hljs-keyword">this</span>.getAndInvoke(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-keyword">this</span>.dep.notify()  <span class="hljs-comment">// this为当前的wacther</span>
 })</code></pre><p>getAndInvoke</p>
-<pre><code>getAndInvoke (cb: <span class="hljs-built_in">Function</span>) {
+          <pre><code>getAndInvoke (cb: <span class="hljs-built_in">Function</span>) {
     <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">this</span>.get()
     <span class="hljs-keyword">if</span> (
     <span class="hljs-comment">//  这里会做一个比较，相同就是会走缓存，不会派发更新，但是会每次求值</span>
@@ -123,7 +134,7 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
       }
     }
   }</code></pre><p>wacther.get</p>
-<pre><code><span class="hljs-keyword">get</span> () {
+          <pre><code><span class="hljs-keyword">get</span> () {
     pushTarget(<span class="hljs-keyword">this</span>)
     <span class="hljs-keyword">let</span> value
     <span class="hljs-keyword">const</span> vm = <span class="hljs-keyword">this</span>.vm
@@ -146,11 +157,15 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
       <span class="hljs-keyword">this</span>.cleanupDeps()
     }
     <span class="hljs-keyword">return</span> value
-  }</code></pre><h4 id="结论：">结论：</h4>
-<p>computed初始化的时候做了一个get求值，执行了一次用户定义的表达式，这个computed watcher会订阅firstName和lastName的（执行过程中有其他的响应式数据也会订阅）,firtName或者lastName变化会触发computed表达式执行，但是当新值和旧值相等时，不会触订阅了fullName的watcher更新。所以会有缓存一说。</p>
-<h4 id="附录1：响应式梳理">附录1：响应式梳理</h4>
-<p><img src="https://upload-images.jianshu.io/upload_images/6036420-a9403f4216259632.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="响应式梳理 "></p>
-</div>
+  }</code></pre><h4 id="结论：">
+            结论：
+          </h4>
+          <p>computed初始化的时候做了一个get求值，执行了一次用户定义的表达式，这个computed watcher会订阅firstName和lastName的（执行过程中有其他的响应式数据也会订阅）,firtName或者lastName变化会触发computed表达式执行，但是当新值和旧值相等时，不会触订阅了fullName的watcher更新。所以会有缓存一说。</p>
+          <h4 id="附录1：响应式梳理">
+            附录1：响应式梳理
+          </h4>
+          <p><img src="https://upload-images.jianshu.io/upload_images/6036420-a9403f4216259632.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="响应式梳理 "></p>
+        </div>
       </div>
       <div class="meta-bottom">
         <div class="like cursor-p">
@@ -163,37 +178,48 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
         <form class="new-comment">
           <div class="comment-input-ct">
             <a class="avatar">
-              <Avatar icon="ios-person" size="large"></Avatar>
+              <Avatar icon="ios-person" size="large" />
             </a>
             <textarea
               class="comment-input"
-              placeholder="写下你的评论...">
-          </textarea>
+              placeholder="写下你的评论..."
+            >
+            </textarea>
           </div>
           <div class="write-function-block">
-            <Button style="border: none;" type="text">取消</Button>
+            <Button style="border: none;" type="text">
+              取消
+            </Button>
             <Button>发送</Button>
           </div>
         </form>
         <div class="normal-comment-list">
-           <div class="top-title">
-             2条评论
-           </div>
+          <div class="top-title">
+            2条评论
+          </div>
           <div v-for="item in 5" :key="item" class="comment">
             <div>
               <div class="author">
-                <div class="v-tooltip-container"
-                     style="z-index: 0;">
+                <div
+                  class="v-tooltip-container"
+                  style="z-index: 0;"
+                >
                   <div
-                    class="v-tooltip-content">
+                    class="v-tooltip-content"
+                  >
                     <a
                       target="_blank"
-                      class="avatar">
-                      <Avatar size="large" icon="ios-person"></Avatar>
+                      class="avatar"
+                    >
+                      <Avatar size="large" icon="ios-person" />
                     </a>
-                  </div> <!----></div>
-                <div class="info"><a href="/u/902d44e549ed" target="_blank" class="name">心生能量</a> <!----> <!---->
-                  <div class="meta"><span>3楼 · 2019.08.23 15:21</span></div>
+                  </div> <!---->
+                </div>
+                <div class="info">
+                  <a href="/u/902d44e549ed" target="_blank" class="name">心生能量</a> <!----> <!---->
+                  <div class="meta">
+                    <span>3楼 · 2019.08.23 15:21</span>
+                  </div>
                 </div>
               </div>
               <div class="comment-wrap">

@@ -1,7 +1,7 @@
 <template>
   <span class="icon-comp-ct">
     <svg class="icon" aria-hidden="true" :style="{color}">
-      <use :xlink:href="'#icon-'+icon"></use>
+      <use :xlink:href="'#icon-'+icon" />
     </svg>
   </span>
 </template>

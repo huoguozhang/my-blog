@@ -1,7 +1,6 @@
+const { uploader } = require('../utils/upload')
 const routesArticle = require('./article')
 const routesUser = require('./user')
-
-const { uploader } = require('../utils/upload')
 
 const Routes = [
   {
@@ -26,11 +25,11 @@ const Routes = [
     method: 'GET',
     path: '/api/uploads/{fileName}',
     handler: (request, h) => {
-      return h.file('./uploads/' +  request.params.fileName)
+      return h.file('./uploads/' + request.params.fileName)
     },
     config: {
       auth: false
     }
   }
 ]
- module.exports = Routes.concat(routesUser, routesArticle)
+module.exports = Routes.concat(routesUser, routesArticle)
