@@ -37,12 +37,11 @@
   </div>
 </template>
 <script lang="ts">
-import { mapActions } from 'vuex'
 import { Vue, Component } from 'vue-property-decorator'
 import request from '~/client/api/index'
 import { saveToken } from '~/client/utils/token'
 
-interface UserForm {
+interface UserFormType {
   username: string
   password: string
   nickname: string
@@ -54,19 +53,13 @@ interface TabsArray {
   [index:number]: {name: string, label: string}
 }
 
-@Component({
-  methods: {
-    ...mapActions('user', ['getUserInfo'])
-  }
-})
+@Component({})
 export default class Login extends Vue {
-  userForm!: UserForm
-  tabActive!: TAbActive
   tabs: TabsArray
   [property: string]: any
   $refs: any
-  tabActive = SIGNIN
-  userForm = {
+  tabActive: string = SIGNIN
+  userForm: UserFormType = {
     username: '',
     password: '',
     nickname: ''
@@ -95,9 +88,8 @@ export default class Login extends Vue {
   login (username: string, password: string) {
     request.userLogin({ username, password }).then((res: any) => {
       saveToken(res.token)
-      this.getUserInfo()
       this.$router.push({
-         path: '/recommend'
+        path: '/recommend'
       })
     })
   }

@@ -1,7 +1,7 @@
 const validate = (decoded, request, h) => {
   // eslint disable
   // decoded 为 JWT payload 被解码后的数据
-  const { userId, exp } = decoded
+  const { exp } = decoded
   if (new Date(exp * 1000) < new Date()) {
     return h.response({
       code: 4,

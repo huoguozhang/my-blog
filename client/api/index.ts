@@ -47,7 +47,7 @@ const Requests: RequestFns = {
     return request.get('/user/current')
   },
   getUserInfo (params: any) {
-    return request.get(`/user/${params.uid}`)
+    return request.get(`http://127.0.0.1:3000/api/user/${params.uid}`)
   },
   updateUserInfo (uid, data) {
     return request.put(`/user/${uid}`, data)

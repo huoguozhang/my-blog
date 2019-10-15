@@ -4,7 +4,9 @@
       <div class="top">
         <div class="avatar-ct">
           <img v-if="userInfo.avatar" class="avatar" :src="userInfo.avatar" />
-          <div v-else class="none"> 暂无头像 </div>
+          <div v-else class="none">
+            暂无头像
+          </div>
         </div>
         <div class="info-ct">
           <div class="nickname">
@@ -41,7 +43,7 @@
       </div>
     </div>
     <el-dialog :visible.sync="showEditForm" title="编辑资料">
-      <el-form ref="form" label-width="80px"  style="width: 300px;margin: 0 auto;">
+      <el-form ref="form" label-width="80px" style="width: 300px;margin: 0 auto;">
         <el-form-item label="头像" :model="userForm" :rules="userFormRules">
           <imageUpload v-model="userForm.avatar" />
         </el-form-item>
@@ -61,7 +63,7 @@
           <el-button @click="showEditForm = false">
             取消
           </el-button>
-          <el-button @click="submitForm" type="primary">
+          <el-button type="primary" @click="submitForm">
             确定
           </el-button>
         </el-form-item>
@@ -91,6 +93,12 @@ interface UserForm {
   },
   components: {
     articleBlock, imageUpload
+  },
+  asyncData ({ params }) {
+    return request.getUserInfo({ uid: params.uid })
+      .then(() => {
+
+      })
   }
 })
 export default class User extends Vue {
@@ -128,7 +136,7 @@ export default class User extends Vue {
     this.userForm = { ...this.userForm, ...this.userInfo }
   }
   submitForm () {
-    let data = {
+    const data = {
       nickname: this.userForm.nickname,
       password: this.userForm.password,
       avatar: this.userForm.avatar,
@@ -143,11 +151,8 @@ export default class User extends Vue {
   getUserInfo () {
     request.getUserInfo({ uid: this.uid })
       .then((data: any) => {
-       this.userInfo = data
+        this.userInfo = data
       })
-  }
-  mounted () {
-    this.getUserInfo()
   }
 }
 </script>

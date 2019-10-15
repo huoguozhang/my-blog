@@ -190,7 +190,7 @@ module.exports = [
       tags: ['api', 'user'],
       description: '修改用户信息',
       validate: {
-         ...jwtHeaderDefine,
+        ...jwtHeaderDefine,
         params: {
           uid: Joi.string().required()
         },

@@ -21,8 +21,8 @@
         </div>
         <div class="writer-ct">
           <div class="user-info-ct">
-            <a :href="'/user/' + userInfo.uid" v-if="userInfo.uid" class="user-info">
-               <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar" />
+            <a v-if="userInfo.uid" :href="'/user/' + userInfo.uid" class="user-info">
+              <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar" />
               {{ userInfo.nickname }}
             </a>
             <a v-else href="/login">登录</a>
@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 
 interface menu {
@@ -49,8 +49,11 @@ interface menu {
 @Component({
   computed: {
     ...mapState({
-      userInfo: state => state.user.info
+      userInfo: (state: any) => state.user.info
     })
+  },
+  methods: {
+    ...mapActions('user', ['getUserInfo'])
   }
 })
 export default class index extends Vue {
@@ -70,8 +73,10 @@ export default class index extends Vue {
     this.menuActive = item.value
     this.$router.push({ path: item.path })
   }
+  beforeMount () {
+    this.getUserInfo()
+  }
   created (): void {
-    // console.log(this.$router)
     const path:string = this.$route.path
     let item = this.menus.find(menu => menu.path === path)
     if (item) {
