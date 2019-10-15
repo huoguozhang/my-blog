@@ -1,11 +1,14 @@
 <template>
-  <div class="my-comp-ct">
+  <div class="user-comp-ct">
     <div class="left">
       <div class="top">
-        <div class="avatar-ct" />
+        <div class="avatar-ct">
+          <img v-if="userInfo.avatar" class="avatar" :src="userInfo.avatar" />
+          <div v-else class="none"> 暂无头像 </div>
+        </div>
         <div class="info-ct">
           <div class="nickname">
-            火锅小王子
+            {{ userInfo.nickname }}
           </div>
           <div class="other-info">
             <div class="item">
@@ -32,83 +35,124 @@
     <div class="right">
       <div class="title">
         <span>个人简介</span>
-        <span class="cursor-p" @click="showEditForm=true">编辑</span>
+        <span class="cursor-p" @click="beforeEdit">编辑</span>
       </div>
-      <div class="brief">
-        github: https://github.com/huoguozhang
-        <br>
-        掘金、思否同名：火锅小王子
-        <br>
-        主要工作是：前端工程师
-        喜欢折腾
-        <br>
-        本站技术栈:
-        typescript nuxt.js element-ui nodejs hapi.js my-sql
-        目前正在开发中
+      <div class="description" v-text="userInfo.description">
       </div>
     </div>
     <el-dialog :visible.sync="showEditForm" title="编辑资料">
-      <el-form label-width="80px">
+      <el-form ref="form" label-width="80px"  style="width: 300px;margin: 0 auto;">
         <el-form-item label="头像" :model="userForm" :rules="userFormRules">
-          <imageUpload/>
+          <imageUpload v-model="userForm.avatar" />
         </el-form-item>
         <el-form-item label="登录名" prop="username">
-          <el-input :value="userForm.username" class="w-200" disabled/>
+          <el-input :value="userForm.username" class="w-200" disabled />
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="userForm.nickname" class="w-200" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="userForm.password" class="w-200" />
+          <el-input v-model="userForm.password" type="password" class="w-200" />
         </el-form-item>
         <el-form-item label="简介">
-          <el-input v-model="userForm.brief" class="my-textarea w-200" type="textarea"/>
+          <el-input v-model="userForm.description" class="my-textarea" type="textarea" />
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="showEditForm = false">
+            取消
+          </el-button>
+          <el-button @click="submitForm" type="primary">
+            确定
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
   </div>
 </template>
 <script lang="ts">
+import { mapState } from 'vuex'
 import { Vue, Component } from 'vue-property-decorator'
 import articleBlock from '~/components/article-block/article-block.vue'
 import imageUpload from '~/components/imageUpload.vue'
+import request from '~/client/api'
 
 interface UserForm {
   username: string
   nickname: string
   password: string
-  brief: string,
+  description: string,
   avatar: string
 }
 @Component({
+  computed: {
+    ...mapState({
+      currentUserInfo: state => state.user.info
+    })
+  },
   components: {
     articleBlock, imageUpload
   }
 })
-export default class My extends Vue {
+export default class User extends Vue {
   userFormRules: any = {
     username: [
-      {required: true, message: '请填写用户名', trigger: 'blur'}
+      { required: true, message: '请填写用户名', trigger: 'blur' }
     ],
     password: [
-      {required: true, message: '请填写密码', trigger: 'blur'}
+      { required: true, message: '请填写密码', trigger: 'blur' }
     ],
     nickname: [
-      {required: true, message: '请填写昵称', trigger: 'blur'}
+      { required: true, message: '请填写昵称', trigger: 'blur' }
     ]
   }
   showEditForm: boolean = false
+  userInfo = {
+    username: '',
+    password: '',
+    description: '',
+    avatar: '',
+    nickname: ''
+  }
   userForm: UserForm = {
-    username: 'huoguozhang',
-    password: '123',
-    brief: 'hahah',
-    avatar: 'hahha',
-    nickname: '火锅小王子'
+    username: '',
+    password: '',
+    description: '',
+    avatar: '',
+    nickname: ''
+  }
+  get uid () {
+    return this.$route.params.uid
+  }
+  beforeEdit () {
+    this.showEditForm = true
+    this.userForm = { ...this.userForm, ...this.userInfo }
+  }
+  submitForm () {
+    let data = {
+      nickname: this.userForm.nickname,
+      password: this.userForm.password,
+      avatar: this.userForm.avatar,
+      description: this.userForm.description
+    }
+    request.updateUserInfo(this.uid, data).then(() => {
+      this.$refs.form.resetFields()
+      this.showEditForm = false
+      this.getUserInfo()
+    })
+  }
+  getUserInfo () {
+    request.getUserInfo({ uid: this.uid })
+      .then((data: any) => {
+       this.userInfo = data
+      })
+  }
+  mounted () {
+    this.getUserInfo()
   }
 }
 </script>
 <style lang="scss" scoped>
-.my-comp-ct {
+.user-comp-ct {
   display: flex;
   .left{
     width: 700px;
@@ -119,8 +163,17 @@ export default class My extends Vue {
       .avatar-ct{
         width: 80px;
         height: 80px;
+        line-height: 80px;
+        text-align: center;
         border-radius: 40px;
-        background: #3e76f6;
+        overflow: hidden;
+        .none{
+          background: #3e76f6;
+        }
+        .avatar{
+          width: 80px;
+          height: 80px;
+        }
       }
       .info-ct{
         margin-left: 24px;
@@ -155,7 +208,7 @@ export default class My extends Vue {
       font-size: 14px;
       color: #969696;
     }
-    .brief{
+    .description{
       padding: 0 16px;
       margin-bottom: 10px;
       line-height: 20px;
@@ -165,11 +218,8 @@ export default class My extends Vue {
 }
 </style>
 <style lang="scss">
-  .my-comp-ct{
+  .user-comp-ct{
     .my-textarea{
-      .ivu-el-input{
-        min-height: 200px !important;
-      }
     }
   }
 </style>

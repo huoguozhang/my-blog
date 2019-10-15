@@ -8,6 +8,7 @@ module.exports = {
         type: Sequelize.UUID,
         primaryKey: true
       },
+      author: Sequelize.UUID,
       title: {
         type: Sequelize.STRING,
         allowNull: false
@@ -18,8 +19,7 @@ module.exports = {
       },
       summary: Sequelize.STRING,
       created_time: Sequelize.DATE,
-      updated_time: Sequelize.DATE,
-      author: Sequelize.UUID
+      updated_time: Sequelize.DATE
     },
     {
       charset: 'utf8'

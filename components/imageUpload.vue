@@ -1,29 +1,36 @@
 <template>
-  <el-upload class="upload-comp-ct" :action="action">
-    <img v-if="path" class="avatar" src="../assets/image/photo.jpeg">
+  <el-upload :on-success="uploadSuccess" class="upload-comp-ct" :action="action">
+    <img v-if="path" class="avatar" :src="path">
     <div v-else class="avatar no-photo">
       <i class="el-icon-user-solid"></i>
     </div>
     <div class="desc">
-      点击{{ path?'修改':'设置' }}头像
+      {{ path?'修改':'设置' }}头像
     </div>
   </el-upload>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-@Component({
-  props: {
-    value: {
-      type: String
-    },
-    action: {
-      type: String,
-      default: ''
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+@Component({})
+export default class upload extends Vue {
+  @Prop({ type: String }) value! :string
+  @Watch('value')
+  onValueChange (val: string) {
+    if (this.path !== val) {
+      this.path = val
     }
   }
-})
-export default class upload extends Vue {
   path: string = ''
+  action: string = '/api/upload'
+  uploadSuccess (res: any) {
+    if (res.code === 0) {
+      this.path = res.data.path
+      this.$emit('input', this.path)
+    }
+  }
+  created () {
+    this.path = this.value
+  }
 }
 </script>
 <style lang="scss" scoped>

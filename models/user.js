@@ -6,6 +6,8 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
       type: DataTypes.UUID,
       primaryKey: true
     },
+    avatar: DataTypes.STRING,
+    description: DataTypes.STRING,
     nickname: {
       type: DataTypes.STRING,
       unique: true,

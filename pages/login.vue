@@ -37,6 +37,7 @@
   </div>
 </template>
 <script lang="ts">
+import { mapActions } from 'vuex'
 import { Vue, Component } from 'vue-property-decorator'
 import request from '~/client/api/index'
 import { saveToken } from '~/client/utils/token'
@@ -53,52 +54,50 @@ interface TabsArray {
   [index:number]: {name: string, label: string}
 }
 
-@Component({})
+@Component({
+  methods: {
+    ...mapActions('user', ['getUserInfo'])
+  }
+})
 export default class Login extends Vue {
   userForm!: UserForm
   tabActive!: TAbActive
   tabs: TabsArray
   [property: string]: any
   $refs: any
-  constructor () {
-    super()
-    this.tabActive = SIGNIN
-    this.userForm = {
-      username: '',
-      password: '',
-      nickname: ''
-    }
-    this.tabs = [
-      {
-        name: SIGNIN,
-        label: '登录'
-      },
-      {
-        name: SIGNUP,
-        label: '注册'
-      }
-    ]
+  tabActive = SIGNIN
+  userForm = {
+    username: '',
+    password: '',
+    nickname: ''
   }
-  data () {
-    return {
-      formRules: {
-        username: [
-          { required: true, message: '请填写用户名', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '请填写密码', trigger: 'blur' }
-        ],
-        nickname: [
-          { required: true, message: '请填写用户昵称', trigger: 'blur' }
-        ]
-      }
+  tabs = [
+    {
+      name: SIGNIN,
+      label: '登录'
+    },
+    {
+      name: SIGNUP,
+      label: '注册'
     }
+  ]
+  formRules = {
+    username: [
+      { required: true, message: '请填写用户名', trigger: 'blur' }
+    ],
+    password: [
+      { required: true, message: '请填写密码', trigger: 'blur' }
+    ],
+    nickname: [
+      { required: true, message: '请填写用户昵称', trigger: 'blur' }
+    ]
   }
   login (username: string, password: string) {
     request.userLogin({ username, password }).then((res: any) => {
       saveToken(res.token)
+      this.getUserInfo()
       this.$router.push({
-        path: '/recommend'
+         path: '/recommend'
       })
     })
   }

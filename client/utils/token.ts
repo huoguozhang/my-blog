@@ -3,5 +3,5 @@ export function saveToken (token: string) {
 }
 
 export function getToken () {
-  return window.localStorage.getItem('token')
+  return (window && window.localStorage.getItem('token')) || null
 }

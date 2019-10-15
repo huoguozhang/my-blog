@@ -30,8 +30,7 @@ async function start () {
       // logPayload: true,
       logEvents: ['response', 'onPostStart']
     }
-  })
-*/
+  }) */
 
   await server.register(Inert)
 

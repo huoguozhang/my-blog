@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
+    author: DataTypes.STRING,
     content: {
       type: DataTypes.TEXT,
       allowNull: false
     },
     summary: DataTypes.STRING,
     created_time: DataTypes.DATE,
-    updated_time: DataTypes.DATE,
-    author: DataTypes.UUID
+    updated_time: DataTypes.DATE
   },
   {
     tableName: 'article'

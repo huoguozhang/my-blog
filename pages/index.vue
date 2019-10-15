@@ -5,9 +5,6 @@
         <div class="logo-ct" title="本站技术栈:vue vuex vue-router typescript iView ssr node.js mysql">
           Z-blog
         </div>
-        <div class="input-ct">
-          <input v-model="search" class="search-input" type="text" placeholder="搜索">
-        </div>
         <div class="menu-ct">
           <div
             v-for="item in menus"
@@ -19,7 +16,21 @@
             {{ item.label }}
           </div>
         </div>
-        <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <i class="el-icon-edit-outline"></i></a>
+        <div class="input-ct">
+          <input v-model="search" class="search-input" type="text" placeholder="搜索">
+        </div>
+        <div class="writer-ct">
+          <div class="user-info-ct">
+            <a :href="'/user/' + userInfo.uid" v-if="userInfo.uid" class="user-info">
+               <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar" />
+              {{ userInfo.nickname }}
+            </a>
+            <a v-else href="/login">登录</a>
+          </div>
+          <el-button round>
+            <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <i class="el-icon-edit-outline"></i></a>
+          </el-button>
+        </div>
       </div>
     </div>
     <div class="index-content-ct">
@@ -29,17 +40,23 @@
 </template>
 
 <script lang="ts">
+import { mapState } from 'vuex'
 import { Vue, Component, Watch } from 'vue-property-decorator'
+
 interface menu {
  label: string, value: number, path: string
 }
 @Component({
+  computed: {
+    ...mapState({
+      userInfo: state => state.user.info
+    })
+  }
 })
 export default class index extends Vue {
   menus: Array<menu> = [
     { label: '主页', value: 0, path: '/recommend' },
-    { label: '所有文章', value: 1, path: '/all' },
-    { label: '我的', value: 2, path: '/my' }
+    { label: '所有文章', value: 1, path: '/all' }
   ]
   menuActive:number = -1
   search: string = ''
@@ -89,7 +106,6 @@ export default class index extends Vue {
       .header-main{
         display: flex;
         align-items: center;
-        justify-content: space-between;
         height: 100%;
         width: 1200px;
         margin: 0 auto;
@@ -102,6 +118,7 @@ export default class index extends Vue {
           /*color: #ffffff;*/
         }
         .input-ct{
+          margin: 0 64px;
           .search-input{
             outline: none;
             padding: 0 40px 0 20px;
@@ -115,9 +132,28 @@ export default class index extends Vue {
             transition-delay: .1s;
           }
         }
+        .user-info-ct{
+          display: flex;
+          align-items: center;
+          margin-right: 16px;
+          color: #409EFF;
+          .avatar{
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+            border-radius: 50%;
+          }
+        }
+        .writer-ct{
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+        }
         .menu-ct{
           display: flex;
           align-items: center;
+          margin: 0 64px;
           .menu-item{
             height: 80px;
             padding: 0 24px;

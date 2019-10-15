@@ -7,12 +7,37 @@ const { jwtHeaderDefine } = require('../utils/router-helper')
 const generateJWT = (uid) => {
   const payload = {
     userId: uid,
-    exp: Math.floor(new Date().getTime() / 1000) + 7 * 24 * 60 * 60
+    exp: Math.floor(new Date().getTime() / 1000) + 24 * 60 * 60
   }
   return JWT.sign(payload, process.env.JWT_SECRET)
 }
 
 module.exports = [
+  {
+    method: 'GET',
+    path: '/api/user/current',
+    handler: async (request, h) => {
+      const { userId } = request.auth.credentials
+      const result = await models.user.findAll({
+        where: {
+          uid: userId
+        },
+        attributes: {
+          exclude: ['password']
+        }
+      })
+
+      return h.response(result[0])
+    },
+    config: {
+      auth: 'jwt',
+      tags: ['api', 'user'],
+      description: '当前登录用户的信息',
+      validate: {
+        ...jwtHeaderDefine
+      }
+    }
+  },
   {
     method: 'GET',
     path: '/api/user',
@@ -151,6 +176,10 @@ module.exports = [
     path: '/api/user/{uid}',
     handler: async (request, h) => {
       const { uid } = request.params
+      const { userId } = request.auth.credentials
+      if (uid !== userId) {
+        return h.response({ code: 3, message: '没有权限', data: null })
+      }
       const count = await models.user.update(request.payload, { where: { uid } })
       const successRes = { code: 0, message: '修改成功', data: null }
       const errorRes = { code: 9, message: `修改错误，uid:${uid}不存在`, data: null }
@@ -161,13 +190,15 @@ module.exports = [
       tags: ['api', 'user'],
       description: '修改用户信息',
       validate: {
+         ...jwtHeaderDefine,
         params: {
           uid: Joi.string().required()
         },
         payload: {
-          username: Joi.string(),
+          description: Joi.string(),
           password: Joi.string(),
-          nickname: Joi.string()
+          nickname: Joi.string(),
+          avatar: Joi.string()
         }
       }
     }

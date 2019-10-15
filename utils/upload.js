@@ -1,9 +1,9 @@
 const fs = require('fs')
+const path = require('path')
 const uuid = require('uuid')
 
-const UPLOAD_PATH = 'uploads'
+const UPLOAD_PATH = path.join(__dirname, `../uploads`)
 const fileOptions = { dest: `${UPLOAD_PATH}/` }
-
 const uploader = function (file, options) {
   if (!file) { throw new Error('no file(s)') }
 
@@ -19,7 +19,8 @@ const _fileHandler = function (file, options = fileOptions) {
 
   const orignalname = file.hapi.filename
   const filename = uuid.v1()
-  const path = `${options.dest}${filename}${orignalname.match(/\.[\d\w]+$/)}`
+  const newFileName = (filename + orignalname.match(/\.[\d\w]+$/)).toLowerCase()
+  const path = `${options.dest}${newFileName}`
   const fileStream = fs.createWriteStream(path)
   //  可以在这里存数据库 origin name - uid name
   return new Promise((resolve, reject) => {
@@ -38,9 +39,9 @@ const _fileHandler = function (file, options = fileOptions) {
         originalname: file.hapi.filename,
         filename,
         mimetype: file.hapi.headers['content-type'],
-        destination: `${options.dest}`,
-        path: '/api/' + path,
-        size: fs.statSync(path).size
+        // destination: `${options.dest}`,
+        path: '/api/uploads/' + newFileName
+        // size: fs.statSync(path).size
       }
 
       resolve(fileDetails)

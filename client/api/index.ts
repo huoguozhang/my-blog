@@ -20,14 +20,20 @@ request.interceptors.response.use((res: AxiosResponse): any => {
 })
 
 request.interceptors.request.use((config: AxiosRequestConfig): AxiosRequestConfig => {
-  if (getToken()) { config.headers.token = getToken() }
+  const token = getToken()
+  if (token) { config.headers.authorization = token }
   return config
 })
 
 type PostFn = (data: object) => AxiosPromise
+type GetFn = (params?: object) => AxiosPromise
+type PutFn = (uid: string, data: object) => AxiosPromise
 interface RequestFns {
   userLogin: PostFn
   userRegister: PostFn
+  getUserInfo: GetFn
+  getCurrentUserInfo: GetFn
+  updateUserInfo: PutFn
 }
 
 const Requests: RequestFns = {
@@ -36,6 +42,15 @@ const Requests: RequestFns = {
   },
   userRegister (data: object) {
     return request.post('/user', data)
+  },
+  getCurrentUserInfo () {
+    return request.get('/user/current')
+  },
+  getUserInfo (params: any) {
+    return request.get(`/user/${params.uid}`)
+  },
+  updateUserInfo (uid, data) {
+    return request.put(`/user/${uid}`, data)
   }
 }
 export default Requests
