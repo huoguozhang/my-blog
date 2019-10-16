@@ -6,7 +6,6 @@ import {
 } from './js/utils'
 import defaultTools from './js/tools'
 
-hljs.initHighlightingOnLoad()
 const renderer = new marked.Renderer()
 
 marked.setOptions({
@@ -104,10 +103,14 @@ export default {
       }
     }
   },
+  beforeMount () {
+    console.log(window)
+    hljs.initHighlightingOnLoad()
+  },
   mounted () {
+    const textarea = this.$refs.textarea
     this.init()
     setTimeout(() => {
-      const textarea = this.$refs.textarea
       textarea.focus()
       textarea.addEventListener('keydown', (e) => {
         if (e.keyCode === 83) {
@@ -124,8 +127,96 @@ export default {
         }, this.interval)
       }
     }, 20)
+    this.initDrag(textarea)
   },
   methods: {
+    // 初始化拖拽事件
+    initDrag (dropZone) {
+      dropZone.addEventListener('dragenter', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+      }, false)
+
+      dropZone.addEventListener('dragover', function (e) {
+        e.dataTransfer.dropEffect = 'copy' // 兼容某些三方应用，如圈点
+        e.preventDefault()
+        e.stopPropagation()
+      }, false)
+
+      dropZone.addEventListener('dragleave', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+      }, false)
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // 处理拖拽文件的逻辑
+        this.handleDropFile(e.dataTransfer)
+      })
+    },
+    // 处理拖拽文件
+    handleDropFile (df) {
+      let dropFiles = [] // 拖拽的文件，会放到这里
+      let dealFileCnt = 0 // 读取文件是个异步的过程，需要记录处理了多少个文件了
+      let allFileLen = df.files.length // 所有的文件的数量，给非Chrome浏览器使用的变量
+      function getDropFileCallBack (dropFiles) {
+        console.log(dropFiles, dropFiles.length)
+      }
+      // 检测是否已经把所有的文件都遍历过了
+      function checkDropFinish () {
+        if (dealFileCnt === allFileLen - 1) {
+          getDropFileCallBack(dropFiles)
+        }
+        dealFileCnt++
+      }
+
+      if (df.items !== undefined) {
+        // Chrome拖拽文件逻辑
+        for (let i = 0; i < df.items.length; i++) {
+          let item = df.items[ i ]
+          // 只支持图片
+          if (/^image/ig.test(item.type) && item.kind === 'file' && item.webkitGetAsEntry().isFile) {
+            let file = item.getAsFile()
+            dropFiles.push(file)
+            this.handleIamgeFile(file)
+          }
+        }
+      } else {
+        // 非Chrome拖拽文件逻辑
+        for (let i = 0; i < allFileLen; i++) {
+          let dropFile = df.files[ i ]
+          if (dropFile.type) {
+            dropFiles.push(dropFile)
+            checkDropFinish()
+          } else {
+            try {
+              let fileReader = new FileReader()
+              fileReader.readAsDataURL(dropFile.slice(0, 3))
+
+              fileReader.addEventListener('load', function (e) {
+                console.log(e, 'load')
+                dropFiles.push(dropFile)
+                checkDropFinish()
+              }, false)
+
+              fileReader.addEventListener('error', function (e) {
+                console.log(e, 'error，不可以上传文件夹')
+                checkDropFinish()
+              }, false)
+
+            } catch (e) {
+              console.log(e, 'catch error，不可以上传文件夹')
+              checkDropFinish()
+            }
+          }
+        }
+      }
+    },
+    // 拿到的图片文件
+    handleIamgeFile (file) {
+      console.log(file)
+    },
     init () {
       this.value = this.initialValue
       this.themeName = this.theme

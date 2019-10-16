@@ -37,7 +37,7 @@
     <div class="right">
       <div class="title">
         <span>个人简介</span>
-        <span class="cursor-p" @click="beforeEdit">编辑</span>
+        <span v-if="uid === currentUserInfo.uid" class="cursor-p" @click="beforeEdit">编辑</span>
       </div>
       <div class="description" v-text="userInfo.description">
       </div>
@@ -96,8 +96,8 @@ interface UserForm {
   },
   asyncData ({ params }) {
     return request.getUserInfo({ uid: params.uid })
-      .then(() => {
-
+      .then((data: any) => {
+        return { userInfo: data }
       })
   }
 })
@@ -114,13 +114,13 @@ export default class User extends Vue {
     ]
   }
   showEditForm: boolean = false
-  userInfo = {
+  /* userInfo = {
     username: '',
     password: '',
     description: '',
     avatar: '',
     nickname: ''
-  }
+  } */
   userForm: UserForm = {
     username: '',
     password: '',

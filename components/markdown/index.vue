@@ -157,7 +157,7 @@
         </h1>
         <div
           ref="previewInner"
-          v-html="pureHtml"
+          v-html="html"
         />
       </div>
     </div>
