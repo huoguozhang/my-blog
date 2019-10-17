@@ -1,6 +1,7 @@
 import marked from 'marked'
 import _ from 'lodash'
 import hljs from './js/hljs'
+import request from '~/client/api'
 import {
   saveFile
 } from './js/utils'
@@ -69,7 +70,7 @@ export default {
     return {
       value: '', // 输入框内容
       timeoutId: null,
-      indexLenth: 100,
+      indexLength: 100,
       title: '',
       html: '',
       preview: 1, // 是否是预览状态
@@ -178,7 +179,7 @@ export default {
           if (/^image/ig.test(item.type) && item.kind === 'file' && item.webkitGetAsEntry().isFile) {
             let file = item.getAsFile()
             dropFiles.push(file)
-            this.handleIamgeFile(file)
+            this.handleImageFile(file)
           }
         }
       } else {
@@ -198,12 +199,10 @@ export default {
                 dropFiles.push(dropFile)
                 checkDropFinish()
               }, false)
-
               fileReader.addEventListener('error', function (e) {
                 console.log(e, 'error，不可以上传文件夹')
                 checkDropFinish()
               }, false)
-
             } catch (e) {
               console.log(e, 'catch error，不可以上传文件夹')
               checkDropFinish()
@@ -213,36 +212,19 @@ export default {
       }
     },
     // 拿到的图片文件
-    handleIamgeFile (file) {
-      console.log(file)
-      this.insertContent(`![926.PNG](https://upload-images.jianshu.io/upload_images/6036420-b091091a447db998.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)`)
+    async handleImageFile (file) {
+      // 保存起来
+      let oldValue = this.$refs.textarea.value
+      this.insertContent(`![图片上传中...](${file.name})`)
+      const data = await this.uploadFile(file)
+      this.$refs.textarea.value = oldValue
+      this.insertContent(`![${file.name}](${data.path})`)
+      // 上传文件
     },
-    // 添加img标签
-    addImgTag () {
-      let myField = this.$refs.textarea
-      let myValue = '### 我是图片'
-      if (document.selection) {
-        //IE support
-        myField.focus()
-        sel = document.selection.createRange()
-        sel.text = myValue
-        sel.select()
-      } else if (myField.selectionStart || myField.selectionStart == '0') {
-        //MOZILLA/NETSCAPE support
-        var startPos = myField.selectionStart
-        var endPos = myField.selectionEnd
-        var beforeValue = myField.value.substring(0, startPos)
-        var afterValue = myField.value.substring(endPos, myField.value.length)
-
-        myField.value = beforeValue + myValue + afterValue
-
-        myField.selectionStart = startPos + myValue.length
-        myField.selectionEnd = startPos + myValue.length
-        myField.focus()
-      } else {
-        myField.value += myValue
-        myField.focus()
-      }
+    uploadFile (file) {
+      const formData = new FormData()
+      formData.append('file', file)
+      return request.uploadFile(formData)
     },
     init () {
       this.value = this.initialValue
@@ -586,12 +568,12 @@ export default {
           ...this.markedOptions
         })
       }, 30)
-      this.indexLenth = this.value.split('\n').length
-      const height1 = this.indexLenth * 22
+      this.indexLength = this.value.split('\n').length
+      const height1 = this.indexLength * 22
       const height2 = this.$refs.textarea.scrollHeight
       const height3 = this.$refs.preview.scrollHeight
       this.scrollHeight = Math.max(height1, height2, height3)
-      this.indexLenth = parseInt(this.scrollHeight / 22, 0) - 1
+      this.indexLength = parseInt(this.scrollHeight / 22, 0) - 1
       this.addImageClickListener()
     },
     theme () {

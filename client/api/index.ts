@@ -1,7 +1,9 @@
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios'
 import { Message } from 'element-ui'
+import qs from 'qs'
 import { ElMessageOptions } from 'element-ui/types/message'
 import { getToken } from '~/client/utils/token'
+import Axios from "axios";
 
 const MyMessage = (options: ElMessageOptions) => {
   Message({ ...options, showClose: true, duration: 2000 })
@@ -34,6 +36,7 @@ interface RequestFns {
   getUserInfo: GetFn
   getCurrentUserInfo: GetFn
   updateUserInfo: PutFn
+  uploadFile: PostFn
 }
 
 const Requests: RequestFns = {
@@ -51,6 +54,13 @@ const Requests: RequestFns = {
   },
   updateUserInfo (uid, data) {
     return request.put(`/user/${uid}`, data)
+  },
+  uploadFile (data) {
+    return request.post('/upload', data, {
+      headers: {
+        'content-type': 'multipart/form-data;charset=UTF-8'
+      }
+    })
   }
 }
 export default Requests
