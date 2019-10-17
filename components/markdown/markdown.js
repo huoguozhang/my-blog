@@ -104,7 +104,6 @@ export default {
     }
   },
   beforeMount () {
-    console.log(window)
     hljs.initHighlightingOnLoad()
   },
   mounted () {
@@ -139,7 +138,7 @@ export default {
 
       dropZone.addEventListener('dragover', function (e) {
         e.dataTransfer.dropEffect = 'copy' // 兼容某些三方应用，如圈点
-        e.preventDefault()
+        // e.preventDefault()
         e.stopPropagation()
       }, false)
 
@@ -216,6 +215,34 @@ export default {
     // 拿到的图片文件
     handleIamgeFile (file) {
       console.log(file)
+      this.insertContent(`![926.PNG](https://upload-images.jianshu.io/upload_images/6036420-b091091a447db998.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)`)
+    },
+    // 添加img标签
+    addImgTag () {
+      let myField = this.$refs.textarea
+      let myValue = '### 我是图片'
+      if (document.selection) {
+        //IE support
+        myField.focus()
+        sel = document.selection.createRange()
+        sel.text = myValue
+        sel.select()
+      } else if (myField.selectionStart || myField.selectionStart == '0') {
+        //MOZILLA/NETSCAPE support
+        var startPos = myField.selectionStart
+        var endPos = myField.selectionEnd
+        var beforeValue = myField.value.substring(0, startPos)
+        var afterValue = myField.value.substring(endPos, myField.value.length)
+
+        myField.value = beforeValue + myValue + afterValue
+
+        myField.selectionStart = startPos + myValue.length
+        myField.selectionEnd = startPos + myValue.length
+        myField.focus()
+      } else {
+        myField.value += myValue
+        myField.focus()
+      }
     },
     init () {
       this.value = this.initialValue
