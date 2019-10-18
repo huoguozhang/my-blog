@@ -2,10 +2,10 @@
   <div class="article-block-comp-ct cursor-p" @click="goPost">
     <div class="content">
       <div class="title">
-        为什么遍历LinkedList要用增强型for循环为什么遍历LinkedList要用增强型for循环
+        {{article.title}}
       </div>
-      <div class="abstract">
-        for循环和链表介绍 我们都知道java中有个增强型for循环，这个for循环很方便，如果不需要知道当前遍历到第几个的话可以跟普通for循环替换...
+      <div class="abstract two-row-ellipsis">
+       {{article.summary}}
       </div>
       <div class="other-info-ct">
         <span class="nickname info-item">
@@ -27,10 +27,11 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component({})
 export default class articleBlock extends Vue {
+  @Prop({ type: Object, default: () => ({}) })  article!: object
   goPost () {
     this.$router.push({
       path: '/post'

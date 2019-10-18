@@ -36,6 +36,7 @@ interface RequestFns {
   updateUserInfo: PutFn
   createArticle: PostFn
   uploadFile: PostFn
+  getArticleList: GetFn
 }
 
 const Requests: RequestFns = {
@@ -53,6 +54,9 @@ const Requests: RequestFns = {
   },
   updateUserInfo (uid, data) {
     return request.put(`/user/${uid}`, data)
+  },
+  getArticleList (params : object = {}) {
+    return request.get('/article', { params })
   },
   createArticle (data: object) {
     return request.post('/article', data)

@@ -5,11 +5,14 @@
         <el-carousel height="270" loop autoplay>
           <el-carousel-item v-for="(item,i) in 4" :key="item">
             <div :style="{height: '100%'}">
-              <img :src="imgs[i]" style="width: 100%;">
+              <img :src="carouselImages[i]" style="width: 100%;">
             </div>
           </el-carousel-item>
         </el-carousel>
-        <article-block v-for="item in 10" :key="item" />
+        <article-block
+          :article="item"
+          v-for="item in articleList"
+          :key="item.uid" />
       </div>
       <div class="right-content">
         <div class="board-ct">
@@ -49,11 +52,12 @@
       </div>
     </div>
     <footer>
-      本站技术: vue vuex vue-router typescript ssr node.js mysql
+      本站技术: nuxt typescript hapi.js node.js mysql
     </footer>
   </div>
 </template>
 <script lang="ts">
+import request from '~/client/api'
 import { Vue, Component } from 'vue-property-decorator'
 import articleBlock from '~/components/article-block/article-block.vue'
 interface Board {
@@ -62,27 +66,24 @@ interface Board {
   bg: string
 }
 @Component({
-  data () {
-    return {
-      imgs: [
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099218&di=9567ceea2c7b053d47656cabc07f95c3&imgtype=0&src=http%3A%2F%2Fpic.rmb.bdstatic.com%2F79a52c2a0179484489537079151015d6.jpeg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099219&di=d4b11a6516b2f408b0bf7e9611ae3faf&imgtype=0&src=http%3A%2F%2Fdingyue.nosdn.127.net%2FLZ2LnfxeH1lADvrk4PuCD7y1KoGGIkm8r2QMeZSyK4TJO1530549365272compressflag.jpg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099220&di=628df78af9ff907cef9142e5df7c1004&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0197595afe676ba801218cf4a555b4.jpg%401280w_1l_2o_100sh.jpg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099220&di=9fad79a0fe106223a51129d248625224&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn17%2F600%2Fw1920h1080%2F20180627%2F310c-hencxtv2861523.jpg'
-      ],
-      bgs: ['red', 'blue', 'pink', 'yellow', 'grey', 'gold']
-    }
-  },
   components: {
     articleBlock
   }
 })
 export default class recommend extends Vue {
+  carouselImages = [
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099218&di=9567ceea2c7b053d47656cabc07f95c3&imgtype=0&src=http%3A%2F%2Fpic.rmb.bdstatic.com%2F79a52c2a0179484489537079151015d6.jpeg',
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099219&di=d4b11a6516b2f408b0bf7e9611ae3faf&imgtype=0&src=http%3A%2F%2Fdingyue.nosdn.127.net%2FLZ2LnfxeH1lADvrk4PuCD7y1KoGGIkm8r2QMeZSyK4TJO1530549365272compressflag.jpg',
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099220&di=628df78af9ff907cef9142e5df7c1004&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0197595afe676ba801218cf4a555b4.jpg%401280w_1l_2o_100sh.jpg',
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099220&di=9fad79a0fe106223a51129d248625224&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn17%2F600%2Fw1920h1080%2F20180627%2F310c-hencxtv2861523.jpg'
+  ]
+  bgs = ['red', 'blue', 'pink', 'yellow', 'grey', 'gold']
   boardList: Array<Board> = [
     { label: 'Github', link: 'https://github.com/huoguozhang', bg: '#24292e' },
     { label: '简书博客', link: 'https://www.jianshu.com/u/dfee0b8584c6', bg: '#ea6f5a' },
     { label: '掘金', link: 'https://juejin.im/user/5a1d4f295188252754100f60', bg: '#007fff' },
-    { label: 'segmentfault', link: 'https://segmentfault.com/u/huoguoxiaowangzi', bg: '#009a61' }]
+    { label: 'segmentfault', link: 'https://segmentfault.com/u/huoguoxiaowangzi', bg: '#009a61' }
+  ]
   userList: Array <any> = [
     {
       uid: '1',
@@ -105,6 +106,15 @@ export default class recommend extends Vue {
       avatar: require('~/assets/image/4.jpg')
     }
   ]
+  articleList = []
+  getArticleList () {
+    return request.getArticleList().then((data: any) => {
+      this.articleList =data.results
+    })
+  }
+  mounted () {
+    this.getArticleList()
+  }
 }
 </script>
 <style lang="scss" scoped>
