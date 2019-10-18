@@ -1,7 +1,6 @@
 import marked from 'marked'
 import _ from 'lodash'
 import hljs from './js/hljs'
-import request from '~/client/api'
 import {
   saveFile
 } from './js/utils'
@@ -24,7 +23,13 @@ marked.setOptions({
 
 export default {
   name: 'markdown',
+  model: {
+    prop: 'initialValue',
+    event: 'change'
+  },
   props: {
+    uploadImageFile: Function,
+    articleTitle: String,
     initialValue: {
       type: String,
       default: ''
@@ -215,19 +220,16 @@ export default {
     async handleImageFile (file) {
       // 保存起来
       let oldValue = this.$refs.textarea.value
-      this.insertContent(`![图片上传中...](${file.name})`)
-      const data = await this.uploadFile(file)
+      // 需要保存原来的光标位置
+      let prevData = this.insertContent(`[图片上传中...(${file.name})]`)
+      const data = await this.uploadImageFile(file)
       this.$refs.textarea.value = oldValue
-      this.insertContent(`![${file.name}](${data.path})`)
+      this.insertContent(`![${file.name}](${data.path})`, prevData)
       // 上传文件
-    },
-    uploadFile (file) {
-      const formData = new FormData()
-      formData.append('file', file)
-      return request.uploadFile(formData)
     },
     init () {
       this.value = this.initialValue
+      this.title = this.articleTitle
       this.themeName = this.theme
       this.editorHeight = this.height
       this.editorWidth = this.width
@@ -289,7 +291,7 @@ export default {
     mousescrollSide (side) { // 设置究竟是哪个半边在主动滑动
       this.scroll = side
     },
-    insertContent (initStr) { // 插入文本
+    insertContent (initStr, prevData = {}) { // 插入文本
       const {
         preview
       } = this
@@ -302,9 +304,9 @@ export default {
       const lastFourCharts = this.value.substring(point - 4, point)
       if (lastChart !== '\n' && this.value !== '' && lastFourCharts !== '    ') {
         const str = '\n' + initStr
-        this.insertAfterText(str)
+        return this.insertAfterText(str, prevData)
       } else {
-        this.insertAfterText(initStr)
+        return this.insertAfterText(initStr, prevData)
       }
     },
     getCursortPosition () { // 获取光标位置
@@ -320,8 +322,10 @@ export default {
       }
       return cursorPos
     },
-    insertAfterText (value) { // 插入文本
+    insertAfterText (value, prevData = {}) { // 插入文本
       const textDom = this.$refs.textarea
+      const oldValue = textDom.value
+
       let selectRange
       if (document.selection) {
         textDom.focus()
@@ -329,9 +333,10 @@ export default {
         selectRange.text = value
         textDom.focus()
       } else if (textDom.selectionStart || parseInt(textDom.selectionStart, 0) === 0) {
-        const startPos = textDom.selectionStart
-        const endPos = textDom.selectionEnd
-        const scrollTop = textDom.scrollTop
+        const startPos = prevData.startPos || textDom.selectionStart
+        const endPos = prevData.endPos || textDom.selectionEnd
+        const scrollTop = prevData.scrollTop || textDom.scrollTop
+        prevData = { startPos, endPos, scrollTop }
         textDom.value = textDom.value.substring(0, startPos) + value + textDom.value.substring(endPos, textDom.value.length)
         textDom.focus()
         textDom.selectionStart = startPos + value.length
@@ -342,6 +347,7 @@ export default {
         textDom.focus()
       }
       this.$set(this, 'value', textDom.value)
+      return prevData
     },
     setCaretPosition (position) { // 设置光标位置
       const textDom = this.$refs.textarea
@@ -559,7 +565,7 @@ export default {
     initialValue () {
       this.value = this.initialValue
     },
-    value () {
+    value (val) {
       clearTimeout(this.timeoutId)
       this.timeoutId = setTimeout(() => {
         this.html = marked(this.value, {
@@ -575,6 +581,9 @@ export default {
       this.scrollHeight = Math.max(height1, height2, height3)
       this.indexLength = parseInt(this.scrollHeight / 22, 0) - 1
       this.addImageClickListener()
+      if (val !== this.initialValue) {
+        this.$emit('change', val)
+      }
     },
     theme () {
       this.themeName = this.theme
@@ -584,6 +593,16 @@ export default {
     },
     width () {
       this.editorWidth = this.width
+    },
+    articleTitle (val) {
+      if (val !== this.title) {
+        this.title = val
+      }
+    },
+    title (val) {
+      if (val !== this.articleTitle) {
+        this.$emit('update:articleTitle', val)
+      }
     }
   },
   destroyed () { // 销毁时清除定时器
