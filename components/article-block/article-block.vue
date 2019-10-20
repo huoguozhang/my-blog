@@ -2,14 +2,15 @@
   <div class="article-block-comp-ct cursor-p" @click="goPost">
     <div class="content">
       <div class="title">
-        {{article.title}}
+        {{ article.title }}
       </div>
       <div class="abstract two-row-ellipsis">
-       {{article.summary}}
+        {{ article.summary }}
       </div>
       <div class="other-info-ct">
         <span class="nickname info-item">
-          火锅小王子
+          <i class="el-icon-user-solid"></i>
+          {{ (article.user && article.user.nickname) || '佚名' }}
         </span>
         <span class="comments info-item">
           <i class="el-icon-s-comment"></i>
@@ -31,7 +32,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component({})
 export default class articleBlock extends Vue {
-  @Prop({ type: Object, default: () => ({}) })  article!: object
+  @Prop({ type: Object, default: () => ({}) }) article!: object
   goPost () {
     this.$router.push({
       path: '/post'
@@ -45,6 +46,7 @@ export default class articleBlock extends Vue {
 }
 .article-block-comp-ct {
   position: relative;
+  min-height: 100px;
   width: 100%;
   margin: 0 0 16px;
   padding: 16px 2px 20px 0;

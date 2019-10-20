@@ -10,9 +10,10 @@
           </el-carousel-item>
         </el-carousel>
         <article-block
-          :article="item"
           v-for="item in articleList"
-          :key="item.uid" />
+          :key="item.uid"
+          :article="item"
+        />
       </div>
       <div class="right-content">
         <div class="board-ct">
@@ -33,7 +34,7 @@
             <span class="change"><i class="el-icon-refresh"></i> 换一批</span>
           </div>
           <ul class="user-list-ct">
-            <li v-for="item in userList" :key="item.uid" class="list-item">
+            <li v-for="item in userList.slice(0, 4)" :key="item.uid" class="list-item">
               <img :src="item.avatar" class="avatar">
               <div class="info">
                 <p class="nickname">
@@ -57,8 +58,8 @@
   </div>
 </template>
 <script lang="ts">
-import request from '~/client/api'
 import { Vue, Component } from 'vue-property-decorator'
+import request from '~/client/api'
 import articleBlock from '~/components/article-block/article-block.vue'
 interface Board {
   label: string
@@ -68,6 +69,11 @@ interface Board {
 @Component({
   components: {
     articleBlock
+  },
+  asyncData () {
+    return request.getArticleList().then((data: any) => {
+      return { articleList: data.results }
+    })
   }
 })
 export default class recommend extends Vue {
@@ -77,43 +83,21 @@ export default class recommend extends Vue {
     'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099220&di=628df78af9ff907cef9142e5df7c1004&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0197595afe676ba801218cf4a555b4.jpg%401280w_1l_2o_100sh.jpg',
     'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566834099220&di=9fad79a0fe106223a51129d248625224&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn17%2F600%2Fw1920h1080%2F20180627%2F310c-hencxtv2861523.jpg'
   ]
-  bgs = ['red', 'blue', 'pink', 'yellow', 'grey', 'gold']
   boardList: Array<Board> = [
     { label: 'Github', link: 'https://github.com/huoguozhang', bg: '#24292e' },
     { label: '简书博客', link: 'https://www.jianshu.com/u/dfee0b8584c6', bg: '#ea6f5a' },
     { label: '掘金', link: 'https://juejin.im/user/5a1d4f295188252754100f60', bg: '#007fff' },
     { label: 'segmentfault', link: 'https://segmentfault.com/u/huoguoxiaowangzi', bg: '#009a61' }
   ]
-  userList: Array <any> = [
-    {
-      uid: '1',
-      nickname: '夜空中的猩',
-      avatar: require('~/assets/image/1.jpg')
-    },
-    {
-      uid: '2',
-      nickname: '翔你的野',
-      avatar: require('~/assets/image/2.jpg')
-    },
-    {
-      uid: '3',
-      nickname: '加多宝铁罐',
-      avatar: require('~/assets/image/3.jpg')
-    },
-    {
-      uid: '4',
-      nickname: '牙刷柄',
-      avatar: require('~/assets/image/4.jpg')
-    }
-  ]
-  articleList = []
-  getArticleList () {
-    return request.getArticleList().then((data: any) => {
-      this.articleList =data.results
-    })
+  userList: Array <object> = []
+  getUserList () {
+    request.getUserList()
+      .then((data: any) => {
+        this.userList = data
+      })
   }
-  mounted () {
-    this.getArticleList()
+  created () {
+    this.getUserList()
   }
 }
 </script>

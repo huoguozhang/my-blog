@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => sequelize.define(
+const Article = (sequelize, DataTypes) => sequelize.define(
   'article',
   {
     uid: {
@@ -22,3 +22,5 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
     tableName: 'article'
   }
 )
+
+module.exports = Article

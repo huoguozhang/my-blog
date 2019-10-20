@@ -30,7 +30,10 @@
       </div>
       <el-tabs>
         <el-tab-pane icon="md-document" label="文章">
-          <article-block v-for="item in 10" :key="item" />
+          <article-block
+            :article="item"
+            v-for="item in userArticleList.slice(0, 10)"
+            :key="item.uid" />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -114,13 +117,6 @@ export default class User extends Vue {
     ]
   }
   showEditForm: boolean = false
-  /* userInfo = {
-    username: '',
-    password: '',
-    description: '',
-    avatar: '',
-    nickname: ''
-  } */
   userForm: UserForm = {
     username: '',
     password: '',
@@ -128,6 +124,7 @@ export default class User extends Vue {
     avatar: '',
     nickname: ''
   }
+  userArticleList = []
   get uid () {
     return this.$route.params.uid
   }
@@ -153,6 +150,15 @@ export default class User extends Vue {
       .then((data: any) => {
         this.userInfo = data
       })
+  }
+  getUserArticleList () {
+    request.getArticleList({ author: this.uid })
+      .then((data: any) => {
+        this.userArticleList = data.results
+      })
+  }
+  created () {
+    this.getUserArticleList()
   }
 }
 </script>

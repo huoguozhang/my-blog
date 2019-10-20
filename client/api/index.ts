@@ -7,7 +7,7 @@ const MyMessage = (options: ElMessageOptions) => {
   Message({ ...options, showClose: true, duration: 2000 })
 }
 const request = axios.create({
-  baseURL: '/api'
+  baseURL: 'http://127.0.0.1:3000/api'
   // ..
 })
 
@@ -17,6 +17,7 @@ request.interceptors.response.use((res: AxiosResponse): any => {
   }
   MyMessage({ message: res.data.message, type: 'error' })
   return Promise.reject(res.data.message)
+}, () => {
 })
 
 request.interceptors.request.use((config: AxiosRequestConfig): AxiosRequestConfig => {
@@ -37,6 +38,7 @@ interface RequestFns {
   createArticle: PostFn
   uploadFile: PostFn
   getArticleList: GetFn
+  getUserList: GetFn
 }
 
 const Requests: RequestFns = {
@@ -50,10 +52,13 @@ const Requests: RequestFns = {
     return request.get('/user/current')
   },
   getUserInfo (params: any) {
-    return request.get(`http://127.0.0.1:3000/api/user/${params.uid}`)
+    return request.get(`/user/${params.uid}`)
   },
   updateUserInfo (uid, data) {
     return request.put(`/user/${uid}`, data)
+  },
+  getUserList (params: object = {}) {
+    return request.get('/user', { params })
   },
   getArticleList (params : object = {}) {
     return request.get('/article', { params })

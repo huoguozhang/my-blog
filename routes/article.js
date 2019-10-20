@@ -8,8 +8,9 @@ const Routes = [
     path: '/api/article',
     method: 'POST',
     handler: async (request, h) => {
+      const { userId } = request.auth.credentials
       const summary = extractTextFormMD(request.payload.content)
-      const res = await models.article.create({ ...request.payload, summary })
+      const res = await models.article.create({ ...request.payload, summary, author: userId })
       return h.response(res).code(201)
     },
     config: {
@@ -29,12 +30,25 @@ const Routes = [
     method: 'GET',
     path: '/api/article',
     handler: async (request, h) => {
+      const { author } = request.params
+      const whereObj = {}
+      if (author) whereObj.author = author
       const { rows: results, count: totalCount } = await models.article.findAndCountAll({
+        include: [{
+          model: models.user,
+          attributes: {
+            exclude: ['password']
+          }
+        }],
         attributes: [
           'uid',
           'title',
-          'summary'
+          'summary',
+          'author'
         ],
+        where: {
+          ...whereObj
+        },
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit
       })
@@ -47,6 +61,7 @@ const Routes = [
       description: '获取文章列表',
       validate: {
         query: {
+          author: Joi.string(),
           ...paginationDefine
         }
       }

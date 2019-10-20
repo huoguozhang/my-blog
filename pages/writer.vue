@@ -2,8 +2,8 @@
   <div class="writer-comp-ct">
     <MarkDown
       v-model="md"
-      :uploadImageFile="uploadFile"
-      :articleTitle.sync="title"
+      :upload-image-file="uploadFile"
+      :article-title.sync="title"
       theme="Dark"
     >
       <a slot="header-right" @click="createArticle">发布文章</a>

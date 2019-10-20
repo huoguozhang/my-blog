@@ -324,8 +324,6 @@ export default {
     },
     insertAfterText (value, prevData = {}) { // 插入文本
       const textDom = this.$refs.textarea
-      const oldValue = textDom.value
-
       let selectRange
       if (document.selection) {
         textDom.focus()
