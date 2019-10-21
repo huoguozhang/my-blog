@@ -12,19 +12,22 @@ function wrapIncludeObject (v, modelName) {
   })
 }
 
-function wrapDateQuery (start_date, end_date) {
+function wrapDateQuery (model, start_date, end_date) {
   if (!start_date && !end_date) {
     return ''
-  } else {
   }
+  const startRawDate = moment(start_date || new Date()).format('YYYY-MM-DD')
+  const endRawDate = moment(end_date || new Date()).format('YYYY-MM-DD')
   let result = ''
   if (start_date && !end_date) {
-    result = `updated_time >= ${start_date} OR created_time >= ${start_date}`
+    result = `${model}.updated_time >= '${startRawDate}' OR ${model}.created_time >= '${startRawDate}'`
   } else if (!start_date && end_date) {
-    result = `updated_time <= ${end_date} OR created_time <= ${end_date}`
+    result = `${model}.updated_time <= '${endRawDate}' OR ${model}.created_time <= '${endRawDate}'`
   } else if (start_date && end_date) {
-    result = `(updated_time BETWEEN　${moment(start_date).format('YYYY-MM-DD')}
-     AND ${moment(end_date).format('YYYY-MM-DD')})`
+    result = `
+    (${model}.updated_time BETWEEN　'${startRawDate}' AND '${endRawDate}') OR 
+    (${model}.created_time BETWEEN　'${startRawDate}' AND '${endRawDate}')
+    `
   }
   return `AND (${result})`
 }
