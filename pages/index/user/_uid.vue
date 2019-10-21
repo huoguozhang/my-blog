@@ -31,9 +31,10 @@
       <el-tabs>
         <el-tab-pane icon="md-document" label="文章">
           <article-block
-            :article="item"
             v-for="item in userArticleList.slice(0, 10)"
-            :key="item.uid" />
+            :key="item.uid"
+            :article="item"
+          />
         </el-tab-pane>
       </el-tabs>
     </div>

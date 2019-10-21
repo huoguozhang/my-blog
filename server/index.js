@@ -17,20 +17,20 @@ async function start () {
     port: process.env.PORT || 3000
   })
 
-  await server.register({
+  /*await server.register({
     plugin: HapiNuxt,
     options: {}
-  })
+  })*/
 
   // 日志
-  /* await server.register({
+  /*await server.register({
     plugin: require('hapi-pino'),
     options: {
       prettyPrint: true,
       // logPayload: true,
       logEvents: ['response', 'onPostStart']
     }
-  }) */
+  })*/
 
   await server.register(Inert)
 

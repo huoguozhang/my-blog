@@ -13,7 +13,7 @@ module.exports = {
     'host': env.MYSQL_HOST,
     'port': env.MYSQL_PORT,
     dialect: 'mysql',
-    // logging: true, // mysql 执行日志
+    // logging: false, // mysql 执行日志
     timezone: '+08:00'
     // "operatorsAliases": false,  // 此参数为自行追加，解决高版本 sequelize 连接警告
   },

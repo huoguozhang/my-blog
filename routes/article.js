@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi')
 const { paginationDefine, jwtHeaderDefine } = require('../utils/router-helper')
 const models = require('../models')
 const { extractTextFormMD } = require('../utils/stringHelp')
-
+const { wrapDateQuery, wrapSearchQuery, wrapUserQuery } = require('../utils/handleRouteQuery')
 const Routes = [
   {
     path: '/api/article',
@@ -30,23 +30,43 @@ const Routes = [
     method: 'GET',
     path: '/api/article',
     handler: async (request, h) => {
-      const { author } = request.params
+      const { author, search, start_date, end_date } = request.query
       const whereObj = {}
-      if (author) whereObj.author = author
+      if (author) { whereObj.author = author }
+      models.sequelize.query(`
+       SELECT article.updated_time, article.created_time, article.uid, article.title, article.summary, article.author,
+         user.uid AS 'user.uid',
+         user.avatar AS 'user.avatar', user.description AS 'user.description',
+         user.nickname AS 'user.nickname', user.username AS 'user.username',
+         user.created_time AS 'user.created_time', user.updated_time AS 'user.updated_time'
+         FROM article AS article LEFT
+         OUTER JOIN user AS user ON article.author = user.uid
+         WHERE (article.title LIKE '%${search}%' OR article.content LIKE '%${search}%' OR user.nickname LIKE '%${search}%')
+         LIMIT ${request.query.limit}
+         OFFSET ${(request.query.page - 1) * request.query.limit}
+      `).then(xxx => {
+        console.log(xxx)
+      })
       const { rows: results, count: totalCount } = await models.article.findAndCountAll({
         include: [{
+          required: true,
+          right: true,
           model: models.user,
           attributes: {
             exclude: ['password']
           }
         }],
         attributes: [
+          'updated_time',
+          'created_time',
           'uid',
           'title',
           'summary',
           'author'
         ],
         where: {
+          ...wrapDateQuery(start_date, end_date),
+          ...wrapSearchQuery(search, [ 'title', 'content' ]),
           ...whereObj
         },
         limit: request.query.limit,
@@ -61,6 +81,9 @@ const Routes = [
       description: '获取文章列表',
       validate: {
         query: {
+          search: Joi.string(),
+          start_date: Joi.date(),
+          end_date: Joi.date(),
           author: Joi.string(),
           ...paginationDefine
         }

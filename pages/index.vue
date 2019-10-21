@@ -73,7 +73,7 @@ export default class index extends Vue {
     this.menuActive = item.value
     this.$router.push({ path: item.path })
   }
-  beforeMount () {
+  mounted () {
     this.getUserInfo()
   }
   created (): void {

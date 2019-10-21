@@ -34,7 +34,7 @@
             <span class="change"><i class="el-icon-refresh"></i> 换一批</span>
           </div>
           <ul class="user-list-ct">
-            <li v-for="item in userList.slice(0, 4)" :key="item.uid" class="list-item">
+            <li v-for="item in userList" :key="item.uid" class="list-item">
               <img :src="item.avatar" class="avatar">
               <div class="info">
                 <p class="nickname">
@@ -89,7 +89,7 @@ export default class recommend extends Vue {
     { label: '掘金', link: 'https://juejin.im/user/5a1d4f295188252754100f60', bg: '#007fff' },
     { label: 'segmentfault', link: 'https://segmentfault.com/u/huoguoxiaowangzi', bg: '#009a61' }
   ]
-  userList: Array <object> = []
+  userList = []
   getUserList () {
     request.getUserList()
       .then((data: any) => {

@@ -12,9 +12,9 @@
     </div>
     <div class="main-ct">
       <article-block
-        :article="item"
         v-for="item in articleList"
         :key="item.uid"
+        :article="item"
       />
       <el-pagination
         class="m-b-24"
@@ -23,7 +23,8 @@
         layout="total, jumper, prev, pager, next"
         :current-page.sync="allListParams.page.page"
         :page-size.sync="allListParams.page.limit"
-        :total="allListParams.page.totalCount">
+        :total="allListParams.page.totalCount"
+      >
       </el-pagination>
     </div>
   </div>

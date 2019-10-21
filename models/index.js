@@ -47,8 +47,7 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize
 db.Sequelize = Sequelize
 
-
-db.user.hasMany(db.article, {foreignKey: 'uid'})
-db.article.belongsTo(db.user, {foreignKey: 'author'})
+db.user.hasMany(db.article, { foreignKey: 'uid' })
+db.article.belongsTo(db.user, { foreignKey: 'author' })
 
 module.exports = db

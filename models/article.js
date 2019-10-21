@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const Article = (sequelize, DataTypes) => sequelize.define(
   'article',
   {
@@ -15,8 +17,18 @@ const Article = (sequelize, DataTypes) => sequelize.define(
       allowNull: false
     },
     summary: DataTypes.STRING,
-    created_time: DataTypes.DATE,
-    updated_time: DataTypes.DATE
+    created_time: {
+      type: DataTypes.DATE,
+      get () {
+        return moment(this.getDataValue('created_time')).format('YYYY-MM-DD HH:mm:ss')
+      }
+    },
+    updated_time: {
+      type: DataTypes.DATE,
+      get () {
+        return moment(this.getDataValue('updated_time')).format('YYYY-MM-DD HH:mm:ss')
+      }
+    }
   },
   {
     tableName: 'article'
