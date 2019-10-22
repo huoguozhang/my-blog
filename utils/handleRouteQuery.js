@@ -4,46 +4,46 @@ function wrapDateQuery (start_date, end_date) {
   const whereObj = {}
   let startDate = moment(start_date || new Date()).format('YYYY-MM-DD 00:00:00')
   let endDate = moment(end_date || new Date()).format('YYYY-MM-DD 23:59:59')
-   if (start_date && !end_date) {
-     whereObj[Op.or] = [
-       {
-         updated_time: {
-           [Op.gte]: startDate
-         }
-       },
-       {
-         created_time: {
-           [Op.gte]: startDate
-         }
-       }
-     ]
-   } else if (!start_date && end_date) {
-     whereObj[Op.or] = [
-       {
-         created_time: {
-           [Op.lte]: endDate
-         }
-       },
-       {
-         updated_time: {
-           [Op.lte]: endDate
-         }
-       }
-     ]
-   } else if (start_date && end_date) {
-      whereObj[Op.or] = [
-       {
-         created_time: {
-           [Op.between]: [startDate, endDate]
-         }
-       },
-       {
-         updated_time: {
-           [Op.between]: [startDate. endDate]
-         }
-       }
-     ]
-   }
+  if (start_date && !end_date) {
+    whereObj[Op.or] = [
+      {
+        updated_time: {
+          [Op.gte]: startDate
+        }
+      },
+      {
+        created_time: {
+          [Op.gte]: startDate
+        }
+      }
+    ]
+  } else if (!start_date && end_date) {
+    whereObj[Op.or] = [
+      {
+        created_time: {
+          [Op.lte]: endDate
+        }
+      },
+      {
+        updated_time: {
+          [Op.lte]: endDate
+        }
+      }
+    ]
+  } else if (start_date && end_date) {
+    whereObj[Op.or] = [
+      {
+        created_time: {
+          [Op.between]: [startDate, endDate]
+        }
+      },
+      {
+        updated_time: {
+          [Op.between]: [startDate.endDate]
+        }
+      }
+    ]
+  }
   return whereObj
 }
 
@@ -54,7 +54,7 @@ function wrapSearchQuery (search, matchKeys) {
   }
   try {
     whereObj[Op.or] = [
-      ...matchKeys.map(key => {
+      ...matchKeys.map((key) => {
         return {
           [key]: {
             [Op.substring]: search

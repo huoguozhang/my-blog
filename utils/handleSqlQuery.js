@@ -1,6 +1,6 @@
 const moment = require('moment')
 function wrapIncludeObject (v, modelName) {
-  Object.keys(v).forEach(key => {
+  Object.keys(v).forEach((key) => {
     if (/\w+\.\w+/.test(key)) {
       const newKey = key.split('.')[ 1 ]
       if (!v[ modelName ]) {
@@ -24,10 +24,7 @@ function wrapDateQuery (model, start_date, end_date) {
   } else if (!start_date && end_date) {
     result = `${model}.updated_time <= DATE('${endRawDate}') OR ${model}.created_time <= DATE('${endRawDate}')`
   } else if (start_date && end_date) {
-    result = `
-    (${model}.updated_time BETWEEN　'${startRawDate}' AND '${endRawDate}') OR 
-    (${model}.created_time BETWEEN　'${startRawDate}' AND '${endRawDate}')
-    `
+    result = `(${model}.updated_time BETWEEN '${startRawDate}' AND '${endRawDate}') OR (${model}.created_time BETWEEN '${startRawDate}' AND '${endRawDate}')`
   }
   return `AND (${result})`
 }

@@ -95,7 +95,7 @@ const Routes = [
           uid: request.params.uid
         }
       })
-      return h.response(res)
+      return h.response(res[0])
     },
     config: {
       auth: false,

@@ -6,11 +6,11 @@
       </h1>
       <div class="author">
         <div class="avatar">
-          <Avatar
+          <!--<span
             style="width: 48px;height: 48px;line-height: 48px;border-radius: 24px;"
             size="large"
             icon="ios-person"
-          />
+          />-->
         </div>
         <div class="info">
           <div class="nickname">
@@ -35,137 +35,7 @@
         </div>
       </div>
       <div class="article-content markdown-body Dark">
-        <div>
-          <p>new Vue的时候：执行 initComputed (vm, computed)</p>
-          <pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initComputed</span> (<span class="hljs-params">vm, computed</span>) </span>{
-...
-for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> computed) {
-    <span class="hljs-keyword">var</span> userDef = computed[key];
-    <span class="hljs-keyword">var</span> getter = <span class="hljs-keyword">typeof</span> userDef === <span class="hljs-string">'function'</span> ? userDef : userDef.get;
-    <span class="hljs-keyword">if</span> (!isSSR) {
-      <span class="hljs-comment">// create internal watcher for the computed property.</span>
-      watchers[key] = <span class="hljs-keyword">new</span> Watcher(
-        vm,
-        getter || noop, <span class="hljs-comment">// 这个值就是用户定义的computed: {key: val} 的val</span>
-        noop,
-        computedWatcherOptions
-      );
-}
-...
-}</code></pre><p>所以本质上computed是一个watcher</p>
-          <pre><code> <span class="hljs-keyword">constructor</span> (<span class="hljs-params">
-    vm: Component,
-    expOrFn: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">Function</span>,
-    cb: <span class="hljs-built_in">Function</span>,
-    options?: ?<span class="hljs-built_in">Object</span>,
-    isRenderWatcher?: <span class="hljs-built_in">boolean</span>
-  </span>) {
-...
- <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> expOrFn === <span class="hljs-string">'function'</span>) {
-<span class="hljs-comment">// 这里的expOrFn就是用户定义的computed{key: val}中的val</span>
-      <span class="hljs-keyword">this</span>.getter = expOrFn
-    }
-...
-
-}</code></pre><p>假设用户computed中定义为</p>
-          <pre><code>用户的computed中: {
-    fullName () {
-     <span class="hljs-comment">// 'aa' + 'bb'</span>
-     return this<span class="hljs-selector-class">.firstName</span> + this<span class="hljs-selector-class">.lastName</span>
-  }
-}</code></pre><p>假设这个时候firstName变成了'a' , lastName变成了'abb'<br>这两个值的变化都会触发派发更新<br>会触发watcher.update，当前的watcher为computed</p>
-          <pre><code> update () {
-    <span class="hljs-comment">/* istanbul ignore else */</span>
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.computed) {
-      <span class="hljs-comment">// A computed property watcher has two modes: lazy and activated.</span>
-      <span class="hljs-comment">// It initializes as lazy by default, and only becomes activated when</span>
-      <span class="hljs-comment">// it is depended on by at least one subscriber, which is typically</span>
-      <span class="hljs-comment">// another computed property or a component's render function.</span>
-      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.dep.subs.length === <span class="hljs-number">0</span>) {
-        <span class="hljs-comment">// 当你并没有使用过这个computed的时候，其实就可以啥都不做</span>
-        <span class="hljs-comment">// In lazy mode, we don't want to perform computations until necessary,</span>
-        <span class="hljs-comment">// so we simply mark the watcher as dirty. The actual computation is</span>
-        <span class="hljs-comment">// performed just-in-time in this.evaluate() when the computed property</span>
-        <span class="hljs-comment">// is accessed.</span>
-        <span class="hljs-keyword">this</span>.dirty = <span class="hljs-literal">true</span>
-      } <span class="hljs-keyword">else</span> {
-        <span class="hljs-comment">// In activated mode, we want to proactively perform the computation</span>
-        <span class="hljs-comment">// but only notify our subscribers when the value has indeed changed.</span>
-       <span class="hljs-comment">// 有使用的case</span>
-        <span class="hljs-keyword">this</span>.getAndInvoke(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-          <span class="hljs-keyword">this</span>.dep.notify()
-        })
-      }
-    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.sync) {
-      <span class="hljs-keyword">this</span>.run()
-    } <span class="hljs-keyword">else</span> {
-      queueWatcher(<span class="hljs-keyword">this</span>)
-    }
-  }</code></pre><p>上一步分析到：会执行</p>
-          <pre><code><span class="hljs-keyword">this</span>.getAndInvoke(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">this</span>.dep.notify()  <span class="hljs-comment">// this为当前的wacther</span>
-})</code></pre><p>getAndInvoke</p>
-          <pre><code>getAndInvoke (cb: <span class="hljs-built_in">Function</span>) {
-    <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">this</span>.get()
-    <span class="hljs-keyword">if</span> (
-    <span class="hljs-comment">//  这里会做一个比较，相同就是会走缓存，不会派发更新，但是会每次求值</span>
-      value !== <span class="hljs-keyword">this</span>.value ||
-      <span class="hljs-comment">// Deep watchers and watchers on Object/Arrays should fire even</span>
-      <span class="hljs-comment">// when the value is the same, because the value may</span>
-      <span class="hljs-comment">// have mutated.</span>
-      isObject(value) ||
-      <span class="hljs-keyword">this</span>.deep
-    ) {
-      <span class="hljs-comment">// set new value</span>
-      <span class="hljs-keyword">const</span> oldValue = <span class="hljs-keyword">this</span>.value
-      <span class="hljs-keyword">this</span>.value = value
-      <span class="hljs-keyword">this</span>.dirty = <span class="hljs-literal">false</span>
-      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.user) {
-      <span class="hljs-comment">// 我们在new Vue({watch: {}})写的watch</span>
-        <span class="hljs-keyword">try</span> {
-          cb.call(<span class="hljs-keyword">this</span>.vm, value, oldValue)
-        } <span class="hljs-keyword">catch</span> (e) {
-          handleError(e, <span class="hljs-keyword">this</span>.vm, <span class="hljs-string">`callback for watcher "<span class="hljs-subst">${<span class="hljs-keyword">this</span>.expression}</span>"`</span>)
-        }
-      } <span class="hljs-keyword">else</span> {
-         <span class="hljs-comment">// 这里执行上一步的 () =&gt; {this.dep.notify()}</span>
-        cb.call(<span class="hljs-keyword">this</span>.vm, value, oldValue)
-        <span class="hljs-comment">// 这里会派发更新，像普通的data.fullName值一样，会重新渲染vue</span>
-      }
-    }
-  }</code></pre><p>wacther.get</p>
-          <pre><code><span class="hljs-keyword">get</span> () {
-    pushTarget(<span class="hljs-keyword">this</span>)
-    <span class="hljs-keyword">let</span> value
-    <span class="hljs-keyword">const</span> vm = <span class="hljs-keyword">this</span>.vm
-    <span class="hljs-keyword">try</span> {
-      value = <span class="hljs-keyword">this</span>.getter.call(vm, vm)
-
-    } <span class="hljs-keyword">catch</span> (e) {
-      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.user) {
-        handleError(e, vm, <span class="hljs-string">`getter for watcher "<span class="hljs-subst">${<span class="hljs-keyword">this</span>.expression}</span>"`</span>)
-      } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">throw</span> e
-      }
-    } <span class="hljs-keyword">finally</span> {
-      <span class="hljs-comment">// "touch" every property so they are all tracked as</span>
-      <span class="hljs-comment">// dependencies for deep watching</span>
-      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.deep) {
-        traverse(value)
-      }
-      popTarget()
-      <span class="hljs-keyword">this</span>.cleanupDeps()
-    }
-    <span class="hljs-keyword">return</span> value
-  }</code></pre><h4 id="结论：">
-            结论：
-          </h4>
-          <p>computed初始化的时候做了一个get求值，执行了一次用户定义的表达式，这个computed watcher会订阅firstName和lastName的（执行过程中有其他的响应式数据也会订阅）,firtName或者lastName变化会触发computed表达式执行，但是当新值和旧值相等时，不会触订阅了fullName的watcher更新。所以会有缓存一说。</p>
-          <h4 id="附录1：响应式梳理">
-            附录1：响应式梳理
-          </h4>
-          <p><img src="https://upload-images.jianshu.io/upload_images/6036420-a9403f4216259632.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="响应式梳理 "></p>
-        </div>
+        <div v-html="html"></div>
       </div>
       <div class="meta-bottom">
         <div class="like cursor-p">
@@ -178,7 +48,7 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
         <form class="new-comment">
           <div class="comment-input-ct">
             <a class="avatar">
-              <Avatar icon="ios-person" size="large" />
+             <!-- <Avatar icon="ios-person" size="large" />-->
             </a>
             <textarea
               class="comment-input"
@@ -187,10 +57,10 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
             </textarea>
           </div>
           <div class="write-function-block">
-            <Button style="border: none;" type="text">
+            <el-button style="border: none;" type="text">
               取消
-            </Button>
-            <Button>发送</Button>
+            </el-button>
+            <el-button>发送</el-button>
           </div>
         </form>
         <div class="normal-comment-list">
@@ -211,7 +81,7 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
                       target="_blank"
                       class="avatar"
                     >
-                      <Avatar size="large" icon="ios-person" />
+                      <!--<Avatar size="large" icon="ios-person" />-->
                     </a>
                   </div> <!---->
                 </div>
@@ -233,13 +103,46 @@ for (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</sp
   </div>
 </template>
 <script lang="ts">
+import marked from 'marked'
 import { Vue, Component } from 'vue-property-decorator'
+import request from '~/client/api'
+import hljs from '~/components/markdown/js/hljs'
+
+const renderer = new marked.Renderer()
+marked.setOptions({
+  renderer,
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  smartLists: true,
+  highlight (code) {
+    return hljs.highlightAuto(code).value
+  }
+})
 @Component({
   name: 'post',
+  asyncData ({ params }) {
+    return request.getArticleItem(params.uid)
+      .then((data: object) => {
+        const html = marked(data.content, {
+          breaks: true,
+          sanitize: false
+        })
+        return {
+          article: data,
+          html
+        }
+      })
+  },
   components: {
   }
 })
 export default class post extends Vue {
+  beforeMount () {
+    hljs.initHighlightingOnLoad()
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -1310,5 +1213,5 @@ export default class post extends Vue {
 
 </style>
 <style lang="less" scoped>
-@import "../../components/markdown/css/dark";
+@import "../../../components/markdown/css/dark";
 </style>

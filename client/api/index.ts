@@ -28,6 +28,7 @@ request.interceptors.request.use((config: AxiosRequestConfig): AxiosRequestConfi
 
 type PostFn = (data: object) => AxiosPromise
 type GetFn = (params?: object) => AxiosPromise
+type GetItemFn = (uid: string) => AxiosPromise
 type PutFn = (uid: string, data: object) => AxiosPromise
 interface RequestFns {
   userLogin: PostFn
@@ -39,6 +40,7 @@ interface RequestFns {
   uploadFile: PostFn
   getArticleList: GetFn
   getUserList: GetFn
+  getArticleItem: GetItemFn
 }
 
 const Requests: RequestFns = {
@@ -65,6 +67,9 @@ const Requests: RequestFns = {
   },
   createArticle (data: object) {
     return request.post('/article', data)
+  },
+  getArticleItem (uid: string) {
+    return request.get(`/article/${uid}/`)
   },
   uploadFile (data: object) {
     return request.post('/upload', data, {

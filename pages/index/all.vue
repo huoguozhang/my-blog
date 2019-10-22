@@ -1,9 +1,23 @@
 <template>
   <div class="all-comp-ct">
     <div class="all-header-ct">
-      <el-date-picker type="date" placeholder="开始日期" class="w-200 m-r-24" />
-      <el-date-picker type="date" placeholder="结束日期" class="w-200 m-r-24" />
+      <el-date-picker
+        v-model="allListParams.startDate"
+        type="date"
+        value-format="yyyy-MM-dd"
+        @change="handleSearchChange"
+        placeholder="开始日期"
+        class="w-200 m-r-24" />
+      <el-date-picker
+        v-model="allListParams.endDate"
+        type="date"
+        value-format="yyyy-MM-dd"
+        @change="handleSearchChange"
+        placeholder="结束日期"
+        class="w-200 m-r-24" />
       <el-input
+        v-model="allListParams.search"
+        @change="handleSearchChange"
         suffix-icon="el-icon-search"
         class="w-200"
         placeholder="搜索：作者 标题 内容"
@@ -20,7 +34,9 @@
         class="m-b-24"
         style="float: right;"
         background
-        layout="total, jumper, prev, pager, next"
+        @size-change="getArticleList"
+        @current-change="handleSearchChange"
+        layout="total, jumper, prev, pager, next, sizes"
         :current-page.sync="allListParams.page.page"
         :page-size.sync="allListParams.page.limit"
         :total="allListParams.page.totalCount"
@@ -52,8 +68,29 @@ export default class ALl extends Vue {
       totalCount: 0
     }
   }
+  handleSearchChange () {
+    this.allListParams.page = {
+      page: 1,
+      limit: 10,
+      totalCount: 0
+    }
+    this.getArticleList()
+  }
   getArticleList () {
-    request.getArticleList()
+    const params = {
+      limit: this.allListParams.page.limit,
+      page: this.allListParams.page.page
+    }
+    if (this.allListParams.startDate) {
+      params.start_date = this.allListParams.startDate
+    }
+    if (this.allListParams.endDate) {
+      params.end_date = this.allListParams.endDate
+    }
+    if (this.allListParams.search) {
+      params.search = this.allListParams.search
+    }
+    request.getArticleList(params)
       .then((data: any) => {
         this.articleList = data.results
         this.allListParams.page.totalCount = data.totalCount

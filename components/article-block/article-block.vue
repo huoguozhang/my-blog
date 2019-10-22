@@ -1,7 +1,7 @@
 <template>
-  <div class="article-block-comp-ct cursor-p" @click="goPost">
+  <div class="article-block-comp-ct">
     <div class="content">
-      <div class="title">
+      <div class="title  cursor-p" @click="goPost">
         {{ article.title }}
       </div>
       <div class="abstract two-row-ellipsis">
@@ -35,7 +35,7 @@ export default class articleBlock extends Vue {
   @Prop({ type: Object, default: () => ({}) }) article!: object
   goPost () {
     this.$router.push({
-      path: '/post'
+      path: `/post/${this.article.uid}`
     })
   }
 }
