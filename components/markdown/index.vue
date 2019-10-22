@@ -148,7 +148,7 @@
       <div
         v-show="preview===1||preview===2"
         ref="preview"
-        :class="`markdown-preview ${themeName}`"
+        :class="`markdown-preview Dark`"
         @scroll="previewScroll"
         @mouseenter="mousescrollSide('preview')"
       >
@@ -178,9 +178,6 @@ export default markdown
 </style>
 <style lang="less">
   @import "./css/theme";
-  @import "./css/light";
   @import "./css/dark";
-  @import "./css/one-dark";
-  @import "./css/gitHub";
   @import "./css/index";
 </style>

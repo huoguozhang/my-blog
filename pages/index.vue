@@ -27,7 +27,7 @@
             </a>
             <a v-else href="/login">登录</a>
           </div>
-          <el-button round>
+          <el-button v-if="userInfo.uid" round>
             <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <i class="el-icon-edit-outline"></i></a>
           </el-button>
         </div>

@@ -5,22 +5,24 @@
         v-model="allListParams.startDate"
         type="date"
         value-format="yyyy-MM-dd"
-        @change="handleSearchChange"
         placeholder="开始日期"
-        class="w-200 m-r-24" />
+        class="w-200 m-r-24"
+        @change="handleSearchChange"
+      />
       <el-date-picker
         v-model="allListParams.endDate"
         type="date"
         value-format="yyyy-MM-dd"
-        @change="handleSearchChange"
         placeholder="结束日期"
-        class="w-200 m-r-24" />
+        class="w-200 m-r-24"
+        @change="handleSearchChange"
+      />
       <el-input
         v-model="allListParams.search"
-        @change="handleSearchChange"
         suffix-icon="el-icon-search"
         class="w-200"
         placeholder="搜索：作者 标题 内容"
+        @change="handleSearchChange"
       >
       </el-input>
     </div>
@@ -34,12 +36,12 @@
         class="m-b-24"
         style="float: right;"
         background
-        @size-change="getArticleList"
-        @current-change="handleSearchChange"
         layout="total, jumper, prev, pager, next, sizes"
         :current-page.sync="allListParams.page.page"
         :page-size.sync="allListParams.page.limit"
         :total="allListParams.page.totalCount"
+        @size-change="getArticleList"
+        @current-change="handleSearchChange"
       >
       </el-pagination>
     </div>
