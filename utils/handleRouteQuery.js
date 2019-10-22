@@ -1,16 +1,19 @@
 const Op = require('sequelize').Op
+const moment = require('moment')
 function wrapDateQuery (start_date, end_date) {
   const whereObj = {}
+  let startDate = moment(start_date || new Date()).format('YYYY-MM-DD 00:00:00')
+  let endDate = moment(end_date || new Date()).format('YYYY-MM-DD 23:59:59')
    if (start_date && !end_date) {
      whereObj[Op.or] = [
        {
          updated_time: {
-           [Op.gte]: start_date
+           [Op.gte]: startDate
          }
        },
        {
          created_time: {
-           [Op.gte]: start_date
+           [Op.gte]: startDate
          }
        }
      ]
@@ -18,12 +21,12 @@ function wrapDateQuery (start_date, end_date) {
      whereObj[Op.or] = [
        {
          created_time: {
-           [Op.lte]: end_date
+           [Op.lte]: endDate
          }
        },
        {
-         update_time: {
-           [Op.lte]: end_date
+         updated_time: {
+           [Op.lte]: endDate
          }
        }
      ]
@@ -31,12 +34,12 @@ function wrapDateQuery (start_date, end_date) {
       whereObj[Op.or] = [
        {
          created_time: {
-           [Op.between]: [start_date, end_date]
+           [Op.between]: [startDate, endDate]
          }
        },
        {
          updated_time: {
-           [Op.between]: [start_date. end_date]
+           [Op.between]: [startDate. endDate]
          }
        }
      ]
@@ -47,7 +50,7 @@ function wrapDateQuery (start_date, end_date) {
 function wrapSearchQuery (search, matchKeys) {
   const whereObj = {}
   if (!search) {
-    return false
+    return whereObj
   }
   try {
     whereObj[Op.or] = [
@@ -62,7 +65,7 @@ function wrapSearchQuery (search, matchKeys) {
   } catch (e) {
     throw e
   }
-  return whereObj
+  return { [Op.and]: whereObj }
 }
 
 function wrapUserQuery (search) {

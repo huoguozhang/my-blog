@@ -1,6 +1,7 @@
 const Op = require('sequelize').Op
 const Joi = require('@hapi/joi')
 const JWT = require('jsonwebtoken')
+const { wrapSearchQuery } = require('../utils/handleRouteQuery')
 const models = require('../models')
 const { jwtHeaderDefine } = require('../utils/router-helper')
 
@@ -42,19 +43,25 @@ module.exports = [
     method: 'GET',
     path: '/api/user',
     handler: async (request, h) => {
+      const { search } = request.query
       const result = await models.user.findAll({
         attributes: {
           exclude: ['password']
+        },
+        where: {
+          ...wrapSearchQuery(search, ['nickname', 'description'])
         }
       })
       return h.response(result)
     },
     config: {
-      auth: 'jwt',
+      auth: false,
       tags: ['api', 'user'],
-      description: '用户',
+      description: '用户列表',
       validate: {
-        ...jwtHeaderDefine
+        query: {
+          search: Joi.string()
+        }
       }
     }
   },

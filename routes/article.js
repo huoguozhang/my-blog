@@ -1,11 +1,9 @@
 const Joi = require('@hapi/joi')
-const Sequelize = require('sequelize')
+const Op = require('sequelize').Op
 const { paginationDefine, jwtHeaderDefine } = require('../utils/router-helper')
 const models = require('../models')
 const { extractTextFormMD } = require('../utils/stringHelp')
-// const { wrapDateQuery, wrapSearchQuery, wrapUserQuery } = require('../utils/handleRouteQuery')
-const { wrapIncludeObject, wrapDateQuery } = require('../utils/handleSqlQuery')
-const Op = Sequelize.Op
+const { wrapDateQuery, wrapSearchQuery } = require('../utils/handleRouteQuery')
 const Routes = [
   {
     path: '/api/article',
@@ -36,42 +34,19 @@ const Routes = [
       const { author, search, start_date, end_date } = request.query
       const whereObj = {}
       if (author) { whereObj.author = author }
-      const totalCountRow = await models.sequelize.query(`
-         SELECT count(article.uid) AS count
-         FROM article AS article
-         INNER JOIN user AS user
-         ON article.author = user.uid
-         WHERE (article.title LIKE '%${search}%' OR article.content LIKE '%${search}%' OR user.nickname LIKE '%${search}%')
-      `)
-      const totalCount = totalCountRow[0][0].count
-      // const rows = await models.sequelize.query(`
-      //  SELECT article.updated_time, article.created_time, article.uid, article.title, article.summary, article.author,
-      //    user.uid AS 'user.uid',
-      //    user.avatar AS 'user.avatar', user.description AS 'user.description',
-      //    user.nickname AS 'user.nickname', user.username AS 'user.username',
-      //    user.created_time AS 'user.created_time', user.updated_time AS 'user.updated_time'
-      //    FROM article AS article LEFT
-      //    OUTER JOIN user AS user ON article.author = user.uid
-      //    WHERE (article.title LIKE '%${search}%' OR article.content LIKE '%${search}%' OR user.nickname LIKE '%${search}%') AND
-      //   (article.updated_time BETWEEN　2018-09-01 AND 2020-10-01)
-      //    LIMIT ${request.query.limit}
-      //    OFFSET ${(request.query.page - 1) * request.query.limit}
-      // `)
-       const rows = await models.sequelize.query(`
-       SELECT article.updated_time, user.nickname FROM article    
-       LEFT OUTER JOIN user ON article.author = user.uid
-       WHERE (article.updated_time BETWEEN '2018-09-01 00:00:00' AND '2018-09-02 00:00:00') AND (article.title LIKE '%xx%' OR article.content LIKE '%xx%' OR user.nickname LIKE '%xx%') 
-         LIMIT ${request.query.limit}
-         OFFSET ${(request.query.page - 1) * request.query.limit}
-      `)
-      const results = rows[0].map(v => {
-        wrapIncludeObject(v, 'user')
-        return v
-      })
-      /*const { rows: results, count: totalCount } = await models.article.findAndCountAll({
+      let matchUsers
+      if (search && !author) {
+        matchUsers = await models.user.findAll({
+          where: {
+            ...wrapSearchQuery(search, ['nickname', 'description'])
+          }
+        })
+        whereObj.author = {
+          [Op.or]: matchUsers.map(v => v.uid)
+        }
+      }
+      const { rows: results, count: totalCount } = await models.article.findAndCountAll({
         include: [{
-          required: true,
-          right: true,
           model: models.user,
           attributes: {
             exclude: ['password']
@@ -92,7 +67,7 @@ const Routes = [
         },
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit
-      })*/
+      })
       // 开启分页的插件，返回的数据结构里，需要带上 result 与 totalCount 两个字段
       return h.response({ results, totalCount })
     },
