@@ -5,13 +5,7 @@
         深入理解Nginx及使用Nginx实现负载均衡
       </h1>
       <div class="author">
-        <div class="avatar">
-          <!--<span
-            style="width: 48px;height: 48px;line-height: 48px;border-radius: 24px;"
-            size="large"
-            icon="ios-person"
-          />-->
-        </div>
+       <avatar></avatar>
         <div class="info">
           <div class="nickname">
             火锅小王子
@@ -34,7 +28,7 @@
           </div>
         </div>
       </div>
-      <div class="article-content markdown-body Dark">
+      <div class="article-content markdown-preview Dark">
         <div v-html="html"></div>
       </div>
       <div class="meta-bottom">
@@ -47,9 +41,7 @@
       <div class="comment-list">
         <form class="new-comment">
           <div class="comment-input-ct">
-            <a class="avatar">
-              <!-- <Avatar icon="ios-person" size="large" />-->
-            </a>
+            <avatar></avatar>
             <textarea
               class="comment-input"
               placeholder="写下你的评论..."
@@ -105,9 +97,10 @@
 <script lang="ts">
 import marked from 'marked/lib/marked'
 import { Vue, Component } from 'vue-property-decorator'
-import request from '~/client/api'
 import hljs from 'highlight.js/lib/index'
-import 'highlight.js/styles/github.css'
+import request from '~/client/api'
+import avatar from '~/components/avatar.vue'
+
 const renderer = new marked.Renderer()
 marked.setOptions({
   renderer,
@@ -137,6 +130,7 @@ marked.setOptions({
       })
   },
   components: {
+    avatar
   }
 })
 export default class post extends Vue {
@@ -164,10 +158,17 @@ export default class post extends Vue {
       .author{
         display: flex;
         margin: 30px 0 40px;
-        .avatar{}
+        align-items: center;
+        .avatar{
+          width: 48px;
+          height: 48px;
+          overflow: hidden;
+          border-radius: 50%;
+        }
         .info{
           margin-left: 16px;
           .nickname{
+            margin-bottom: 8px;
             color: #333;
             font-size: 16px;
           }
@@ -182,6 +183,7 @@ export default class post extends Vue {
         font-size: 16px;
         font-weight: 400;
         line-height: 1.7;
+         overflow: hidden !important;
       }
       .meta-bottom{
         margin: 40px 0 80px;
@@ -204,14 +206,14 @@ export default class post extends Vue {
         .new-comment{
           .comment-input-ct{
             display: flex;
-            .avatar{
-              width: 40px;
-              height: 40px;
+            align-items: center;
+            .avatar-ct{
               margin-right: 16px;
             }
             .comment-input{
+              margin-left: 16px;
               padding: 10px 15px;
-              width: 100%;
+              flex: 1;
               height: 80px;
               font-size: 13px;
               border: 1px solid #dcdcdc;
@@ -252,10 +254,9 @@ export default class post extends Vue {
     }
   }
 </style>
-<style lang="scss">
-@import "./md-beauty";
-</style>
-<style lang="less" scoped>
+<style lang="less">
 @import "../../../components/markdown/css/theme";
+@import "../../../components/markdown/css/dark";
 @import "../../../components/markdown/css/index";
+/*@import './md-beauty';*/
 </style>

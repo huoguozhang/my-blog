@@ -1,4 +1,4 @@
-const validate = (decoded, request, h) => {
+const validate = (decoded) => {
   // eslint disable
   // decoded 为 JWT payload 被解码后的数据
   const { exp } = decoded
