@@ -2,10 +2,10 @@
   <div class="post-comp-ct">
     <div class="article">
       <h1 class="title">
-        深入理解Nginx及使用Nginx实现负载均衡
+        {{ article.title }}
       </h1>
       <div class="author">
-       <avatar></avatar>
+        <avatar></avatar>
         <div class="info">
           <div class="nickname">
             火锅小王子
@@ -34,14 +34,14 @@
       <div class="meta-bottom">
         <div class="like cursor-p">
           <div class="btn-like">
-            <i class="el-icon-star-on"></i>喜欢
+            <img width="24" class="m-r-8" src="~/assets/image/heart.svg" alt="">喜欢
           </div>
         </div>
       </div>
       <div class="comment-list">
         <form class="new-comment">
           <div class="comment-input-ct">
-            <avatar></avatar>
+            <avatar :avatar="userInfo.avatar || ''"></avatar>
             <textarea
               class="comment-input"
               placeholder="写下你的评论..."
@@ -62,25 +62,19 @@
           <div v-for="item in 5" :key="item" class="comment">
             <div>
               <div class="author">
-                <div
-                  class="v-tooltip-container"
-                  style="z-index: 0;"
-                >
-                  <div
-                    class="v-tooltip-content"
-                  >
-                    <a
-                      target="_blank"
-                      class="avatar"
-                    >
-                      <!--<Avatar size="large" icon="ios-person" />-->
-                    </a>
-                  </div> <!---->
-                </div>
                 <div class="info">
-                  <a href="/u/902d44e549ed" target="_blank" class="name">心生能量</a> <!----> <!---->
-                  <div class="meta">
-                    <span>3楼 · 2019.08.23 15:21</span>
+                  <avatar></avatar>
+                  <div class="text-ct">
+                    <a
+                      href="/u/902d44e549ed"
+                      target="_blank"
+                      class="name"
+                    >
+                      心生能量
+                    </a>
+                    <div class="meta">
+                      <span>3楼 · 2019.08.23 15:21</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -97,6 +91,7 @@
 <script lang="ts">
 import marked from 'marked/lib/marked'
 import { Vue, Component } from 'vue-property-decorator'
+import { mapState } from 'vuex'
 import hljs from 'highlight.js/lib/index'
 import request from '~/client/api'
 import avatar from '~/components/avatar.vue'
@@ -116,6 +111,11 @@ marked.setOptions({
 })
 @Component({
   name: 'post',
+  computed: {
+    ...mapState({
+      userInfo: (state: any) => state.user.info
+    })
+  },
   asyncData ({ params }) {
     return request.getArticleItem(params.uid)
       .then((data: object) => {
@@ -240,12 +240,24 @@ export default class post extends Vue {
             border-bottom: 1px solid #f0f0f0
           }
           .comment{
+            .info{
+              display: flex;
+              align-items: center;
+              .text-ct{
+                margin-left: 16px;
+                .name{
+                  display: inline-block;
+                  margin-bottom: 8px;
+                }
+              }
+            }
             padding: 20px 0 30px;
             border-bottom: 1px solid #f0f0f0;
             &:last-child {
               border-bottom: none;
             }
             .comment-wrap{
+              margin-left: 80px;
               font-size: 16px;
             }
           }

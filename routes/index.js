@@ -1,6 +1,7 @@
 const { uploader } = require('../utils/upload')
 const routesArticle = require('./article')
 const routesUser = require('./user')
+const routeComment = require('./comment')
 
 const Routes = [
   {
@@ -32,4 +33,4 @@ const Routes = [
     }
   }
 ]
-module.exports = Routes.concat(routesUser, routesArticle)
+module.exports = Routes.concat(routesUser, routesArticle, routeComment)
