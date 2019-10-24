@@ -42,6 +42,8 @@ interface RequestFns {
   getArticleList: GetFn
   getUserList: GetFn
   getArticleItem: GetItemFn
+  createCommentOfArticle: PostFn
+  getCommentOfArticle: GetFn
 }
 
 const Requests: RequestFns = {
@@ -78,6 +80,12 @@ const Requests: RequestFns = {
         'content-type': 'multipart/form-data;charset=UTF-8'
       }
     })
+  },
+  createCommentOfArticle (data: object) {
+    return request.post('/comment', data)
+  },
+  getCommentOfArticle (params: object) {
+    return request.get('/comment', { params })
   }
 }
 export default Requests

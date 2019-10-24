@@ -8,7 +8,7 @@ const Routes = [
     method: 'POST',
     handler: async (request, h) => {
       const { userId } = request.auth.credentials
-      const res = await models.article.create({
+      const res = await models.comment.create({
         content: request.payload.content,
         author: userId,
         article_uid: request.payload.article_uid
@@ -24,6 +24,38 @@ const Routes = [
         payload: {
           content: Joi.string().required(),
           author: Joi.string().guid().required(),
+          article_uid: Joi.string().guid().required()
+        }
+      }
+    }
+  },
+  {
+    path: '/api/comment',
+    method: 'GET',
+    handler: async (request, h) => {
+      const res = await models.comment.findAll({
+        order: [
+          ['created_time']
+        ],
+        include: [{
+          model: models.user,
+          attributes: {
+            exclude: ['password']
+          }
+        }],
+        where: {
+          article_uid: request.query.article_uid
+        }
+      })
+      return h.response(res)
+    },
+    config: {
+      auth: 'jwt',
+      tags: ['api', 'comment'],
+      description: '获取某篇文章的列表',
+      validate: {
+        ...jwtHeaderDefine,
+        query: {
           article_uid: Joi.string().guid().required()
         }
       }

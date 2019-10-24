@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(
@@ -29,4 +29,4 @@ module.exports = {
   ),
 
   down: queryInterface => queryInterface.dropTable('comment')
-};
+}

@@ -38,49 +38,50 @@
           </div>
         </div>
       </div>
-      <div class="comment-list">
-        <form class="new-comment">
-          <div class="comment-input-ct">
-            <avatar :avatar="userInfo.avatar || ''"></avatar>
-            <textarea
-              class="comment-input"
-              placeholder="写下你的评论..."
-            >
+    </div>
+    <div class="comment-list">
+      <form class="new-comment">
+        <div class="comment-input-ct">
+          <avatar :avatar="userInfo.avatar || ''"></avatar>
+          <textarea
+            v-model="inputComment"
+            class="comment-input"
+            placeholder="写下你的评论..."
+          >
             </textarea>
-          </div>
-          <div class="write-function-block">
-            <el-button style="border: none;" type="text">
-              取消
-            </el-button>
-            <el-button>发送</el-button>
-          </div>
-        </form>
-        <div class="normal-comment-list">
-          <div class="top-title">
-            2条评论
-          </div>
-          <div v-for="item in 5" :key="item" class="comment">
-            <div>
-              <div class="author">
-                <div class="info">
-                  <avatar></avatar>
-                  <div class="text-ct">
-                    <a
-                      href="/u/902d44e549ed"
-                      target="_blank"
-                      class="name"
-                    >
-                      心生能量
-                    </a>
-                    <div class="meta">
-                      <span>3楼 · 2019.08.23 15:21</span>
-                    </div>
+        </div>
+        <div class="write-function-block">
+          <el-button style="border: none;" type="text">
+            取消
+          </el-button>
+          <el-button @click="addComment">发送</el-button>
+        </div>
+      </form>
+      <div class="normal-comment-list">
+        <div class="top-title">
+          {{commentList.length}}条评论
+        </div>
+        <div v-for="(item, index) in commentList" :key="item.uid" class="comment">
+          <div>
+            <div class="author">
+              <div class="info">
+                <avatar></avatar>
+                <div class="text-ct">
+                  <a
+                    :href="`/user/${item.user.uid}`"
+                    target="_blank"
+                    class="name"
+                  >
+                    {{item.user.nickname}}
+                  </a>
+                  <div class="meta">
+                    <span>{{index + 2}}楼 · {{item.created_time}}</span>
                   </div>
                 </div>
               </div>
-              <div class="comment-wrap">
-                <p>c2h1aXd1eW91NzIy 如果符合 加我</p>
-              </div>
+            </div>
+            <div class="comment-wrap">
+              <p>{{item.content}}</p>
             </div>
           </div>
         </div>
@@ -134,18 +135,66 @@ marked.setOptions({
   }
 })
 export default class post extends Vue {
+  inputComment: string = ''
+  commentList: Array<object> = []
+  addComment () {
+    let data = {
+      content: this.inputComment,
+      author: this.userInfo.uid,
+      article_uid: this.article!.uid
+    }
+    return request.createCommentOfArticle(data)
+      .then(() => {
+        this.inputComment = ''
+      })
+  }
+  getCommentList () {
+    request.getCommentOfArticle({ article_uid: this.article.uid })
+      .then((data: any) => {
+        this.commentList = data
+      })
+  }
   beforeMount () {
     hljs.initHighlightingOnLoad()
+    this.getCommentList()
   }
 }
 </script>
 <style lang="scss" scoped>
   .post-comp-ct{
-    margin: 0 auto;
-    padding-top: 20px;
-    padding-bottom: 40px;
-    width: 620px;
+    border: 1px solid transparent;
+    margin-top: -24px;
+    padding-top: 24px;
+    background-color: #f9f9f9;
+    .author{
+      display: flex;
+      margin: 30px 0 40px;
+      align-items: center;
+      .avatar{
+        width: 48px;
+        height: 48px;
+        overflow: hidden;
+        border-radius: 50%;
+      }
+      .info{
+        margin-left: 16px;
+        .nickname{
+          margin-bottom: 8px;
+          color: #333;
+          font-size: 16px;
+        }
+        .meta{
+          color: #969696;
+        }
+      }
+    }
     .article{
+      margin: 0 auto;
+      padding: 24px;
+      width: 700px;
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(26,26,26,.1);
       .title{
         /*word-break: break-word!important;*/
         word-break: break-all;
@@ -154,28 +203,6 @@ export default class post extends Vue {
         font-size: 34px;
         font-weight: 700;
         line-height: 1.3;
-      }
-      .author{
-        display: flex;
-        margin: 30px 0 40px;
-        align-items: center;
-        .avatar{
-          width: 48px;
-          height: 48px;
-          overflow: hidden;
-          border-radius: 50%;
-        }
-        .info{
-          margin-left: 16px;
-          .nickname{
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 16px;
-          }
-          .meta{
-            color: #969696;
-          }
-        }
       }
       .article-content{
         color: #2f2f2f;
@@ -201,65 +228,70 @@ export default class post extends Vue {
           }
         }
       }
-      .comment-list{
-        padding-top: 20px;
-        .new-comment{
-          .comment-input-ct{
-            display: flex;
-            align-items: center;
-            .avatar-ct{
-              margin-right: 16px;
-            }
-            .comment-input{
-              margin-left: 16px;
-              padding: 10px 15px;
-              flex: 1;
-              height: 80px;
-              font-size: 13px;
-              border: 1px solid #dcdcdc;
-              border-radius: 4px;
-              background-color: hsla(0,0%,71%,.1);
-              resize: none;
-              display: inline-block;
-              vertical-align: top;
-              outline-style: none;
-            }
+    }
+    .comment-list{
+      width: 700px;
+      margin: 24px auto;
+      padding: 24px;
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(26,26,26,.1);
+      .new-comment{
+        .comment-input-ct{
+          display: flex;
+          align-items: center;
+          .avatar-ct{
+            margin-right: 16px;
           }
-          .write-function-block{
-            margin-top: 16px;
-            display: flex;
-            justify-content: flex-end;
+          .comment-input{
+            margin-left: 16px;
+            padding: 10px 15px;
+            flex: 1;
+            height: 80px;
+            font-size: 13px;
+            border: 1px solid #dcdcdc;
+            border-radius: 4px;
+            background-color: hsla(0,0%,71%,.1);
+            resize: none;
+            display: inline-block;
+            vertical-align: top;
+            outline-style: none;
           }
         }
-        .normal-comment-list{
-          margin-top: 30px;
-          .top-title{
-            padding-bottom: 20px;
-            font-size: 17px;
-            font-weight: 700;
-            border-bottom: 1px solid #f0f0f0
-          }
-          .comment{
-            .info{
-              display: flex;
-              align-items: center;
-              .text-ct{
-                margin-left: 16px;
-                .name{
-                  display: inline-block;
-                  margin-bottom: 8px;
-                }
+        .write-function-block{
+          margin-top: 16px;
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+      .normal-comment-list{
+        margin-top: 30px;
+        .top-title{
+          padding-bottom: 20px;
+          font-size: 17px;
+          font-weight: 700;
+          border-bottom: 1px solid #f0f0f0
+        }
+        .comment{
+          .info{
+            display: flex;
+            align-items: center;
+            .text-ct{
+              margin-left: 16px;
+              .name{
+                display: inline-block;
+                margin-bottom: 8px;
               }
             }
-            padding: 20px 0 30px;
-            border-bottom: 1px solid #f0f0f0;
-            &:last-child {
-              border-bottom: none;
-            }
-            .comment-wrap{
-              margin-left: 80px;
-              font-size: 16px;
-            }
+          }
+          padding: 20px 0 30px;
+          border-bottom: 1px solid #f0f0f0;
+          &:last-child {
+            border-bottom: none;
+          }
+          .comment-wrap{
+            margin-left: 80px;
+            font-size: 16px;
           }
         }
       }

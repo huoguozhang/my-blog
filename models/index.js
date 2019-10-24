@@ -50,7 +50,7 @@ db.Sequelize = Sequelize
 db.user.hasMany(db.article, { foreignKey: 'uid' })
 db.article.belongsTo(db.user, { foreignKey: 'author' })
 
-db.article.hasMany(db.comment, { foreignKey: 'uid' })
-db.comment.belongsTo(db.article, { foreignKey: 'article_uid' })
+db.user.hasMany(db.comment, { foreignKey: 'uid' })
+db.comment.belongsTo(db.user, { foreignKey: 'author' })
 
 module.exports = db

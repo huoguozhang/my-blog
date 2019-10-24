@@ -97,14 +97,14 @@ export default class index extends Vue {
 </script>
 <style lang="scss">
   .index{
-    padding-top: 80px;
+    padding-top: 104px;
     .header-ct{
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 80px;
-      background: #f7f7f7;
+      background: #fff;
       border-bottom: 1px solid #f0f0f0;
      /* background-color: #111111;*/
       z-index: 999;
@@ -170,18 +170,17 @@ export default class index extends Vue {
             letter-spacing: 0px;
             /*color: #cccccc;*/
             cursor: pointer;
-            color: #999999;
+            color: #000000;
           }
           .menu-active, .menu-item:hover{
             /*color: #fff;*/
-            color: #000000;
+            color: #409EFF;
           }
         }
       }
     }
     .index-content-ct{
-      width: 1200px;
-      margin: 24px auto;
+      min-width: 1200px;
     }
   }
 </style>
