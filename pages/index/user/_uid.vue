@@ -166,6 +166,8 @@ export default class User extends Vue {
 <style lang="scss" scoped>
 .user-comp-ct {
   display: flex;
+  margin: 0 auto;
+  width: 900px;
   .left{
     width: 700px;
     .top{

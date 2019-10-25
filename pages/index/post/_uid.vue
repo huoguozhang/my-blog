@@ -5,24 +5,18 @@
         {{ article.title }}
       </h1>
       <div class="author">
-        <avatar></avatar>
+        <Avatar :user="article.user"></Avatar>
         <div class="info">
           <div class="nickname">
-            火锅小王子
+            {{ article.user.nickname }}
           </div>
           <div class="meta">
-            <!-- 简书钻 -->
-            <span class="jsd-meta">
-              <i class="iconfont ic-paid1" /> 4.8
-            </span>
-            <!-- 如果文章更新时间大于发布时间，那么使用 tooltip 显示更新时间 -->
             <span
               class="publish-time"
               data-toggle="tooltip"
               data-placement="bottom"
-              title=""
-              data-original-title="最后编辑于 2019.08.22 13:48"
-            >2019.08.21 15:15*</span>
+              :title="`最后编辑于${article.updated_time}`"
+            >{{ article.created_time }}</span>
             <span class="wordage">字数 2536</span>
             <span class="views-count">阅读 331</span><span class="comments-count">评论 0</span><span class="likes-count">喜欢 15</span>
           </div>
@@ -31,10 +25,20 @@
       <div class="article-content markdown-preview Dark">
         <div v-html="html"></div>
       </div>
-      <div class="meta-bottom">
+      <el-divider></el-divider>
+      <div v-if="likeObj.like_status" class="meta-bottom">
+        <span>该文章您点击了<strong>{{ likeObj.like_status === 1 ? '' : '不' }}喜欢</strong></span>
+        <div @click="changeLikeStatus(0)" class="undo cursor-p" title="点击撤销操作"><img width="18" src="~/assets/image/cancel.svg" /></div>
+      </div>
+      <div v-else class="meta-bottom">
         <div class="like cursor-p">
-          <div class="btn-like">
-            <img width="24" class="m-r-8" src="~/assets/image/heart.svg" alt="">喜欢
+          <div @click="changeLikeStatus(1)" class="btn-like">
+            <img class="m-r-8 heart-img" src="~/assets/image/heart.svg" />喜欢
+          </div>
+        </div>
+        <div class="like unlike cursor-p">
+          <div @click="changeLikeStatus(2)" class="btn-like">
+            <img class="m-r-8 heart-img" src="~/assets/image/heartbreak.svg" />不喜欢
           </div>
         </div>
       </div>
@@ -42,7 +46,7 @@
     <div class="comment-list">
       <form class="new-comment">
         <div class="comment-input-ct">
-          <avatar :avatar="userInfo.avatar || ''"></avatar>
+          <avatar :avatar="userInfo || {}"></Avatar>
           <textarea
             v-model="inputComment"
             class="comment-input"
@@ -54,34 +58,39 @@
           <el-button style="border: none;" type="text">
             取消
           </el-button>
-          <el-button @click="addComment">发送</el-button>
+          <el-button @click="addComment">
+            发送
+          </el-button>
         </div>
       </form>
-      <div class="normal-comment-list">
+      <div v-loading="loadingComment" class="normal-comment-list">
         <div class="top-title">
-          {{commentList.length}}条评论
+          {{ commentList.length }}条评论
         </div>
         <div v-for="(item, index) in commentList" :key="item.uid" class="comment">
           <div>
             <div class="author">
               <div class="info">
-                <avatar></avatar>
+                <Avatar :user="item.user"></Avatar>
                 <div class="text-ct">
                   <a
                     :href="`/user/${item.user.uid}`"
                     target="_blank"
                     class="name"
                   >
-                    {{item.user.nickname}}
+                    {{ item.user.nickname }}
                   </a>
+                  <span v-if="item.author === article.author" class="is-author">
+                    作者
+                  </span>
                   <div class="meta">
-                    <span>{{index + 2}}楼 · {{item.created_time}}</span>
+                    <span>{{ index + 2 }}楼 · {{ item.created_time }}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="comment-wrap">
-              <p>{{item.content}}</p>
+              <p>{{ item.content }}</p>
             </div>
           </div>
         </div>
@@ -95,7 +104,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import { mapState } from 'vuex'
 import hljs from 'highlight.js/lib/index'
 import request from '~/client/api'
-import avatar from '~/components/avatar.vue'
+import Avatar from '~/components/avatar.vue'
 
 const renderer = new marked.Renderer()
 marked.setOptions({
@@ -131,12 +140,14 @@ marked.setOptions({
       })
   },
   components: {
-    avatar
+    Avatar
   }
 })
 export default class post extends Vue {
   inputComment: string = ''
+  loadingComment: boolean = false
   commentList: Array<object> = []
+  likeObj = {}
   addComment () {
     let data = {
       content: this.inputComment,
@@ -146,17 +157,41 @@ export default class post extends Vue {
     return request.createCommentOfArticle(data)
       .then(() => {
         this.inputComment = ''
+        this.getCommentList()
+      })
+  }
+  async getUserLikeArticleStatus () {
+    let params = {
+      article_uid: this.article.uid
+    }
+    this.likeObj = await request.getUserLikeArticleStatus(params)
+    if (!this.likeObj.uid) {
+      await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0})
+        .then((data: any) => {
+          console.log(data)
+        })
+    }
+  }
+  changeLikeStatus (status) {
+    return request.updateUserLikeArticleStatus(this.likeObj.uid, { like_status: status })
+      .then(() => {
+        this.likeObj.like_status = status
       })
   }
   getCommentList () {
+    this.loadingComment= true
     request.getCommentOfArticle({ article_uid: this.article.uid })
       .then((data: any) => {
         this.commentList = data
+        this.loadingComment = false
       })
   }
   beforeMount () {
     hljs.initHighlightingOnLoad()
+    this.getUserLikeArticleStatus()
     this.getCommentList()
+  }
+  mounted () {
   }
 }
 </script>
@@ -213,19 +248,33 @@ export default class post extends Vue {
          overflow: hidden !important;
       }
       .meta-bottom{
-        margin: 40px 0 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .heart-img{
+              width: 24px;
+            }
         .like{
           position: relative;
+          margin: 0 auto;
           width: 123px;
           height: 57px;
-          border: 1px solid #EA6F5A;
+          color: #EA6F5A;
+          border: 1px solid;
           border-radius: 40px;
           text-align: center;
           line-height: 57px;
           .btn-like{
-            color: #EA6F5A;
             font-size: 19px;
           }
+        }
+        .unlike{
+          color: #bfbfbf;
+        }
+        .undo{
+          margin-left: 16px;
+          color: #bfbfbf;
+          font-size: 12px;
         }
       }
     }
@@ -281,6 +330,16 @@ export default class post extends Vue {
               .name{
                 display: inline-block;
                 margin-bottom: 8px;
+              }
+              .is-author{
+                margin-left: 4px;
+                padding: 0 2px;
+                font-size: 12px;
+                font-weight: normal;
+                color: #409EFF;
+                border: 1px solid;
+                border-radius: 4px;
+                user-select: none;
               }
             }
           }

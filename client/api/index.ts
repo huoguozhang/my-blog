@@ -44,6 +44,9 @@ interface RequestFns {
   getArticleItem: GetItemFn
   createCommentOfArticle: PostFn
   getCommentOfArticle: GetFn
+  createUserLikeArticle: PostFn
+  getUserLikeArticleStatus: GetFn
+  updateUserLikeArticleStatus: PutFn
 }
 
 const Requests: RequestFns = {
@@ -86,6 +89,18 @@ const Requests: RequestFns = {
   },
   getCommentOfArticle (params: object) {
     return request.get('/comment', { params })
+  },
+  // 创建一条喜欢或者不喜欢的记录
+  createUserLikeArticle (data: object) {
+    return request.post('/like', data)
+  },
+  // 获取用户对文章的喜欢状态
+  getUserLikeArticleStatus (params) {
+    return request.get('/like', { params })
+  },
+  // 更新用户对文某一篇的喜欢状态
+  updateUserLikeArticleStatus (uid: string, data: object) {
+    return request.put(`/like/${uid}`, data)
   }
 }
 export default Requests

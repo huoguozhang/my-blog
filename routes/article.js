@@ -91,6 +91,12 @@ const Routes = [
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
       const res = await models.article.findAll({
+        include: [ {
+          model: models.user,
+          attributes: {
+            exclude: [ 'password' ]
+          }
+        } ],
         where: {
           uid: request.params.uid
         }

@@ -1,6 +1,6 @@
 <template>
   <div class="avatar-comp-ct cursor-p">
-    <img v-if="avatar" :src="avatar" class="avatar">
+    <img v-if="user.avatar" :src="user.avatar" class="avatar">
     <div class="avatar">
       <i class="el-icon-user-solid"></i>
     </div>
@@ -11,7 +11,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component({})
 export default class avatar extends Vue {
-  @Prop({ type: String }) avatar!: string
+  @Prop({ type: Object, default: () => ({}) }) user!: object
 }
 </script>
 <style lang="scss" scoped>
