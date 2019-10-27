@@ -12,13 +12,15 @@
           </div>
           <div class="meta">
             <span
-              class="publish-time"
+              class="publish-time m-r-16"
               data-toggle="tooltip"
               data-placement="bottom"
               :title="`最后编辑于${article.updated_time}`"
             >{{ article.created_time }}</span>
-            <span class="wordage">字数 2536</span>
-            <span class="views-count">阅读 331</span><span class="comments-count">评论 0</span><span class="likes-count">喜欢 15</span>
+            <span class="wordage m-r-8">字数 2536</span>
+            <span class="views-count m-r-8">阅读 0</span>
+            <span class="comments-count m-r-8">评论 {{ commentList.length }}</span>
+            <span class="likes-count">喜欢 {{ article.like_count }}</span>
           </div>
         </div>
       </div>
@@ -28,16 +30,18 @@
       <el-divider></el-divider>
       <div v-if="likeObj.like_status" class="meta-bottom">
         <span>该文章您点击了<strong>{{ likeObj.like_status === 1 ? '' : '不' }}喜欢</strong></span>
-        <div @click="changeLikeStatus(0)" class="undo cursor-p" title="点击撤销操作"><img width="18" src="~/assets/image/cancel.svg" /></div>
+        <div class="undo cursor-p" title="点击撤销操作" @click="changeLikeStatus(0)">
+          <img width="18" src="~/assets/image/cancel.svg" />
+        </div>
       </div>
       <div v-else class="meta-bottom">
         <div class="like cursor-p">
-          <div @click="changeLikeStatus(1)" class="btn-like">
+          <div class="btn-like" @click="changeLikeStatus(1)">
             <img class="m-r-8 heart-img" src="~/assets/image/heart.svg" />喜欢
           </div>
         </div>
         <div class="like unlike cursor-p">
-          <div @click="changeLikeStatus(2)" class="btn-like">
+          <div class="btn-like" @click="changeLikeStatus(2)">
             <img class="m-r-8 heart-img" src="~/assets/image/heartbreak.svg" />不喜欢
           </div>
         </div>
@@ -105,7 +109,7 @@ import { mapState } from 'vuex'
 import hljs from 'highlight.js/lib/index'
 import request from '~/client/api'
 import Avatar from '~/components/avatar.vue'
-
+import { getToken } from '~/client/utils/token'
 const renderer = new marked.Renderer()
 marked.setOptions({
   renderer,
@@ -147,7 +151,7 @@ export default class post extends Vue {
   inputComment: string = ''
   loadingComment: boolean = false
   commentList: Array<object> = []
-  likeObj = {}
+  likeObj:object = {}
   addComment () {
     let data = {
       content: this.inputComment,
@@ -166,10 +170,7 @@ export default class post extends Vue {
     }
     this.likeObj = await request.getUserLikeArticleStatus(params)
     if (!this.likeObj.uid) {
-      await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0})
-        .then((data: any) => {
-          console.log(data)
-        })
+      await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0 })
     }
   }
   changeLikeStatus (status) {
@@ -179,19 +180,25 @@ export default class post extends Vue {
       })
   }
   getCommentList () {
-    this.loadingComment= true
+    this.loadingComment = true
     request.getCommentOfArticle({ article_uid: this.article.uid })
       .then((data: any) => {
         this.commentList = data
         this.loadingComment = false
       })
   }
+  createArticleReadRecord () {
+    request.createArticleReadRecord({ article_uid: this.article.uid })
+  }
   beforeMount () {
     hljs.initHighlightingOnLoad()
-    this.getUserLikeArticleStatus()
+    if (getToken()) {
+      this.getUserLikeArticleStatus()
+    }
     this.getCommentList()
   }
   mounted () {
+    this.createArticleReadRecord()
   }
 }
 </script>
@@ -319,7 +326,7 @@ export default class post extends Vue {
           padding-bottom: 20px;
           font-size: 17px;
           font-weight: 700;
-          border-bottom: 1px solid #f0f0f0
+          border-bottom: 1px solid #DCDFE6;
         }
         .comment{
           .info{
@@ -344,7 +351,7 @@ export default class post extends Vue {
             }
           }
           padding: 20px 0 30px;
-          border-bottom: 1px solid #f0f0f0;
+          border-bottom: 1px solid #DCDFE6;
           &:last-child {
             border-bottom: none;
           }

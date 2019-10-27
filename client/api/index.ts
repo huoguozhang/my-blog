@@ -18,7 +18,7 @@ request.interceptors.response.use((res: AxiosResponse): any => {
   MyMessage({ message: res.data.message, type: 'error' })
   return Promise.reject(res.data.message)
 }, (e) => {
-  console.log(e.response.data.message)
+  return Promise.reject(e.response.data.message)
 })
 
 request.interceptors.request.use((config: AxiosRequestConfig): AxiosRequestConfig => {
@@ -47,6 +47,7 @@ interface RequestFns {
   createUserLikeArticle: PostFn
   getUserLikeArticleStatus: GetFn
   updateUserLikeArticleStatus: PutFn
+  createArticleReadRecord: PostFn
 }
 
 const Requests: RequestFns = {
@@ -96,11 +97,15 @@ const Requests: RequestFns = {
   },
   // 获取用户对文章的喜欢状态
   getUserLikeArticleStatus (params) {
-    return request.get('/like', { params })
+    return request.get('/like/current', { params })
   },
   // 更新用户对文某一篇的喜欢状态
   updateUserLikeArticleStatus (uid: string, data: object) {
     return request.put(`/like/${uid}`, data)
+  },
+  // 创建一条阅读记录
+  createArticleReadRecord (data: object) {
+    return request.post('/read/record', data)
   }
 }
 export default Requests

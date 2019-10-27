@@ -1,16 +1,16 @@
 'use strict'
 
 module.exports = {
- up: (queryInterface, Sequelize) => queryInterface.createTable(
-    'like',
+  up: (queryInterface, Sequelize) => queryInterface.createTable(
+    'article_like',
     {
       uid: {
         type: Sequelize.UUID,
         primaryKey: true
       },
       like_status: {
-       type: Sequelize.INTEGER,
-       defaultValue:  0
+        type: Sequelize.INTEGER,
+        defaultValue: 0
       },
       author: {
         type: Sequelize.UUID,
@@ -28,5 +28,5 @@ module.exports = {
     }
   ),
 
-  down: queryInterface => queryInterface.dropTable('like')
+  down: queryInterface => queryInterface.dropTable('article_like')
 }

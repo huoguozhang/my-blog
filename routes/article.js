@@ -1,9 +1,11 @@
 const Joi = require('@hapi/joi')
-const Op = require('sequelize').Op
+const Sequelize = require('sequelize')
 const { paginationDefine, jwtHeaderDefine } = require('../utils/router-helper')
 const models = require('../models')
 const { extractTextFormMD } = require('../utils/stringHelp')
 const { wrapDateQuery, wrapSearchQuery } = require('../utils/handleRouteQuery')
+const Op = Sequelize.Op
+
 const Routes = [
   {
     path: '/api/article',
@@ -90,18 +92,27 @@ const Routes = [
     method: 'GET',
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
+      const likeCount = await models.like.count({
+        where: {
+          article_uid: request.params.uid
+        }
+      })
       const res = await models.article.findAll({
-        include: [ {
-          model: models.user,
-          attributes: {
-            exclude: [ 'password' ]
+        include: [
+          {
+            model: models.user,
+            attributes: {
+              exclude: ['password']
+            }
           }
-        } ],
+        ],
         where: {
           uid: request.params.uid
         }
       })
-      return h.response(res[0])
+      let result = res[0]
+      result.dataValues.like_count = likeCount
+      return h.response(result)
     },
     config: {
       auth: false,

@@ -1,23 +1,18 @@
 const moment = require('moment')
 module.exports = (sequelize, DataTypes) => sequelize.define(
-  'like',
+  'article_read',
   {
     uid: {
       type: DataTypes.UUID,
       primaryKey: true
     },
-    like_status: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
-    },
-    author: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
     article_uid: {
       type: DataTypes.UUID,
       allowNull: false
     },
+    received: DataTypes.BIGINT,
+    request_id: DataTypes.STRING,
+    client_ip: DataTypes.STRING,
     created_time: {
       type: DataTypes.DATE,
       get () {
@@ -32,6 +27,6 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
     }
   },
   {
-    tableName: 'like'
+    tableName: 'article_read'
   }
 )

@@ -50,11 +50,10 @@ const Routes = [
       return h.response(res)
     },
     config: {
-      auth: 'jwt',
+      auth: false,
       tags: ['api', 'comment'],
-      description: '获取某篇文章的列表',
+      description: '获取某篇文章的评论列表',
       validate: {
-        ...jwtHeaderDefine,
         query: {
           article_uid: Joi.string().guid().required()
         }

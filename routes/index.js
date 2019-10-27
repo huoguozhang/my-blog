@@ -3,6 +3,8 @@ const routesArticle = require('./article')
 const routesUser = require('./user')
 const routeComment = require('./comment')
 const routeLike = require('./like')
+const routeRead = require('./read')
+
 const Routes = [
   {
     method: 'POST',
@@ -33,4 +35,4 @@ const Routes = [
     }
   }
 ]
-module.exports = Routes.concat(routesUser, routesArticle, routeComment, routeLike)
+module.exports = Routes.concat(routesUser, routesArticle, routeComment, routeLike, routeRead)

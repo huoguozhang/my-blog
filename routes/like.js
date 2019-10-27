@@ -7,8 +7,7 @@ const Routes = [
     path: '/api/like',
     method: 'POST',
     handler: async (request, h) => {
-      const { userId } = request.auth.credentials
-      const res = await models.like.create({
+      const res = await models.article_like.create({
         like_status: request.payload.like_status,
         author: userId,
         article_uid: request.payload.article_uid
@@ -32,7 +31,7 @@ const Routes = [
     path: '/api/like/{uid}',
     method: 'PUT',
     handler: async (request, h) => {
-      const res = await models.like.update({ like_status: request.payload.like_status }, { where: { uid: request.params.uid } })
+      const res = await models.article_like.update({ like_status: request.payload.like_status }, { where: { uid: request.params.uid } })
       return h.response(res)
     },
     config: {
@@ -51,11 +50,11 @@ const Routes = [
     }
   },
   {
-    path: '/api/like',
+    path: '/api/like/current',
     method: 'GET',
     handler: async (request, h) => {
       const { userId } = request.auth.credentials
-      const res = await models.like.findAll({
+      const res = await models.article_like.findAll({
         include: [{
           model: models.user,
           attributes: {
@@ -73,7 +72,7 @@ const Routes = [
     config: {
       auth: 'jwt',
       tags: ['api', 'like'],
-      description: '获取某篇文章某个用户喜欢情况的列表',
+      description: '获取当前用户是否喜欢某一片文章',
       validate: {
         ...jwtHeaderDefine,
         query: {

@@ -53,6 +53,7 @@ db.article.belongsTo(db.user, { foreignKey: 'author' })
 db.user.hasMany(db.comment, { foreignKey: 'uid' })
 db.comment.belongsTo(db.user, { foreignKey: 'author' })
 
-db.user.hasMany(db.like, { foreignKey: 'uid' })
-db.like.belongsTo(db.user, { foreignKey: 'author' })
+db.user.hasMany(db.article_like, { foreignKey: 'uid' })
+db.article_like.belongsTo(db.user, { foreignKey: 'author' })
+
 module.exports = db

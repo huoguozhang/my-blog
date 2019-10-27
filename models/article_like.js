@@ -1,22 +1,23 @@
 const moment = require('moment')
-
-const Article = (sequelize, DataTypes) => sequelize.define(
-  'article',
+module.exports = (sequelize, DataTypes) => sequelize.define(
+  'article_like',
   {
     uid: {
       type: DataTypes.UUID,
       primaryKey: true
     },
-    title: {
-      type: DataTypes.STRING,
+    like_status: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    author: {
+      type: DataTypes.UUID,
       allowNull: false
     },
-    author: DataTypes.STRING,
-    content: {
-      type: DataTypes.TEXT,
+    article_uid: {
+      type: DataTypes.UUID,
       allowNull: false
     },
-    summary: DataTypes.STRING,
     created_time: {
       type: DataTypes.DATE,
       get () {
@@ -28,15 +29,9 @@ const Article = (sequelize, DataTypes) => sequelize.define(
       get () {
         return moment(this.getDataValue('updated_time')).format('YYYY-MM-DD HH:mm:ss')
       }
-    },
-    read_num: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
     }
   },
   {
-    tableName: 'article'
+    tableName: 'article_like'
   }
 )
-
-module.exports = Article
