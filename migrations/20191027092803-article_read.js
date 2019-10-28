@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false
       },
-      client_ip: Sequelize.STRING,
+      client_id: Sequelize.STRING,
       received: Sequelize.BIGINT,
       request_id: Sequelize.STRING,
       updated_time: Sequelize.DATE,

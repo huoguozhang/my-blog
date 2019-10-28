@@ -5,6 +5,7 @@
       :upload-image-file="uploadFile"
       :article-title.sync="title"
       theme="Dark"
+      ref="md-comp"
     >
       <a slot="header-right" @click="createArticle">发布文章</a>
     </MarkDown>
@@ -17,6 +18,7 @@ import { Loading } from 'element-ui'
 import { Vue, Component } from 'vue-property-decorator'
 import MarkDown from '~/components/markdown'
 import request from '~/client/api'
+import { wordCount, getSummary } from '../client/utils/articleHelp'
 
 @Component({
   components: {
@@ -34,7 +36,14 @@ export default class Writer extends Vue {
   }
   createArticle () {
     this.loadingInstance = Loading.service({ text: '文章创建中' })
-    request.createArticle({ title: this.title, content: this.md })
+    const previewNode = this.$refs['md-comp'].$refs.previewInner
+    let createData = {
+      title: this.title,
+      content: this.md,
+      summary: getSummary(previewNode.innerHTML),
+      word_count: wordCount(previewNode.innerText)
+    }
+    request.createArticle(createData)
       .then(() => {
         this.loadingInstance.close()
         location.href = location.origin

@@ -7,6 +7,7 @@ const Routes = [
     path: '/api/like',
     method: 'POST',
     handler: async (request, h) => {
+      const { userId } = request.auth.credentials
       const res = await models.article_like.create({
         like_status: request.payload.like_status,
         author: userId,

@@ -17,8 +17,8 @@
               data-placement="bottom"
               :title="`最后编辑于${article.updated_time}`"
             >{{ article.created_time }}</span>
-            <span class="wordage m-r-8">字数 2536</span>
-            <span class="views-count m-r-8">阅读 0</span>
+            <span class="wordage m-r-8">字数 {{ article.word_count }}</span>
+            <span class="views-count m-r-8">阅读 {{ article.read_num }}</span>
             <span class="comments-count m-r-8">评论 {{ commentList.length }}</span>
             <span class="likes-count">喜欢 {{ article.like_count }}</span>
           </div>

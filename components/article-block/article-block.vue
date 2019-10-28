@@ -20,6 +20,10 @@
           <img width="16" height="16" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABp0lEQVRIie2Tv0sbYRjHP9/r+ROKq+DkEJBqTEwiOPkXiEOXUqW6KLq04ty9u2vBJergqrgKugVMSWxFSqBbFzddLtEkj4O5JNrzkkqy+V1e7nne9/O543kPXtMian6wQqGP6+IasgVgArgDLjHbYcDd1vj4LYBdXPTilVeQPgFjQA/wC2mPt/3fFYmU/hFYLjdCxTkCYs+8zBnmzuMUhbkHQDJwl1kO1+YUj/+tC6xQ6OPGy4TA/WRrazC8WTI0OKNIpOQAcF1cawPug8PhAFKcG28V4EHgsNgG/H+z2BCYveuCYKIhgGoXBJVmQa4LgnxDIKU7jjfbaQiqpTRw2UH8bwbcdF2gVOoOaQnwOgAvYrbs//X+DFAiegb2gdpwXhgDrSoVy/gFp7mrZOwQsy+87FYZZptKRncfMQN3Zn++B9sD+tuEl5HWlYhuP20ECgDsx/ksxj4w3AJ+BfZRydhxUNMJKgIoMXlK5c0UEHiwlhNUnnoODiFf4MfMHLLnn5G+AYO1sgd8JRHdkhQ6r5aCuiifH6XsbEFVVLWh6ck/7Z59TWjuAdZJgO+2en4sAAAAAElFTkSuQmCC">
           999+
         </span>
+        <span class="read_num info-item">
+          <i class="el-icon-view"></i>
+          {{ article.read_num }}
+        </span>
       </div>
     </div>
     <a href="#" class="cover-img-ct">

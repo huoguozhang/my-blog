@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
     },
     received: DataTypes.BIGINT,
     request_id: DataTypes.STRING,
-    client_ip: DataTypes.STRING,
+    client_id: DataTypes.STRING,
     created_time: {
       type: DataTypes.DATE,
       get () {

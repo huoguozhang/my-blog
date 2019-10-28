@@ -12,8 +12,7 @@ const Routes = [
     method: 'POST',
     handler: async (request, h) => {
       const { userId } = request.auth.credentials
-      const summary = extractTextFormMD(request.payload.content)
-      const res = await models.article.create({ ...request.payload, summary, author: userId })
+      const res = await models.article.create({ ...request.payload, author: userId })
       return h.response(res).code(201)
     },
     config: {
@@ -24,7 +23,9 @@ const Routes = [
         ...jwtHeaderDefine,
         payload: {
           title: Joi.string().required(),
-          content: Joi.string().required()
+          content: Joi.string().required(),
+          word_count: Joi.number().integer().required(),
+          summary: Joi.string().required()
         }
       }
     }
@@ -48,20 +49,23 @@ const Routes = [
         }
       }
       const { rows: results, count: totalCount } = await models.article.findAndCountAll({
-        include: [{
-          model: models.user,
-          attributes: {
-            exclude: ['password']
+        include: [
+          {
+            model: models.user,
+            attributes: {
+              exclude: [ 'password' ]
+            }
+          },
+          {
+            model: models.comment
+          },
+          {
+            model: models.article_like
           }
-        }],
-        attributes: [
-          'updated_time',
-          'created_time',
-          'uid',
-          'title',
-          'summary',
-          'author'
         ],
+        attributes: {
+          exclude: ['content']
+        },
         where: {
           ...wrapDateQuery(start_date, end_date),
           ...wrapSearchQuery(search, [ 'title', 'content' ]),
@@ -92,11 +96,13 @@ const Routes = [
     method: 'GET',
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
-      const likeCount = await models.like.count({
+      const articleUid = request.params.uid
+      const likeCount = await models.article_like.count({
         where: {
-          article_uid: request.params.uid
+          article_uid: articleUid
         }
       })
+
       const res = await models.article.findAll({
         include: [
           {
@@ -107,7 +113,7 @@ const Routes = [
           }
         ],
         where: {
-          uid: request.params.uid
+          uid: articleUid
         }
       })
       let result = res[0]

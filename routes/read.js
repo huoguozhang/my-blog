@@ -7,21 +7,22 @@ const Routes = [
     method: 'POST',
     handler: async (request, h) => {
       const info = request.info
-      const ipReg = new RegExp(`^${info.received}\\:(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})`)
-      const ip = info.id.match(ipReg)[1]
+      const ipReg = new RegExp(`^${info.received}\\:([^\\:]*)\\:`)
+      const clientId = info.id.match(ipReg)[1]
+      const articleUid = request.payload.article_uid
       const articleRead = await models.article_read.findAll({
         where: {
-          article_uid: request.payload.article_uid,
-          client_ip: ip
+          article_uid: articleUid,
+          client_id: clientId
         }
       })
       const readRecord = articleRead[0]
-      async function createReadRecord() {
+      function createReadRecord () {
         return models.article_read.create({
-          client_ip: ip,
+          client_id: clientId,
           received: info.received,
           request_id: info.id,
-          article_uid: request.payload.article_uid
+          article_uid: articleUid
         })
       }
       let result = null
@@ -36,7 +37,14 @@ const Routes = [
       } else {
         result = await createReadRecord()
       }
-
+      const readCount = await models.article_read.count({
+        where: {
+          article_uid: articleUid
+        }
+      })
+      await models.article.update({
+        read_num: readCount
+      }, { where: { uid: articleUid } })
       return h.response(result).code(201)
     },
     config: {
