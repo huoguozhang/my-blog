@@ -2,7 +2,6 @@ const Joi = require('@hapi/joi')
 const Sequelize = require('sequelize')
 const { paginationDefine, jwtHeaderDefine } = require('../utils/router-helper')
 const models = require('../models')
-const { extractTextFormMD } = require('../utils/stringHelp')
 const { wrapDateQuery, wrapSearchQuery } = require('../utils/handleRouteQuery')
 const Op = Sequelize.Op
 
@@ -57,10 +56,12 @@ const Routes = [
             }
           },
           {
-            model: models.comment
+            model: models.comment,
+            attributes: ['uid']
           },
           {
-            model: models.article_like
+            model: models.article_like,
+            attributes: ['uid']
           }
         ],
         attributes: {
@@ -73,6 +74,13 @@ const Routes = [
         },
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit
+      })
+      results.forEach((row) => {
+        const data = row.dataValues
+        data.comment_count = data.comments.length
+        data.like_count = data.article_likes.length
+        delete data.comments
+        delete data.article_likes
       })
       // 开启分页的插件，返回的数据结构里，需要带上 result 与 totalCount 两个字段
       return h.response({ results, totalCount })

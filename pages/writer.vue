@@ -1,11 +1,11 @@
 <template>
   <div class="writer-comp-ct">
     <MarkDown
+      ref="md-comp"
       v-model="md"
       :upload-image-file="uploadFile"
       :article-title.sync="title"
       theme="Dark"
-      ref="md-comp"
     >
       <a slot="header-right" @click="createArticle">发布文章</a>
     </MarkDown>
@@ -16,9 +16,9 @@
 import moment from 'moment'
 import { Loading } from 'element-ui'
 import { Vue, Component } from 'vue-property-decorator'
+import { wordCount, getSummary } from '../client/utils/articleHelp'
 import MarkDown from '~/components/markdown'
 import request from '~/client/api'
-import { wordCount, getSummary } from '../client/utils/articleHelp'
 
 @Component({
   components: {
@@ -41,7 +41,7 @@ export default class Writer extends Vue {
       title: this.title,
       content: this.md,
       summary: getSummary(previewNode.innerHTML),
-      word_count: wordCount(previewNode.innerText)
+      word_count: wordCount(previewNode.textContent)
     }
     request.createArticle(createData)
       .then(() => {

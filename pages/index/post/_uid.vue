@@ -170,7 +170,7 @@ export default class post extends Vue {
     }
     this.likeObj = await request.getUserLikeArticleStatus(params)
     if (!this.likeObj.uid) {
-      await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0 })
+      this.likeObj = await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0 })
     }
   }
   changeLikeStatus (status) {
