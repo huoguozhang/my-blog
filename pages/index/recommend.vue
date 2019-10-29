@@ -35,7 +35,7 @@
           </div>
           <ul class="user-list-ct">
             <li v-for="item in userList" :key="item.uid" class="list-item">
-              <img :src="item.avatar" class="avatar">
+              <Avatar :user="item"></Avatar>
               <div class="info">
                 <p class="nickname">
                   {{ item.nickname }}
@@ -61,6 +61,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import request from '~/client/api'
 import articleBlock from '~/components/article-block/article-block.vue'
+import Avatar from '~/components/avatar.vue'
 interface Board {
   label: string
   link: string
@@ -68,7 +69,8 @@ interface Board {
 }
 @Component({
   components: {
-    articleBlock
+    articleBlock,
+    Avatar
   },
   asyncData () {
     return request.getArticleList().then((data: any) => {

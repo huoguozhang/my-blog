@@ -1,10 +1,10 @@
 <template>
-  <div class="avatar-comp-ct cursor-p">
+  <a class="avatar-comp-ct" :href="`/user/${user.uid}`">
     <img v-if="user.avatar" :src="user.avatar" class="avatar">
     <div class="avatar">
       <i class="el-icon-user-solid"></i>
     </div>
-  </div>
+  </a>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
