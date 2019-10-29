@@ -1,9 +1,10 @@
-const Op = require('sequelize').Op
+const Sequelize = require('sequelize')
 const Joi = require('@hapi/joi')
 const JWT = require('jsonwebtoken')
 const { wrapSearchQuery } = require('../utils/handleRouteQuery')
 const models = require('../models')
 const { jwtHeaderDefine } = require('../utils/router-helper')
+const Op = Sequelize.Op
 
 const generateJWT = (uid) => {
   const payload = {
@@ -159,12 +160,16 @@ module.exports = [
     method: 'GET',
     path: '/api/user/{uid}',
     handler: async (request, h) => {
+      const userUid = request.params.uid
       const res = await models.user.findAll({
         where: {
-          uid: request.params.uid
+          uid: userUid
         },
         exclude: ['password']
       })
+
+      const res2 = await models.sequelize.query(`select SUM(word_count), COUNT(*) from article WHERE author='${userUid}';`)
+      console.log(res2)
       return h.response(res[0])
     },
     config: {
