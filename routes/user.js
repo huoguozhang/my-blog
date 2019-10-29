@@ -14,6 +14,19 @@ const generateJWT = (uid) => {
   return JWT.sign(payload, process.env.JWT_SECRET)
 }
 
+async function queryUserTotalLikeWordArticle (userUid, res) {
+  let result = res
+  const [wordAndArticleCount] = await models.sequelize.query(`
+      select SUM(word_count) total_word_count, COUNT(*) article_count from article WHERE author='${userUid}';
+      `, { type: Sequelize.QueryTypes.SELECT})
+  const [likeCount] = await models.sequelize.query(`
+      select count(*) total_like_count from article_like A
+       left join article B on A.\`article_uid\`=B.uid where A.like_status=1 and B.author='${userUid}';
+       `, { type: Sequelize.QueryTypes.SELECT})
+  result = result.map(row => ({ ...row.dataValues, ...wordAndArticleCount, ...likeCount}))
+  return result
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -45,7 +58,7 @@ module.exports = [
     path: '/api/user',
     handler: async (request, h) => {
       const { search } = request.query
-      const result = await models.user.findAll({
+      const res = await models.user.findAll({
         attributes: {
           exclude: ['password']
         },
@@ -53,7 +66,7 @@ module.exports = [
           ...wrapSearchQuery(search, ['nickname', 'description'])
         }
       })
-      return h.response(result)
+      return h.response(res)
     },
     config: {
       auth: false,
@@ -165,12 +178,12 @@ module.exports = [
         where: {
           uid: userUid
         },
-        exclude: ['password']
+        attributes: {
+          exclude: ['password']
+        }
       })
-
-      const res2 = await models.sequelize.query(`select SUM(word_count), COUNT(*) from article WHERE author='${userUid}';`)
-      console.log(res2)
-      return h.response(res[0])
+      let result = await queryUserTotalLikeWordArticle(userUid, res)
+      return h.response(result[0])
     },
     config: {
       auth: false,

@@ -129,7 +129,7 @@ const Routes = [
         }
       })
       let result = res[0]
-      result.dataValues.like_count =  result.dataValues.article_likes.filter(v => v.like_status === 1).length
+      result.dataValues.like_count = result.dataValues.article_likes.filter(v => v.like_status === 1).length
       delete result.dataValues.article_likes
       return h.response(result)
     },
