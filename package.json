@@ -34,7 +34,6 @@
     "hapi-pagination": "^3.0.0",
     "hapi-pino": "^6.1.0",
     "hapi-swagger": "^10.1.2",
-    "hexo-wordcount": "^6.0.1",
     "highlight.js": "^9.15.10",
     "inert": "^5.1.3",
     "insert": "^1.0.1",

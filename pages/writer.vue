@@ -37,11 +37,15 @@ export default class Writer extends Vue {
   createArticle () {
     this.loadingInstance = Loading.service({ text: '文章创建中' })
     const previewNode = this.$refs['md-comp'].$refs.previewInner
+    const firstImg = previewNode.querySelector('img')
     let createData = {
       title: this.title,
       content: this.md,
       summary: getSummary(previewNode.innerHTML),
       word_count: wordCount(previewNode.textContent)
+    }
+    if (firstImg) {
+      createData.cover = firstImg.src
     }
     request.createArticle(createData)
       .then(() => {

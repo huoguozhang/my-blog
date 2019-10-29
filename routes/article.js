@@ -24,7 +24,8 @@ const Routes = [
           title: Joi.string().required(),
           content: Joi.string().required(),
           word_count: Joi.number().integer().required(),
-          summary: Joi.string().required()
+          summary: Joi.string().required(),
+          cover: Joi.string()
         }
       }
     }
@@ -61,7 +62,7 @@ const Routes = [
           },
           {
             model: models.article_like,
-            attributes: ['uid']
+            attributes: ['uid', 'like_status']
           }
         ],
         attributes: {
@@ -78,7 +79,7 @@ const Routes = [
       results.forEach((row) => {
         const data = row.dataValues
         data.comment_count = data.comments.length
-        data.like_count = data.article_likes.length
+        data.like_count = data.article_likes.filter(v => v.like_status === 1).length
         delete data.comments
         delete data.article_likes
       })
@@ -105,12 +106,11 @@ const Routes = [
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
       const articleUid = request.params.uid
-      const likeCount = await models.article_like.count({
+      /* const likeCount = await models.article_like.count({
         where: {
           article_uid: articleUid
         }
-      })
-
+      }) */
       const res = await models.article.findAll({
         include: [
           {
@@ -118,6 +118,10 @@ const Routes = [
             attributes: {
               exclude: ['password']
             }
+          },
+          {
+            model: models.article_like,
+            attributes: ['uid', 'like_status']
           }
         ],
         where: {
@@ -125,7 +129,8 @@ const Routes = [
         }
       })
       let result = res[0]
-      result.dataValues.like_count = likeCount
+      result.dataValues.like_count =  result.dataValues.article_likes.filter(v => v.like_status === 1).length
+      delete result.dataValues.article_likes
       return h.response(result)
     },
     config: {

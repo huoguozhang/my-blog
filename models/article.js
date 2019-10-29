@@ -36,6 +36,9 @@ const Article = (sequelize, DataTypes) => sequelize.define(
     word_count: {
       type: DataTypes.INTEGER,
       defaultValue: 0
+    },
+    cover: {
+      type: DataTypes.STRING
     }
   },
   {
