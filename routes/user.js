@@ -18,12 +18,12 @@ async function queryUserTotalLikeWordArticle (userUid, res) {
   let result = res
   const [wordAndArticleCount] = await models.sequelize.query(`
       select SUM(word_count) total_word_count, COUNT(*) article_count from article WHERE author='${userUid}';
-      `, { type: Sequelize.QueryTypes.SELECT})
+      `, { type: Sequelize.QueryTypes.SELECT })
   const [likeCount] = await models.sequelize.query(`
       select count(*) total_like_count from article_like A
        left join article B on A.\`article_uid\`=B.uid where A.like_status=1 and B.author='${userUid}';
-       `, { type: Sequelize.QueryTypes.SELECT})
-  result = result.map(row => ({ ...row.dataValues, ...wordAndArticleCount, ...likeCount}))
+       `, { type: Sequelize.QueryTypes.SELECT })
+  result = result.map(row => ({ ...row.dataValues, ...wordAndArticleCount, ...likeCount }))
   return result
 }
 
@@ -76,6 +76,25 @@ module.exports = [
         query: {
           search: Joi.string()
         }
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/api/user/recommend',
+    handler: async (request, h) => {
+      const res = await models.user.findAll({
+        attributes: {
+          exclude: ['password']
+        }
+      })
+      return h.response(res)
+    },
+    config: {
+      auth: false,
+      tags: ['api', 'user'],
+      description: '推荐用户',
+      validate: {
       }
     }
   },

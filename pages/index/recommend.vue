@@ -75,7 +75,7 @@ interface Board {
   asyncData () {
     return request.getArticleList().then((data: any) => {
       return { articleList: data.results }
-    })
+    }).catch()
   }
 })
 export default class recommend extends Vue {

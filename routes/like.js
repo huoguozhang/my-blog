@@ -11,7 +11,8 @@ const Routes = [
       const res = await models.article_like.create({
         like_status: request.payload.like_status,
         author: userId,
-        article_uid: request.payload.article_uid
+        article_uid: request.payload.article_uid,
+        article_author: request.payload.article_author
       })
       return h.response(res).code(201)
     },
@@ -23,7 +24,8 @@ const Routes = [
         ...jwtHeaderDefine,
         payload: {
           like_status: Joi.number().integer().min(0).max(2).required(),
-          article_uid: Joi.string().guid().required()
+          article_uid: Joi.string().guid().required(),
+          article_author: Joi.string().guid().required()
         }
       }
     }

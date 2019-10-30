@@ -11,8 +11,9 @@ const Routes = [
       const res = await models.comment.create({
         content: request.payload.content,
         author: userId,
-        article_uid: request.payload.article_uid
-      })
+        article_uid: request.payload.article_uid,
+        article_author: request.payload.article_author
+      }).catch(e => console.log(e))
       return h.response(res).code(201)
     },
     config: {
@@ -24,7 +25,8 @@ const Routes = [
         payload: {
           content: Joi.string().required(),
           author: Joi.string().guid().required(),
-          article_uid: Joi.string().guid().required()
+          article_uid: Joi.string().guid().required(),
+          article_author: Joi.string().guid().required()
         }
       }
     }

@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
       type: DataTypes.UUID,
       allowNull: false
     },
+    article_author: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
     created_time: {
       type: DataTypes.DATE,
       get () {

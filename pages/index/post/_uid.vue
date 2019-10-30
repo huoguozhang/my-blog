@@ -156,7 +156,8 @@ export default class post extends Vue {
     let data = {
       content: this.inputComment,
       author: this.userInfo.uid,
-      article_uid: this.article!.uid
+      article_uid: this.article!.uid,
+      article_author: this.article.author
     }
     return request.createCommentOfArticle(data)
       .then(() => {
@@ -170,7 +171,7 @@ export default class post extends Vue {
     }
     this.likeObj = await request.getUserLikeArticleStatus(params)
     if (!this.likeObj.uid) {
-      this.likeObj = await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0 })
+      this.likeObj = await request.createUserLikeArticle({ article_uid: this.article.uid, like_status: 0, article_author: this.article.author })
     }
   }
   changeLikeStatus (status) {
