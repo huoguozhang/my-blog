@@ -83,18 +83,42 @@ module.exports = [
     method: 'GET',
     path: '/api/user/recommend',
     handler: async (request, h) => {
-      const res = await models.user.findAll({
+
+      const users = await models.user.findAll({
+        limit: request.query.limit,
+        order: Sequelize.fn('RAND'),
         attributes: {
           exclude: ['password']
         }
       })
-      return h.response(res)
+      const userUids = users.map(user => `\'${user.uid}\'`)
+      const [rows] = await models.sequelize.query(`
+      select c.author,sum(word_count) word_count,sum(like_count) like_count from (select a.uid,a.author,word_count,IFNULL(b.like_count, 0) like_count from \`article\` a left join
+(select article_uid,article_author,count(*) like_count from article_like where \`article_like\`.like_status=1
+  and article_like.article_author IN (${userUids.join(',')})
+  GROUP BY article_uid) b
+on a.uid=b.article_uid) c GROUP BY c.author
+      
+      `)
+      console.log(rows)
+      const result = users.map(v => {
+        const user = v.dataValues
+        let extendObj = rows.find(r => r.author=== user.uid) || { word_count: 0, like_count: 0 }
+        return {
+          ...user,
+          ...extendObj
+        }
+      })
+      return h.response(result)
     },
     config: {
       auth: false,
       tags: ['api', 'user'],
       description: '推荐用户',
       validate: {
+        query: {
+          limit: Joi.number().default(5)
+        }
       }
     }
   },
