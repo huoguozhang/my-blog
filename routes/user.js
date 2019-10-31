@@ -14,17 +14,41 @@ const generateJWT = (uid) => {
   return JWT.sign(payload, process.env.JWT_SECRET)
 }
 
-async function queryUserTotalLikeWordArticle (userUid, res) {
-  let result = res
-  const [wordAndArticleCount] = await models.sequelize.query(`
-      select SUM(word_count) total_word_count, COUNT(*) article_count from article WHERE author='${userUid}';
-      `, { type: Sequelize.QueryTypes.SELECT })
-  const [likeCount] = await models.sequelize.query(`
-      select count(*) total_like_count from article_like A
-       left join article B on A.\`article_uid\`=B.uid where A.like_status=1 and B.author='${userUid}';
-       `, { type: Sequelize.QueryTypes.SELECT })
-  result = result.map(row => ({ ...row.dataValues, ...wordAndArticleCount, ...likeCount }))
-  return result
+async function queryUserTotalLikeWordArticle (users) {
+  const userUids = users.map(v => v.uid)
+  const userLikeCount = await models.article_like.count({
+    attributes: [
+      'article_author'
+    ],
+    group: 'article_author',
+    where: {
+      like_status: 1,
+      article_author: {
+        [ Op.in ]: userUids
+      }
+    }
+  })
+  const userArticleWordSum = await models.article.findAll({
+    attributes: [
+      [ Sequelize.fn('SUM', Sequelize.col('word_count')), 'word_sum' ],
+      [ Sequelize.fn('COUNT', Sequelize.col('uid')), 'article_sum'],
+      'author'
+    ],
+    group: 'author',
+    where: {
+      author: {
+        [ Op.in ]: userUids
+      }
+    }
+  }).catch(e => console.log(e))
+  users.forEach(u => {
+    const user = u.dataValues
+    let userLike = userLikeCount.find(v => v.article_author === user.uid)
+    let userWord = userArticleWordSum.find(v => v.dataValues.author === user.uid)
+    user.like_sum = userLike && userLike.count || 0
+    user.word_sum = userWord && userWord.dataValues.word_sum || 0
+    user.article_sum = userWord && userWord.dataValues.article_sum || 0
+  })
 }
 
 module.exports = [
@@ -83,7 +107,6 @@ module.exports = [
     method: 'GET',
     path: '/api/user/recommend',
     handler: async (request, h) => {
-
       const users = await models.user.findAll({
         limit: request.query.limit,
         order: Sequelize.fn('RAND'),
@@ -91,25 +114,8 @@ module.exports = [
           exclude: ['password']
         }
       })
-      const userUids = users.map(user => `\'${user.uid}\'`)
-      const [rows] = await models.sequelize.query(`
-      select c.author,sum(word_count) word_count,sum(like_count) like_count from (select a.uid,a.author,word_count,IFNULL(b.like_count, 0) like_count from \`article\` a left join
-(select article_uid,article_author,count(*) like_count from article_like where \`article_like\`.like_status=1
-  and article_like.article_author IN (${userUids.join(',')})
-  GROUP BY article_uid) b
-on a.uid=b.article_uid) c GROUP BY c.author
-      
-      `)
-      console.log(rows)
-      const result = users.map(v => {
-        const user = v.dataValues
-        let extendObj = rows.find(r => r.author=== user.uid) || { word_count: 0, like_count: 0 }
-        return {
-          ...user,
-          ...extendObj
-        }
-      })
-      return h.response(result)
+      await queryUserTotalLikeWordArticle(users)
+      return h.response(users)
     },
     config: {
       auth: false,
@@ -225,8 +231,8 @@ on a.uid=b.article_uid) c GROUP BY c.author
           exclude: ['password']
         }
       })
-      let result = await queryUserTotalLikeWordArticle(userUid, res)
-      return h.response(result[0])
+      await queryUserTotalLikeWordArticle(res)
+      return h.response(res[0])
     },
     config: {
       auth: false,

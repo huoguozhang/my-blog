@@ -48,6 +48,7 @@ interface RequestFns {
   getUserLikeArticleStatus: GetFn
   updateUserLikeArticleStatus: PutFn
   createArticleReadRecord: PostFn
+  getRecommendUsers: GetFn
 }
 
 const Requests: RequestFns = {
@@ -106,6 +107,10 @@ const Requests: RequestFns = {
   // 创建一条阅读记录
   createArticleReadRecord (data: object) {
     return request.post('/read/record', data)
+  },
+  // 获取推荐用户
+  getRecommendUsers (params: object = {}) {
+    return request.get('/user/recommend')
   }
 }
 export default Requests

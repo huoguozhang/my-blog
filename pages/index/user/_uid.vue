@@ -15,15 +15,15 @@
           <div class="other-info">
             <div class="item">
               文章
-              <div>88</div>
+              <div>{{ userInfo.article_sum }}</div>
             </div>
             <div class="item">
               字数
-              <div>8789</div>
+              <div>{{ userInfo.word_sum }}</div>
             </div>
             <div class="item">
               收获喜欢
-              <div>100</div>
+              <div>{{ userInfo.like_sum }}</div>
             </div>
           </div>
         </div>
@@ -157,6 +157,9 @@ export default class User extends Vue {
       .then((data: any) => {
         this.userArticleList = data.results
       })
+  }
+  tranforNumToK (num: number): string {
+    return (num / 1000).toFixed(1) + 'K'
   }
   created () {
     this.getUserArticleList()

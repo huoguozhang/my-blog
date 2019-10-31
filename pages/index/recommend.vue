@@ -31,7 +31,7 @@
         <div class="recommend-user-list">
           <div class="header">
             <span class="title">推荐作者</span>
-            <span class="change"><i class="el-icon-refresh"></i> 换一批</span>
+            <span @click="getUserList" class="change cursor-p"><i class="el-icon-refresh"></i> 换一批</span>
           </div>
           <ul class="user-list-ct">
             <li v-for="item in userList" :key="item.uid" class="list-item">
@@ -41,19 +41,19 @@
                   {{ item.nickname }}
                 </p>
                 <p class="level">
-                  写了338.k字 · 1.8k 喜欢
+                  写了{{ tranforNumToK(item.word_sum) }}字·{{ item.article_sum }}篇· {{ item.like_sum }} 喜欢
                 </p>
               </div>
-              <a class="follow cursor-p">
+              <!--<a class="follow cursor-p">
                 <i class="el-icon-plus"></i>关注
-              </a>
+              </a>-->
             </li>
           </ul>
         </div>
       </div>
     </div>
     <footer>
-      本站技术: nuxt typescript hapi.js node.js mysql
+      本站技术: nuxt typescript hapi.js sequelize mysql
     </footer>
   </div>
 </template>
@@ -93,10 +93,14 @@ export default class recommend extends Vue {
   ]
   userList = []
   getUserList () {
-    request.getUserList()
+    request.getRecommendUsers()
       .then((data: any) => {
         this.userList = data
       })
+  }
+  tranforNumToK (num: number): string {
+    let len = num.length > 3 ? 1 : 3 - num.length
+    return (num / 1000).toFixed(len) + 'K'
   }
   created () {
     this.getUserList()
@@ -143,10 +147,12 @@ export default class recommend extends Vue {
       .user-list-ct{
         .list-item{
           display: flex;
-          justify-content: space-between;
           align-items: center;
           margin-bottom: 16px;
+          padding: 8px 24px;
           color: #333;
+          border-radius: 8px;
+          background: rgba(0, 0, 0, 0.02);
           .avatar{
             height: 48px;
             width: 48px;
@@ -154,6 +160,7 @@ export default class recommend extends Vue {
             border-radius: 24px;
           }
           .info{
+            margin-left: 24px;
             text-align: left;
             .nickname{
               font-size: 14px;
