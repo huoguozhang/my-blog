@@ -178,13 +178,14 @@ export default class User extends Vue {
       display: flex;
       margin-bottom: 24px;
       .avatar-ct{
+
         width: 80px;
         height: 80px;
-        line-height: 80px;
-        text-align: center;
         border-radius: 40px;
         overflow: hidden;
         .none{
+          text-align: center;
+          line-height: 80px;
           background: #3e76f6;
         }
         .avatar{

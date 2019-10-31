@@ -41,7 +41,7 @@
         :page-size.sync="allListParams.page.limit"
         :total="allListParams.page.totalCount"
         @size-change="getArticleList"
-        @current-change="handleSearchChange"
+        @current-change="getArticleList"
       >
       </el-pagination>
     </div>

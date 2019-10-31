@@ -6,7 +6,7 @@ const validate = (decoded) => {
     const response = {
       code: 4,
       message: '登录过期',
-      data: null
+      data: '登录过期'
     }
     return { isValid: true, response }
   }

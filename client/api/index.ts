@@ -15,7 +15,9 @@ request.interceptors.response.use((res: AxiosResponse): any => {
   if (res.data.code === 0) {
     return res.data.data
   }
-  MyMessage({ message: res.data.message, type: 'error' })
+  if (res.data.code !== 4) {
+    MyMessage({ message: res.data.message, type: 'error' })
+  }
   return Promise.reject(res.data.message)
 }, (e) => {
   return Promise.reject(e.response.data.message)
@@ -110,7 +112,7 @@ const Requests: RequestFns = {
   },
   // 获取推荐用户
   getRecommendUsers (params: object = {}) {
-    return request.get('/user/recommend')
+    return request.get('/user/recommend', { params })
   }
 }
 export default Requests

@@ -31,7 +31,7 @@ async function queryUserTotalLikeWordArticle (users) {
   const userArticleWordSum = await models.article.findAll({
     attributes: [
       [ Sequelize.fn('SUM', Sequelize.col('word_count')), 'word_sum' ],
-      [ Sequelize.fn('COUNT', Sequelize.col('uid')), 'article_sum'],
+      [ Sequelize.fn('COUNT', Sequelize.col('uid')), 'article_sum' ],
       'author'
     ],
     group: 'author',
@@ -41,13 +41,13 @@ async function queryUserTotalLikeWordArticle (users) {
       }
     }
   }).catch(e => console.log(e))
-  users.forEach(u => {
+  users.forEach((u) => {
     const user = u.dataValues
     let userLike = userLikeCount.find(v => v.article_author === user.uid)
     let userWord = userArticleWordSum.find(v => v.dataValues.author === user.uid)
-    user.like_sum = userLike && userLike.count || 0
-    user.word_sum = userWord && userWord.dataValues.word_sum || 0
-    user.article_sum = userWord && userWord.dataValues.article_sum || 0
+    user.like_sum = (userLike && userLike.count) || 0
+    user.word_sum = (userWord && userWord.dataValues.word_sum) || 0
+    user.article_sum = (userWord && userWord.dataValues.article_sum) || 0
   })
 }
 

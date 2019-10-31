@@ -34,7 +34,7 @@ const Routes = [
     method: 'GET',
     path: '/api/article',
     handler: async (request, h) => {
-      const { author, search, start_date, end_date } = request.query
+      const { author, search, start_date, end_date, is_rand, is_latest } = request.query
       const whereObj = {}
       if (author) { whereObj.author = author }
       let matchUsers
@@ -48,7 +48,14 @@ const Routes = [
           [Op.or]: matchUsers.map(v => v.uid)
         }
       }
-      const { rows: results, count: totalCount } = await models.article.findAndCountAll({
+      const countObj = {
+        where: {
+          ...wrapDateQuery(start_date, end_date),
+          ...wrapSearchQuery(search, [ 'title', 'content' ]),
+          ...whereObj
+        }
+      }
+      const findObj = {
         include: [
           {
             model: models.user,
@@ -68,14 +75,19 @@ const Routes = [
         attributes: {
           exclude: ['content']
         },
-        where: {
-          ...wrapDateQuery(start_date, end_date),
-          ...wrapSearchQuery(search, [ 'title', 'content' ]),
-          ...whereObj
-        },
+        ...countObj
+        ,
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit
-      })
+      }
+      if (is_latest) {
+        findObj.order = [['updated_time', 'DESC']]
+      }
+      if (is_rand && !is_latest) {
+        findObj.order = Sequelize.fn('RAND')
+      }
+      const totalCount = await models.article.count(countObj)
+      const results = await models.article.findAll(findObj)
       results.forEach((row) => {
         const data = row.dataValues
         data.comment_count = data.comments.length
@@ -92,6 +104,8 @@ const Routes = [
       description: '获取文章列表',
       validate: {
         query: {
+          is_latest: Joi.boolean().default(false),
+          is_rand: Joi.boolean().default(false),
           search: Joi.string(),
           start_date: Joi.date(),
           end_date: Joi.date(),

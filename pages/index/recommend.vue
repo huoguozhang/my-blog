@@ -31,7 +31,7 @@
         <div class="recommend-user-list">
           <div class="header">
             <span class="title">推荐作者</span>
-            <span @click="getUserList" class="change cursor-p"><i class="el-icon-refresh"></i> 换一批</span>
+            <span class="change cursor-p" @click="getUserList"><i class="el-icon-refresh"></i> 换一批</span>
           </div>
           <ul class="user-list-ct">
             <li v-for="item in userList" :key="item.uid" class="list-item">
@@ -53,7 +53,7 @@
       </div>
     </div>
     <footer>
-      本站技术: nuxt typescript hapi.js sequelize mysql
+      @2019-2100  火锅小王子  本站技术:nuxt ts hapi sequelize mysql
     </footer>
   </div>
 </template>
@@ -73,7 +73,7 @@ interface Board {
     Avatar
   },
   asyncData () {
-    return request.getArticleList().then((data: any) => {
+    return request.getArticleList({ is_latest: true }).then((data: any) => {
       return { articleList: data.results }
     }).catch()
   }
@@ -184,7 +184,7 @@ export default class recommend extends Vue {
   }
 }
   footer{
-    text-align: center;
+    width: 944px;
     margin: 24px auto;
     color: #8c8c8c;
   }
