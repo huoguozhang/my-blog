@@ -17,7 +17,19 @@
           </div>
         </div>
         <div class="input-ct">
-          <input v-model="search" class="search-input" type="text" placeholder="搜索">
+          <el-autocomplete
+            :trigger-on-focus="false"
+            suffix-icon="el-icon-search"
+            :fetch-suggestions="handleSearch"
+            v-model="search"
+            class="search-input"
+            placeholder="搜索">
+            <template slot-scope="{ item }">
+              <div class="label">{{ item.type === 'user' ? item.nickname : item.title }}</div>
+              <span v-if="item.type==='user'" class="description">{{ item.description }}</span>
+              <span v-else class="description">{{ item.summary }}</span>
+            </template>
+          </el-autocomplete>
         </div>
         <div class="writer-ct">
           <div class="user-info-ct">
@@ -42,7 +54,7 @@
 <script lang="ts">
 import { mapState, mapActions } from 'vuex'
 import { Vue, Component, Watch } from 'vue-property-decorator'
-
+import request from '~/client/api'
 interface menu {
  label: string, value: number, path: string
 }
@@ -72,6 +84,19 @@ export default class index extends Vue {
     }
     this.menuActive = item.value
     this.$router.push({ path: item.path })
+  }
+  async handleSearch (search, cb) {
+    const users = await request.getUserList({ search })
+    const articles = await request.getArticleList({ search })
+    const userData = users.map(v => {
+      v.type = 'user'
+      return v
+    })
+    const articleData = articles.results.map(v => {
+      v.type = 'article'
+      return v
+    })
+    cb([ ...userData, ...articleData ])
   }
   mounted () {
     this.getUserInfo()
@@ -124,18 +149,29 @@ export default class index extends Vue {
         }
         .input-ct{
           margin: 0 64px;
-          .search-input{
-            outline: none;
-            padding: 0 40px 0 20px;
-            width: 160px;
-            height: 38px;
-            font-size: 14px;
-            border: 1px solid #eee;
-            border-radius: 40px;
-            background: #eee;
+          .search-input .el-input{
             transition: width .5s;
-            transition-delay: .1s;
+            &.el-input__inner:focus{
+              width: 240px;
+            }
           }
+          li {
+            line-height: normal;
+            padding: 7px;
+
+            .label {
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+            .description {
+              font-size: 12px;
+              color: #b4b4b4;
+            }
+
+            .highlighted .addr {
+              color: #ddd;
+            }
+  }
         }
         .user-info-ct{
           display: flex;

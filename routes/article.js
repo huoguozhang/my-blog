@@ -75,8 +75,7 @@ const Routes = [
         attributes: {
           exclude: ['content']
         },
-        ...countObj
-        ,
+        ...countObj,
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit
       }

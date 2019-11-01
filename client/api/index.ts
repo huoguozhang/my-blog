@@ -91,7 +91,7 @@ const Requests: RequestFns = {
   createCommentOfArticle (data: object) {
     return request.post('/comment', data)
   },
-  getCommentOfArticle (params: object) {
+  getCommentOfArticle (params: object = {}) {
     return request.get('/comment', { params })
   },
   // 创建一条喜欢或者不喜欢的记录
