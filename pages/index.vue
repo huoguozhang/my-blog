@@ -18,16 +18,43 @@
         </div>
         <div class="input-ct">
           <el-autocomplete
+            v-model="search"
             :trigger-on-focus="false"
             suffix-icon="el-icon-search"
             :fetch-suggestions="handleSearch"
-            v-model="search"
             class="search-input"
-            placeholder="搜索">
+            placeholder="搜索用户或者文章"
+            @select="handleSelect"
+          >
             <template slot-scope="{ item }">
-              <div class="label">{{ item.type === 'user' ? item.nickname : item.title }}</div>
+              <div
+                v-if="item.type==='user'"
+                class="search-res-user-item"
+              >
+                <el-tag
+                  type="success"
+                >
+                  用户
+                </el-tag>
+                <Avatar :width="24" class="m-l-8 m-r-8" :user="item"></Avatar>
+                <div class="nickname">
+                  {{ item.nickname }}
+                </div>
+              </div>
+              <div
+                v-else-if="item.type='article'"
+                class="search-res-article-item"
+              >
+                <el-tag>文章</el-tag>
+                <div class="m-l-8 title single-row-ellipsis">
+                  {{ item.title }}
+                </div>
+              </div>
+              <!--<div class="label">
+                {{ item.type === 'user' ? item.nickname : item.title }}
+              </div>
               <span v-if="item.type==='user'" class="description">{{ item.description }}</span>
-              <span v-else class="description">{{ item.summary }}</span>
+              <span v-else class="description">{{ item.summary }}</span>-->
             </template>
           </el-autocomplete>
         </div>
@@ -55,10 +82,12 @@
 import { mapState, mapActions } from 'vuex'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import request from '~/client/api'
+import Avatar from '~/components/avatar.vue'
 interface menu {
  label: string, value: number, path: string
 }
 @Component({
+  components: { Avatar },
   computed: {
     ...mapState({
       userInfo: (state: any) => state.user.info
@@ -88,17 +117,31 @@ export default class index extends Vue {
   async handleSearch (search, cb) {
     const users = await request.getUserList({ search })
     const articles = await request.getArticleList({ search })
-    const userData = users.map(v => {
+    // @ts-ignore
+    const userData = users.map((v) => {
       v.type = 'user'
       return v
     })
-    const articleData = articles.results.map(v => {
+    // @ts-ignore
+    const articleData = articles.results.map((v) => {
       v.type = 'article'
       return v
     })
-    cb([ ...userData, ...articleData ])
+    const result = [ ...userData, ...articleData ]
+    cb(result)
+  }
+  handleSelect (item) {
+    const typePathMap = {
+      user: 'user',
+      article: 'post'
+    }
+    let path = `/${typePathMap[item.type]}/${item.uid}`
+    this.$router.push({
+      path
+    })
   }
   mounted () {
+    // @ts-ignore
     this.getUserInfo()
   }
   created (): void {
@@ -121,6 +164,17 @@ export default class index extends Vue {
 }
 </script>
 <style lang="scss">
+  .search-res-user-item{
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    .nickname{
+    }
+  }
+  .search-res-article-item{
+    display: flex;
+    align-items: center;
+  }
   .index{
     padding-top: 104px;
     .header-ct{

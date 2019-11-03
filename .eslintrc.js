@@ -14,6 +14,7 @@ module.exports = {
     'prefer-const': 0,
     camelcase: 0,
     'no-unused-vars': 0,
-    'spaced-comment': 0
+    'spaced-comment': 0,
+    'no-callback-literal': 0
   }
 }

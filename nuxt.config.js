@@ -1,8 +1,8 @@
 module.exports = {
   mode: 'universal',
   /*
-    ** Headers of the page
-    */
+  ** Headers of the page
+  */
   head: {
     title: process.env.npm_package_name || '',
     meta: [
@@ -15,40 +15,37 @@ module.exports = {
     ]
   },
   /*
-    ** Customize the progress-bar color
-    */
-  loading: { color: '#fff' },
+  ** Customize the progress-bar color
+  */
+  loading: { color: '#409EFF' },
   /*
-    ** Global CSS
-    */
+  ** Global CSS
+  */
   css: [
     'element-ui/lib/theme-chalk/index.css',
     '@/assets/css/reset.css',
     '@/assets/css/common.scss'
   ],
   /*
-    ** Plugins to load before mounting the App
-    */
+  ** Plugins to load before mounting the App
+  */
   plugins: [
-    '@/plugins/element'
+    '@/plugins/element.js'
   ],
   /*
-    ** Nuxt.js dev-modules
-    */
+  ** Nuxt.js dev-modules
+  */
   buildModules: [],
   /*
-    ** Nuxt.js modules
-    */
+  ** Nuxt.js modules
+  */
   modules: [],
   /*
-    ** Build configuration
-    */
+  ** Build configuration
+  */
   build: {
     /*
-        ** You can extend webpack config here
-        */
-    extend () {
-      /* eslint-disable */
-    }
+    ** You can extend webpack config here
+    */
   }
 }

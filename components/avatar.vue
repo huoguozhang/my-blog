@@ -1,7 +1,7 @@
 <template>
-  <a class="avatar-comp-ct" :href="`/user/${user.uid}`">
+  <a :style="{width: size, height: size}" class="avatar-comp-ct" :href="`/user/${user.uid}`">
     <img v-if="user.avatar" :src="user.avatar" class="avatar">
-    <div class="avatar">
+    <div v-else :style="{fontSize: width/2 + 'px'}" class="no-avatar">
       <i class="el-icon-user-solid"></i>
     </div>
   </a>
@@ -12,12 +12,17 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 @Component({})
 export default class avatar extends Vue {
   @Prop({ type: Object, default: () => ({}) }) user!: object
+  @Prop({ type: Number, default: 48 }) width!:number
+  get size () {
+    return this.width + 'px'
+  }
 }
 </script>
 <style lang="scss" scoped>
 .avatar-comp-ct {
-  width: 48px;
-  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
   overflow: hidden;
   color: gainsboro;
@@ -26,7 +31,8 @@ export default class avatar extends Vue {
   .avatar{
     width: 100%;
     height: 100%;
-    line-height: 48px;
+  }
+  .no-avatar{
     text-align: center;
   }
 }

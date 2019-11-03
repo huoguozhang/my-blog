@@ -24,6 +24,18 @@
           <i class="el-icon-view"></i>
           {{ article.read_num }}
         </span>
+        <template v-if="showActionBtn">
+          <span
+            @click="handleDelete"
+            class="cursor-p delete-btn action-btn info-item">
+            <i class="el-icon-delete"></i>删除
+          </span>
+          <span
+            @click="handleEdit"
+            class="cursor-p edit-btn action-btn info-item">
+            <i class="el-icon-edit"></i>修改
+          </span>
+        </template>
       </div>
     </div>
     <a v-if="article.cover" href="#" class="cover-img-ct">
@@ -35,12 +47,18 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 @Component({})
 export default class articleBlock extends Vue {
-  @Prop({ type: Object, default: () => ({}) }) article!: object
-  noPhoto = require('../../assets/image/no-photo.png')
+  @Prop({ type: Object, default: () => ({}) }) article!: any
+  @Prop({ type: Boolean, default: false }) showActionBtn!: boolean
   goPost () {
     this.$router.push({
       path: `/post/${this.article.uid}`
     })
+  }
+  handleDelete () {
+    this.$emit('delete')
+  }
+  handleEdit () {
+    this.$emit('edit')
   }
 }
 </script>
@@ -85,6 +103,15 @@ export default class articleBlock extends Vue {
       .info-item{
         margin-right: 16px;
       }
+      .action-btn{
+        visibility: hidden;
+      }
+      .delete-btn{
+        color: #F56C6C
+      }
+      .edit-btn{
+        color: #409EFF;
+      }
     }
   }
   .cover-img-ct{
@@ -96,6 +123,9 @@ export default class articleBlock extends Vue {
       width: 100%;
       height: auto;
     }
+  }
+  &:hover .action-btn{
+    visibility: visible !important;
   }
 }
 </style>

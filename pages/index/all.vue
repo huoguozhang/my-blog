@@ -79,7 +79,7 @@ export default class ALl extends Vue {
     this.getArticleList()
   }
   getArticleList () {
-    const params = {
+    let params:any = {
       limit: this.allListParams.page.limit,
       page: this.allListParams.page.page
     }

@@ -17,10 +17,14 @@ import moment from 'moment'
 import { Loading } from 'element-ui'
 import { Vue, Component } from 'vue-property-decorator'
 import { wordCount, getSummary } from '../client/utils/articleHelp'
-import MarkDown from '~/components/markdown'
+import MarkDown from '~/components/markdown/index.vue'
 import request from '~/client/api'
 
 @Component({
+  validate ({ store }) {
+    // 未登录不展示
+    return store.state.user.uid
+  },
   components: {
     MarkDown
   }
@@ -36,9 +40,10 @@ export default class Writer extends Vue {
   }
   createArticle () {
     this.loadingInstance = Loading.service({ text: '文章创建中' })
+    // @ts-ignore
     const previewNode = this.$refs['md-comp'].$refs.previewInner
     const firstImg = previewNode.querySelector('img')
-    let createData = {
+    let createData:any = {
       title: this.title,
       content: this.md,
       summary: getSummary(previewNode.innerHTML),

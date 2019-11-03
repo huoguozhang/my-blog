@@ -1,4 +1,4 @@
-import axios, { AxiosPromise, AxiosRequestConfig } from 'axios'
+import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Message } from 'element-ui'
 import { ElMessageOptions } from 'element-ui/types/message'
 import { getToken } from '~/client/utils/token'
@@ -33,6 +33,7 @@ type PostFn = (data: object) => AxiosPromise
 type GetFn = (params?: object) => AxiosPromise
 type GetItemFn = (uid: string) => AxiosPromise
 type PutFn = (uid: string, data: object) => AxiosPromise
+type DeleteFn = (uid?: string) => AxiosPromise
 interface RequestFns {
   userLogin: PostFn
   userRegister: PostFn
@@ -51,6 +52,7 @@ interface RequestFns {
   updateUserLikeArticleStatus: PutFn
   createArticleReadRecord: PostFn
   getRecommendUsers: GetFn
+  deleteArticleItem: DeleteFn
 }
 
 const Requests: RequestFns = {
@@ -80,6 +82,9 @@ const Requests: RequestFns = {
   },
   getArticleItem (uid: string) {
     return request.get(`/article/${uid}/`)
+  },
+  deleteArticleItem (uid: string) {
+    return request.delete(`/article/${uid}/`)
   },
   uploadFile (data: object) {
     return request.post('/upload', data, {

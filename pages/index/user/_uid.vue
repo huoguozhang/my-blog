@@ -31,6 +31,9 @@
       <el-tabs>
         <el-tab-pane icon="md-document" label="文章">
           <article-block
+            @delete="handleDelete"
+            @edit="handleEdit"
+            :showActionBtn="uid === currentUserInfo.uid"
             v-for="item in userArticleList.slice(0, 10)"
             :key="item.uid"
             :article="item"
@@ -92,6 +95,7 @@ interface UserForm {
 @Component({
   computed: {
     ...mapState({
+      // @ts-ignore
       currentUserInfo: state => state.user.info
     })
   },
@@ -106,6 +110,7 @@ interface UserForm {
   }
 })
 export default class User extends Vue {
+  [propName: string]: any
   userFormRules: any = {
     username: [
       { required: true, message: '请填写用户名', trigger: 'blur' }
@@ -141,6 +146,7 @@ export default class User extends Vue {
       description: this.userForm.description
     }
     request.updateUserInfo(this.uid, data).then(() => {
+      // @ts-ignore
       this.$refs.form.resetFields()
       this.showEditForm = false
       this.getUserInfo()
@@ -158,8 +164,11 @@ export default class User extends Vue {
         this.userArticleList = data.results
       })
   }
-  tranforNumToK (num: number): string {
-    return (num / 1000).toFixed(1) + 'K'
+  handleDelete () {
+    console.log('delete')
+  }
+  handleEdit () {
+    console.log('edit')
   }
   created () {
     this.getUserArticleList()

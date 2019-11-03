@@ -41,7 +41,7 @@
                   {{ item.nickname }}
                 </p>
                 <p class="level">
-                  写了{{ tranforNumToK(item.word_sum) }}字·{{ item.article_sum }}篇· {{ item.like_sum }} 喜欢
+                  写了{{ convertNum2K(item.word_sum) }}字·{{ item.article_sum }}篇· {{ item.like_sum }} 喜欢
                 </p>
               </div>
               <!--<a class="follow cursor-p">
@@ -98,9 +98,9 @@ export default class recommend extends Vue {
         this.userList = data
       })
   }
-  tranforNumToK (num: number): string {
-    let len = num.length > 3 ? 1 : 3 - num.length
-    return (num / 1000).toFixed(len) + 'K'
+  convertNum2K (num: number) {
+    let str = num + ''
+    return str.length > 2 ? (num / 1000).toFixed(1) + 'K' : num
   }
   created () {
     this.getUserList()

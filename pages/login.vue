@@ -55,7 +55,6 @@ interface TabsArray {
 
 @Component({})
 export default class Login extends Vue {
-  tabs: TabsArray
   [property: string]: any
   $refs: any
   tabActive: string = SIGNIN
@@ -64,7 +63,7 @@ export default class Login extends Vue {
     password: '',
     nickname: ''
   }
-  tabs = [
+  tabs:TabsArray = [
     {
       name: SIGNIN,
       label: '登录'

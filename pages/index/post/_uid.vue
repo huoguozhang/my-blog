@@ -133,6 +133,7 @@ marked.setOptions({
   asyncData ({ params }) {
     return request.getArticleItem(params.uid)
       .then((data: object) => {
+        // @ts-ignore
         const html = marked(data.content, {
           breaks: true,
           sanitize: false
@@ -148,15 +149,16 @@ marked.setOptions({
   }
 })
 export default class post extends Vue {
+  [propName: string]: any
   inputComment: string = ''
   loadingComment: boolean = false
   commentList: Array<object> = []
-  likeObj:object = {}
+  likeObj:any = {}
   addComment () {
     let data = {
       content: this.inputComment,
       author: this.userInfo.uid,
-      article_uid: this.article!.uid,
+      article_uid: this.article.uid,
       article_author: this.article.author
     }
     return request.createCommentOfArticle(data)
