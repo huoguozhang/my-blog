@@ -162,14 +162,32 @@ const Routes = [
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
       const uid = request.params.uid
-      const count = await models.article.destroy({
-        where: {
-          uid
-        }
-      })
       const successRes = { code: 0, message: '删除成功', data: null }
       const errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
-      return h.response(count > 0 ? successRes : errorRes)
+      // 这里用事务处理-删除文章-应该把关联信息也删掉-评论-阅读信息-喜欢信息
+      return models.sequelize.transaction((t) => {
+        return models.article.destroy({
+          where: {
+            uid
+          }
+        }, { transaction: t })
+          .then(count => {
+            if (count === 0) throw new Error('文章未找到!')
+            return Promise.all([
+              models.comment.destroy({ where: { article_uid: uid } }, { transaction: t }),
+              models.article_like.destroy({ where: { article_uid: uid } }, { transaction: t }),
+              models.article_read.destroy({ where: { article_uid: uid } }, { transaction: t })
+            ])
+          })
+      })
+        .then(() => {
+          // 事务已经被提交
+          return successRes
+        })
+        .catch(() => {
+          // 事务被回滚
+          return errorRes
+        })
     },
     config: {
       auth: 'jwt',

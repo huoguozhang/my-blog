@@ -30,14 +30,21 @@
       </div>
       <el-tabs>
         <el-tab-pane icon="md-document" label="文章">
-          <article-block
-            @delete="handleDelete"
-            @edit="handleEdit"
-            :showActionBtn="uid === currentUserInfo.uid"
-            v-for="item in userArticleList.slice(0, 10)"
+          <div class="infinite-list-wrapper">
+             <article-block
+            v-for="(item, i) in userArticleList"
             :key="item.uid"
+            :show-action-btn="uid === currentUserInfo.uid"
             :article="item"
+            @delete="handleDelete(i)"
+            @edit="handleEdit(item.uid)"
           />
+          </div>
+          <infiniteScroll v-loading="loading" :disabled="disabled" :load-data="getUserArticleList">
+            <div class="no-more" v-if="!loading && noMore">
+              没有更多数据
+            </div>
+          </infiniteScroll>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -83,6 +90,7 @@ import { mapState } from 'vuex'
 import { Vue, Component } from 'vue-property-decorator'
 import articleBlock from '~/components/article-block/article-block.vue'
 import imageUpload from '~/components/imageUpload.vue'
+import infiniteScroll from '~/components/infiniteScroll/infiniteScroll.vue'
 import request from '~/client/api'
 
 interface UserForm {
@@ -100,7 +108,7 @@ interface UserForm {
     })
   },
   components: {
-    articleBlock, imageUpload
+    articleBlock, imageUpload, infiniteScroll
   },
   asyncData ({ params }) {
     return request.getUserInfo({ uid: params.uid })
@@ -111,6 +119,7 @@ interface UserForm {
 })
 export default class User extends Vue {
   [propName: string]: any
+  loading = false
   userFormRules: any = {
     username: [
       { required: true, message: '请填写用户名', trigger: 'blur' }
@@ -131,8 +140,21 @@ export default class User extends Vue {
     nickname: ''
   }
   userArticleList = []
+  page = {
+    page: 1,
+    limit: 10,
+    totalCount: 0
+  }
   get uid () {
     return this.$route.params.uid
+  }
+
+  get noMore () {
+    return this.userArticleList.length >= this.page.totalCount
+  }
+
+  get disabled () {
+    return this.loading || this.noMore
   }
   beforeEdit () {
     this.showEditForm = true
@@ -159,19 +181,33 @@ export default class User extends Vue {
       })
   }
   getUserArticleList () {
-    request.getArticleList({ author: this.uid })
+    this.loading = true
+    request.getArticleList({ author: this.uid, page: this.page.page, limit: this.page.limit })
       .then((data: any) => {
-        this.userArticleList = data.results
+        this.userArticleList.push(...data.results)
+        this.page.totalCount = data.totalCount
+        this.loading = false
+        this.page.page++
       })
   }
-  handleDelete () {
-    console.log('delete')
+  handleDelete (i) {
+    this.page.totalCount--
+    request.deleteArticleItem(this.userArticleList[i].uid)
+      .then(() => {
+        this.userArticleList.splice(i, 1)
+      })
   }
-  handleEdit () {
+  handleEdit (uid) {
+    this.$router.push({
+      path: '/writer',
+      query: {
+        article: uid
+      }
+    })
     console.log('edit')
   }
   created () {
-    this.getUserArticleList()
+    // this.getUserArticleList()
   }
 }
 </script>

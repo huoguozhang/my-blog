@@ -26,13 +26,15 @@
         </span>
         <template v-if="showActionBtn">
           <span
+            class="cursor-p delete-btn action-btn info-item"
             @click="handleDelete"
-            class="cursor-p delete-btn action-btn info-item">
+          >
             <i class="el-icon-delete"></i>删除
           </span>
           <span
+            class="cursor-p edit-btn action-btn info-item"
             @click="handleEdit"
-            class="cursor-p edit-btn action-btn info-item">
+          >
             <i class="el-icon-edit"></i>修改
           </span>
         </template>

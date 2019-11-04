@@ -23,7 +23,8 @@ import request from '~/client/api'
 @Component({
   validate ({ store }) {
     // 未登录不展示
-    return store.state.user.uid
+    return true
+    // return store.state.user.uid
   },
   components: {
     MarkDown
@@ -31,15 +32,25 @@ import request from '~/client/api'
 })
 export default class Writer extends Vue {
   md: string = ''
+  uid: string = ''
   loadingInstance: any = null
   title: string = moment(new Date()).format('YYYY-MM-DD')
+  getArticleItem (uid) {
+    request.getArticleItem(uid)
+      .then((data: any) => {
+        console.log(data)
+        this.uid = data.uid
+        this.md = data.content
+        this.title = data.title
+      })
+  }
   uploadFile (file) {
     const formData = new FormData()
     formData.append('file', file)
     return request.uploadFile(formData)
   }
   createArticle () {
-    this.loadingInstance = Loading.service({ text: '文章创建中' })
+    this.loadingInstance = Loading.service({ text: `文章${this.uid ? '修改' : '创建'}中` })
     // @ts-ignore
     const previewNode = this.$refs['md-comp'].$refs.previewInner
     const firstImg = previewNode.querySelector('img')
@@ -57,6 +68,10 @@ export default class Writer extends Vue {
         this.loadingInstance.close()
         location.href = location.origin
       })
+  }
+  created () {
+    let uid = this.$route.query && this.$route.query.article
+    if (uid) this.getArticleItem(uid)
   }
 }
 </script>
