@@ -1,6 +1,6 @@
 // template.js you can generate
 module.exports = {
-  vueTemplate: componentName => {
+  vueTemplate: (componentName) => {
     return `<template>
   <div class="${componentName}-comp-ct">
     ${componentName}组件
@@ -20,11 +20,11 @@ export default class ${componentName} extends Vue {
 </style>
 `
   },
-  entryTemplate: componentName => {
+  entryTemplate: (componentName) => {
     return `import ${componentName} from './${componentName}.vue'
     import Vue from 'vue'
-    componentName.install = function () {
-      Vue.component(componentName.name, componentName)
+    ${componentName}.install = function () {
+      Vue.component(${componentName}.name, ${componentName})
     }
 export default ${componentName}`
   }

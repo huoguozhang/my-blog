@@ -7,7 +7,7 @@
       :article-title.sync="title"
       theme="Dark"
     >
-      <a slot="header-right" @click="createArticle">发布文章</a>
+      <a slot="header-right" @click="sendRequest">{{uid ? '更新' : '发布'}}文章</a>
     </MarkDown>
   </div>
 </template>
@@ -38,7 +38,6 @@ export default class Writer extends Vue {
   getArticleItem (uid) {
     request.getArticleItem(uid)
       .then((data: any) => {
-        console.log(data)
         this.uid = data.uid
         this.md = data.content
         this.title = data.title
@@ -49,12 +48,12 @@ export default class Writer extends Vue {
     formData.append('file', file)
     return request.uploadFile(formData)
   }
-  createArticle () {
-    this.loadingInstance = Loading.service({ text: `文章${this.uid ? '修改' : '创建'}中` })
+  sendRequest () {
+    this.loadingInstance = Loading.service({text: `文章${this.uid ? '修改' : '创建'}中`})
     // @ts-ignore
     const previewNode = this.$refs['md-comp'].$refs.previewInner
     const firstImg = previewNode.querySelector('img')
-    let createData:any = {
+    let createData: any = {
       title: this.title,
       content: this.md,
       summary: getSummary(previewNode.innerHTML),
@@ -63,15 +62,21 @@ export default class Writer extends Vue {
     if (firstImg) {
       createData.cover = firstImg.src
     }
-    request.createArticle(createData)
-      .then(() => {
-        this.loadingInstance.close()
-        location.href = location.origin
+    const doneAfter = () => {
+      this.loadingInstance.close()
+      this.$router.push({
+        path: '/'
       })
+    }
+    if (this.uid) {
+      request.updateArticleItem(this.uid, createData).then(() => doneAfter())
+    } else {
+      request.createArticle(createData).then(() => doneAfter())
+    }
   }
   created () {
     let uid = this.$route.query && this.$route.query.article
-    if (uid) this.getArticleItem(uid)
+    if (uid) { this.getArticleItem(uid) }
   }
 }
 </script>

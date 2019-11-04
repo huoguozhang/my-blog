@@ -20,6 +20,7 @@ request.interceptors.response.use((res: AxiosResponse): any => {
   }
   return Promise.reject(res.data.message)
 }, (e) => {
+  MyMessage({ message: e, type: 'error' })
   return Promise.reject(e.response.data.message)
 })
 
@@ -53,6 +54,7 @@ interface RequestFns {
   createArticleReadRecord: PostFn
   getRecommendUsers: GetFn
   deleteArticleItem: DeleteFn
+  updateArticleItem: PutFn
 }
 
 const Requests: RequestFns = {
@@ -79,6 +81,9 @@ const Requests: RequestFns = {
   },
   createArticle (data: object) {
     return request.post('/article', data)
+  },
+  updateArticleItem (uid: string, data: object) {
+    return request.put(`/article/${uid}/`, data)
   },
   getArticleItem (uid: string) {
     return request.get(`/article/${uid}/`)

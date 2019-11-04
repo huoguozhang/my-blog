@@ -29,7 +29,7 @@ export default class infiniteScroll extends Vue {
     this.windowHeight = window.innerHeight
   }
   handleScroll () {
-    if (this.disabled) return false
+    if (this.disabled) { return false }
     this.top = this.anchor.getBoundingClientRect().top
     if (this.top - this.distance <= this.windowHeight + window.screenTop) {
       this.loadData()

@@ -16,11 +16,17 @@
               data-toggle="tooltip"
               data-placement="bottom"
               :title="`最后编辑于${article.updated_time}`"
-            >{{ article.created_time }}</span>
+            >{{ article.updated_time }}</span>
             <span class="wordage m-r-8">字数 {{ article.word_count }}</span>
             <span class="views-count m-r-8">阅读 {{ article.read_num }}</span>
             <span class="comments-count m-r-8">评论 {{ commentList.length }}</span>
             <span class="likes-count">喜欢 {{ article.like_count }}</span>
+            <span
+              v-if="userInfo.uid === article.author"
+              class="m-l-16 cursor-p edit"
+              @click="handleEditClick()"
+            >
+              编辑文章</span>
           </div>
         </div>
       </div>
@@ -154,6 +160,11 @@ export default class post extends Vue {
   loadingComment: boolean = false
   commentList: Array<object> = []
   likeObj:any = {}
+  handleEditClick () {
+    this.$router.push({
+      path: `/writer?article=${this.article.uid}`
+    })
+  }
   addComment () {
     let data = {
       content: this.inputComment,
@@ -230,6 +241,13 @@ export default class post extends Vue {
         }
         .meta{
           color: #969696;
+          .edit{
+            font-size: 16px;
+            color: #969696;
+          }
+          .edit:hover{
+            color: #409EFF;
+          }
         }
       }
     }
@@ -241,6 +259,7 @@ export default class post extends Vue {
       border-radius: 4px;
       box-shadow: 0 1px 3px rgba(26,26,26,.1);
       .title{
+
         /*word-break: break-word!important;*/
         word-break: break-all;
         margin: 20px 0 0;

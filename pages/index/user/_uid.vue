@@ -31,17 +31,17 @@
       <el-tabs>
         <el-tab-pane icon="md-document" label="文章">
           <div class="infinite-list-wrapper">
-             <article-block
-            v-for="(item, i) in userArticleList"
-            :key="item.uid"
-            :show-action-btn="uid === currentUserInfo.uid"
-            :article="item"
-            @delete="handleDelete(i)"
-            @edit="handleEdit(item.uid)"
-          />
+            <article-block
+              v-for="(item, i) in userArticleList"
+              :key="item.uid"
+              :show-action-btn="uid === currentUserInfo.uid"
+              :article="item"
+              @delete="handleDelete(i)"
+              @edit="handleEdit(item.uid)"
+            />
           </div>
           <infiniteScroll v-loading="loading" :disabled="disabled" :load-data="getUserArticleList">
-            <div class="no-more" v-if="!loading && noMore">
+            <div v-if="!loading && noMore" class="no-more">
               没有更多数据
             </div>
           </infiniteScroll>

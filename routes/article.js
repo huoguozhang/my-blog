@@ -160,7 +160,7 @@ const Routes = [
   {
     method: 'DELETE',
     path: '/api/article/{uid}/',
-    handler: async (request, h) => {
+    handler: (request) => {
       const uid = request.params.uid
       const successRes = { code: 0, message: '删除成功', data: null }
       const errorRes = { code: 9, message: `删除错误，uid:${uid}不存在`, data: null }
@@ -171,8 +171,8 @@ const Routes = [
             uid
           }
         }, { transaction: t })
-          .then(count => {
-            if (count === 0) throw new Error('文章未找到!')
+          .then((count) => {
+            if (count === 0) { throw new Error('文章未找到!') }
             return Promise.all([
               models.comment.destroy({ where: { article_uid: uid } }, { transaction: t }),
               models.article_like.destroy({ where: { article_uid: uid } }, { transaction: t }),
@@ -206,10 +206,9 @@ const Routes = [
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
       const uid = request.params.uid
-      const { title, content } = request.payload
       const data = await models.article.update(
         {
-          title, content
+          ...request.payload
         },
         {
           where: {
@@ -238,7 +237,10 @@ const Routes = [
         },
         payload: {
           title: Joi.string(),
-          content: Joi.string()
+          content: Joi.string(),
+          word_count: Joi.number().integer(),
+          summary: Joi.string(),
+          cover: Joi.string()
         }
       }
     }
