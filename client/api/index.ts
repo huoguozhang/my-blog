@@ -7,7 +7,7 @@ const MyMessage = (options: ElMessageOptions) => {
   Message({ ...options, showClose: true, duration: 2000 })
 }
 const request = axios.create({
-  baseURL: 'http://127.0.0.1:3000/api'
+  baseURL: '/api'
   // ..
 })
 
