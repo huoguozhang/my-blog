@@ -21,7 +21,7 @@ request.interceptors.response.use((res: AxiosResponse): any => {
   return Promise.reject(res.data.message)
 }, (e) => {
   MyMessage({ message: e, type: 'error' })
-  return Promise.reject(e.response.data.message)
+  return Promise.reject(e)
 })
 
 request.interceptors.request.use((config: AxiosRequestConfig): AxiosRequestConfig => {
