@@ -7,7 +7,7 @@
       :article-title.sync="title"
       theme="Dark"
     >
-      <a slot="header-right" @click="sendRequest">{{uid ? '更新' : '发布'}}文章</a>
+      <a slot="header-right" @click="sendRequest">{{ uid ? '更新' : '发布' }}文章</a>
     </MarkDown>
   </div>
 </template>
@@ -23,8 +23,7 @@ import request from '~/client/api'
 @Component({
   validate ({ store }) {
     // 未登录不展示
-    return true
-    // return store.state.user.uid
+    return store.state.user.info.uid
   },
   components: {
     MarkDown
@@ -49,7 +48,7 @@ export default class Writer extends Vue {
     return request.uploadFile(formData)
   }
   sendRequest () {
-    this.loadingInstance = Loading.service({text: `文章${this.uid ? '修改' : '创建'}中`})
+    this.loadingInstance = Loading.service({ text: `文章${this.uid ? '修改' : '创建'}中` })
     // @ts-ignore
     const previewNode = this.$refs['md-comp'].$refs.previewInner
     const firstImg = previewNode.querySelector('img')

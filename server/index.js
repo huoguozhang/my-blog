@@ -31,7 +31,6 @@ async function start () {
       logEvents: ['response', 'onPostStart']
     }
   })*/
-
   await server.register(Inert)
 
   await server.register([

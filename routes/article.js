@@ -103,7 +103,7 @@ const Routes = [
       description: '获取文章列表',
       validate: {
         query: {
-          is_latest: Joi.boolean().default(false),
+          is_latest: Joi.boolean().default(true),
           is_rand: Joi.boolean().default(false),
           search: Joi.string(),
           start_date: Joi.date(),
@@ -206,13 +206,14 @@ const Routes = [
     path: '/api/article/{uid}/',
     handler: async (request, h) => {
       const uid = request.params.uid
+      const { userId } = request.auth.credentials
       const data = await models.article.update(
         {
           ...request.payload
         },
         {
           where: {
-            uid
+            uid, author: userId
           }
         })
       const effectCount = data[0]
@@ -223,7 +224,7 @@ const Routes = [
         })
         successRes.data = item[0]
       }
-      const errorRes = { code: 7, message: `删除错误，uid:${uid}不存在`, data: null }
+      const errorRes = { code: 7, message: `修改错误`, data: null }
       return h.response(effectCount > 0 ? successRes : errorRes)
     },
     config: {

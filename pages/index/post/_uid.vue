@@ -34,27 +34,29 @@
         <div v-html="html"></div>
       </div>
       <el-divider></el-divider>
-      <div v-if="likeObj.like_status" class="meta-bottom">
-        <span>该文章您点击了<strong>{{ likeObj.like_status === 1 ? '' : '不' }}喜欢</strong></span>
-        <div class="undo cursor-p" title="点击撤销操作" @click="changeLikeStatus(0)">
-          <img width="18" src="~/assets/image/cancel.svg" />
-        </div>
-      </div>
-      <div v-else class="meta-bottom">
-        <div class="like cursor-p">
-          <div class="btn-like" @click="changeLikeStatus(1)">
-            <img class="m-r-8 heart-img" src="~/assets/image/heart.svg" />喜欢
+      <template v-if="userInfo.uid">
+        <div v-if="likeObj.like_status" class="meta-bottom">
+          <span>该文章您点击了<strong>{{ likeObj.like_status === 1 ? '' : '不' }}喜欢</strong></span>
+          <div class="undo cursor-p" title="点击撤销操作" @click="changeLikeStatus(0)">
+            <img width="18" src="~/assets/image/cancel.svg"/>
           </div>
         </div>
-        <div class="like unlike cursor-p">
-          <div class="btn-like" @click="changeLikeStatus(2)">
-            <img class="m-r-8 heart-img" src="~/assets/image/heartbreak.svg" />不喜欢
+        <div v-else class="meta-bottom">
+          <div class="like cursor-p">
+            <div class="btn-like" @click="changeLikeStatus(1)">
+              <img class="m-r-8 heart-img" src="~/assets/image/heart.svg"/>喜欢
+            </div>
+          </div>
+          <div class="like unlike cursor-p">
+            <div class="btn-like" @click="changeLikeStatus(2)">
+              <img class="m-r-8 heart-img" src="~/assets/image/heartbreak.svg"/>不喜欢
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
     <div class="comment-list">
-      <form class="new-comment">
+      <form v-if="userInfo.uid" class="new-comment">
         <div class="comment-input-ct">
           <avatar :avatar="userInfo || {}"></Avatar>
           <textarea
