@@ -82,6 +82,7 @@
 import { mapState, mapActions } from 'vuex'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import request from '~/client/api'
+import { getToken } from '~/client/utils/token'
 import Avatar from '~/components/avatar.vue'
 interface menu {
  label: string, value: number, path: string
@@ -98,6 +99,7 @@ interface menu {
   }
 })
 export default class index extends Vue {
+  [propName: string]: any
   menus: Array<menu> = [
     { label: '主页', value: 0, path: '/recommend' },
     { label: '所有文章', value: 1, path: '/all' }
@@ -117,12 +119,10 @@ export default class index extends Vue {
   async handleSearch (search, cb) {
     const users = await request.getUserList({ search })
     const articles = await request.getArticleList({ search })
-    // @ts-ignore
     const userData = users.map((v) => {
       v.type = 'user'
       return v
     })
-    // @ts-ignore
     const articleData = articles.results.map((v) => {
       v.type = 'article'
       return v
@@ -141,8 +141,9 @@ export default class index extends Vue {
     })
   }
   mounted () {
-    // @ts-ignore
-    this.getUserInfo()
+    if (getToken()) {
+      this.getUserInfo()
+    }
   }
   created (): void {
     const path:string = this.$route.path

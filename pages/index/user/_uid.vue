@@ -57,8 +57,8 @@
       </div>
     </div>
     <el-dialog :visible.sync="showEditForm" title="编辑资料">
-      <el-form ref="form" label-width="80px" style="width: 300px;margin: 0 auto;">
-        <el-form-item label="头像" :model="userForm" :rules="userFormRules">
+      <el-form ref="form" :model="userForm" :rules="userFormRules" label-width="80px" style="width: 300px;margin: 0 auto;">
+        <el-form-item label="头像">
           <imageUpload v-model="userForm.avatar" />
         </el-form-item>
         <el-form-item label="登录名" prop="username">
@@ -161,17 +161,21 @@ export default class User extends Vue {
     this.userForm = { ...this.userForm, ...this.userInfo }
   }
   submitForm () {
-    const data = {
-      nickname: this.userForm.nickname,
-      password: this.userForm.password,
-      avatar: this.userForm.avatar,
-      description: this.userForm.description
-    }
-    request.updateUserInfo(this.uid, data).then(() => {
-      // @ts-ignore
-      this.$refs.form.resetFields()
-      this.showEditForm = false
-      this.getUserInfo()
+    this.$refs.form.validate((valid) => {
+      if (valid) {
+        const data = {
+          nickname: this.userForm.nickname,
+          password: this.userForm.password,
+          avatar: this.userForm.avatar,
+          description: this.userForm.description
+        }
+        request.updateUserInfo(this.uid, data).then(() => {
+          // @ts-ignore
+          this.$refs.form.resetFields()
+          this.showEditForm = false
+          this.getUserInfo()
+        })
+      }
     })
   }
   getUserInfo () {

@@ -41,7 +41,7 @@
                   {{ item.nickname }}
                 </p>
                 <p class="level">
-                  写了{{ convertNum2K(item.word_sum) }}字·{{ item.article_sum }}篇· {{ item.like_sum }} 喜欢
+                  写了{{ convertNum2K(item.word_sum) }}字 · {{ item.article_sum }}篇 · {{ item.like_sum }} 喜欢
                 </p>
               </div>
               <!--<a class="follow cursor-p">
