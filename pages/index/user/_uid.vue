@@ -124,9 +124,6 @@ export default class User extends Vue {
     username: [
       { required: true, message: '请填写用户名', trigger: 'blur' }
     ],
-    password: [
-      { required: true, message: '请填写密码', trigger: 'blur' }
-    ],
     nickname: [
       { required: true, message: '请填写昵称', trigger: 'blur' }
     ]
@@ -165,12 +162,13 @@ export default class User extends Vue {
       if (valid) {
         const data = {
           nickname: this.userForm.nickname,
-          password: this.userForm.password,
           avatar: this.userForm.avatar,
           description: this.userForm.description
         }
+        if (this.userForm.password) {
+          data.password =this.userForm.password
+        }
         request.updateUserInfo(this.uid, data).then(() => {
-          // @ts-ignore
           this.$refs.form.resetFields()
           this.showEditForm = false
           this.getUserInfo()

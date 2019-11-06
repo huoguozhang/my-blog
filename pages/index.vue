@@ -66,9 +66,14 @@
             </a>
             <a v-else href="/login">登录</a>
           </div>
-          <el-button v-if="userInfo.uid" round>
-            <a href="/writer" target="_blank" style="font-size: 16px;">写文章 <i class="el-icon-edit-outline"></i></a>
-          </el-button>
+          <el--button
+            v-if="userInfo.uid"
+            class="el-button el-button--default el-button--medium is-round"
+            @click="goWriter"
+            style="font-size: 16px;"
+          >
+            写文章 <i class="el-icon-edit-outline"></i>
+          </el--button>
         </div>
       </div>
     </div>
@@ -138,6 +143,11 @@ export default class index extends Vue {
     let path = `/${typePathMap[item.type]}/${item.uid}`
     this.$router.push({
       path
+    })
+  }
+  goWriter () {
+    this.$router.push({
+      path: '/writer'
     })
   }
   mounted () {

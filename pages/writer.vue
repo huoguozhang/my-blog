@@ -23,7 +23,11 @@ import request from '~/client/api'
 @Component({
   validate ({ store }) {
     // 未登录不展示
-    return store.state.user.info.uid
+    let userUid = store.state.user.info.uid
+    if (!userUid) {
+      return
+    }
+    return userUid
   },
   components: {
     MarkDown
