@@ -26,7 +26,7 @@ const Article = (sequelize, DataTypes) => sequelize.define(
     updated_time: {
       type: DataTypes.DATE,
       get () {
-        return moment(this.getDataValue('updated_time')).format('YYYY-MM-DD HH:mm:ss')
+        return moment(this.getDataValue('updated_time') || new Date()).format('YYYY-MM-DD HH:mm:ss')
       }
     },
     read_num: {
@@ -42,7 +42,8 @@ const Article = (sequelize, DataTypes) => sequelize.define(
     }
   },
   {
-    tableName: 'article'
+    tableName: 'article',
+    updatedAt: false
   }
 )
 

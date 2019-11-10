@@ -69,8 +69,8 @@
           <el--button
             v-if="userInfo.uid"
             class="el-button el-button--default el-button--medium is-round"
-            @click="goWriter"
             style="font-size: 16px;"
+            @click="goWriter"
           >
             写文章 <i class="el-icon-edit-outline"></i>
           </el--button>

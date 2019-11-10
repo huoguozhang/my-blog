@@ -1,30 +1,45 @@
 <template>
   <div class="container">
     <div class="content">
-      <canvas class="snow" id="snow"></canvas>
+      <canvas id="snow" class="snow"></canvas>
       <div class="main-text">
-        <h1 v-if="error.statusCode === 404">页面不存在</h1>
-        <h1 v-else>应用发生错误异常</h1>
+        <h1 v-if="error.statusCode === 404">
+          页面不存在
+        </h1>
+        <h1 v-else>
+          应用发生错误异常
+        </h1>
         <p><a style="cursor:pointer" onclick="history.back()">返回上一页面</a></p>
-        <nuxt-link to="/">首 页</nuxt-link>
-      <div class="ground">
-        <div class="mound">
-          <div class="mound_text">404</div>
-          <div class="mound_spade"></div>
+        <nuxt-link to="/">
+          首 页
+        </nuxt-link>
+        <div class="ground">
+          <div class="mound">
+            <div class="mound_text">
+              404
+            </div>
+            <div class="mound_spade"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['error'],
+  props: {
+    error: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
+  },
   mounted () {
     (function () {
       function ready (fn) {
-        if (document.readyState != 'loading') {
+        if (document.readyState !== 'loading') {
           fn()
         } else {
           document.addEventListener('DOMContentLoaded', fn)
@@ -50,7 +65,7 @@ export default {
         }
 
         function createParticles (count) {
-          if (count != particles.length) {
+          if (count !== particles.length) {
             particles = []
             for (let i = 0; i < count; i++) {
               particles.push(new Particle())
@@ -108,208 +123,205 @@ export default {
 </script>
 <style lang="scss" scoped>
   $col-sky-top: #bbcfe1;
-$col-sky-bottom: #e8f2f6;
-$col-fg: #5d7399;
-$col-blood: #dd4040;
-$col-ground: #f6f9fa;
+  $col-sky-bottom: #e8f2f6;
+  $col-fg: #5d7399;
+  $col-blood: #dd4040;
+  $col-ground: #f6f9fa;
+  @mixin trees($direction, $size) {
+    $shadow: ();
+    @for $i from 1 through 16 {
+      $space: $size * 1.2;
+      $rand: (random(20)/10 - 1) * 50px;
+      $shadow: append($shadow, ($direction * $i * $space + $rand) (($direction * -$i * $space) + $rand) 15px lighten($col-fg, random(20) + 10%), comma);
+    }
+    box-shadow: $shadow;
+  }
+  .container {
+    position: relative;
+    height: 100vh;
+    min-height: 650px;
+    font-family: 'Dosis', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: $col-fg;
+  }
 
-@mixin trees($direction, $size) {
-	$shadow: ();
+  .content {
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    background-color: mix($col-sky-top, $col-sky-bottom);
+    background-image: linear-gradient(to bottom, $col-sky-top 0%, $col-sky-bottom 80%);
+    overflow: hidden;
+  }
 
-	@for $i from 1 through 16 {
-		$space: $size * 1.2;
-		$rand:  (random(20)/10 - 1) * 50px;
-		$shadow: append($shadow, ($direction * $i * $space + $rand) (($direction * -$i * $space) + $rand) 15px lighten($col-fg, random(20) + 10%), comma);
-	}
+  .snow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 20;
+  }
 
-	box-shadow: $shadow;
-}
+  .main-text {
+    padding: 20vh 20px 0 20px;
 
- .container{
-  position: relative;
-	height: 100vh;
-	min-height: 650px;
-	font-family: 'Dosis', sans-serif;
-	font-size: 32px;
-	font-weight: 500;
-	color: $col-fg;
-}
+    text-align: center;
+    line-height: 2em;
+    font-size: 5vh;
+  }
 
-.content {
-	height: 100%;
-	position: relative;
-	z-index: 1;
-	background-color: mix($col-sky-top, $col-sky-bottom);
-	background-image: linear-gradient(to bottom, $col-sky-top 0%, $col-sky-bottom 80%);
-	overflow: hidden;
-}
+  .home-link {
+    font-size: 0.6em;
+    font-weight: 400;
+    color: inherit;
+    text-decoration: none;
 
-.snow {
-	position: absolute;
-	top: 0;
-	left: 0;
-	pointer-events: none;
-	z-index: 20;
-}
+    opacity: 0.6;
+    border-bottom: 1px dashed transparentize($col-fg, 0.5);
 
-.main-text {
-	padding: 20vh 20px 0 20px;
+    &:hover {
+      opacity: 1;
+    }
+  }
 
-	text-align: center;
-	line-height: 2em;
-	font-size: 5vh;
-}
+  .ground {
+    height: 160px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 
-.home-link {
-	font-size: 0.6em;
-	font-weight: 400;
-	color: inherit;
-	text-decoration: none;
+    background: $col-ground;
+    box-shadow: 0 0 10px 10px $col-ground;
 
-	opacity: 0.6;
-	border-bottom: 1px dashed transparentize($col-fg, 0.5);
+    $treeSize: 250px;
 
-	&:hover {
-		opacity: 1;
-	}
-}
+    &:before,
+    &:after {
 
-.ground {
-	height: 160px;
-	width: 100%;
-	position: absolute;
-	bottom: 0;
-	left: 0;
+      // Trees
+      content: '';
+      display: block;
+      width: $treeSize;
+      height: $treeSize;
+      position: absolute;
+      top: -$treeSize/4;
 
-	background: $col-ground;
-	box-shadow: 0 0 10px 10px $col-ground;
+      z-index: -1;
+      background: transparent;
+      transform: scaleX(0.2) rotate(45deg);
+    }
 
-	$treeSize: 250px;
-	&:before,
-	&:after {
+    &:after {
+      left: 50%;
+      margin-left: -$treeSize / 1.5;
+      @include trees(-1, $treeSize);
+    }
 
-		// Trees
-		content: '';
-		display: block;
-		width: $treeSize;
-		height: $treeSize;
-		position: absolute;
-		top: -$treeSize/4;
+    &:before {
+      right: 50%;
+      margin-right: -$treeSize / 1.5;
+      @include trees(1, $treeSize);
+    }
+  }
 
-		z-index: -1;
-		background: transparent;
-		transform: scaleX(0.2) rotate(45deg);
-	}
+  .mound {
+    margin-top: -80px;
 
-	&:after {
-		left: 50%;
-		margin-left: -$treeSize / 1.5;
-		@include trees(-1, $treeSize);
-	}
+    font-weight: 800;
+    font-size: 180px;
+    text-align: center;
+    color: $col-blood;
+    pointer-events: none;
 
-	&:before {
-		right: 50%;
-		margin-right: -$treeSize / 1.5;
-		@include trees(1, $treeSize);
-	}
-}
+    $from-top: 50px;
 
-.mound {
-	margin-top: -80px;
+    &:before {
+      $w: 600px;
+      $h: 200px;
 
-	font-weight: 800;
-	font-size: 180px;
-	text-align: center;
-	color: $col-blood;
-	pointer-events: none;
+      content: '';
+      display: block;
+      width: $w;
+      height: $h;
+      position: absolute;
+      left: 50%;
+      margin-left: -$w/2;
+      top: $from-top;
+      z-index: 1;
 
-	$from-top: 50px;
+      border-radius: 100%;
+      background-color: $col-sky-bottom;
+      background-image: linear-gradient(to bottom, lighten($col-sky-top, 10%), $col-ground 60px);
+    }
 
-	&:before {
-		$w: 600px;
-		$h: 200px;
+    &:after {
+      // Blood
+      $w: 28px;
+      $h: 6px;
+      content: '';
+      display: block;
+      width: $w;
+      height: $h;
+      position: absolute;
+      left: 50%;
+      margin-left: - 150px;
+      top: $from-top + 18px;
 
-		content: '';
-		display: block;
-		width: $w;
-		height: $h;
-		position: absolute;
-		left: 50%;
-		margin-left: -$w/2;
-		top: $from-top;
-		z-index: 1;
+      z-index: 2;
+      background: $col-blood;
+      border-radius: 100%;
+      transform: rotate(-15deg);
+      box-shadow: -($w * 2) ($h * 2) 0 1px $col-blood, -($w * 4.5) ($h) 0 2px $col-blood, -($w * 7) ($h * 4) 0 3px $col-blood,
+    }
+  }
 
-		border-radius: 100%;
-		background-color: $col-sky-bottom;
-		background-image: linear-gradient(to bottom, lighten($col-sky-top, 10%), $col-ground 60px);
-	}
+  .mound_text {
+    transform: rotate(6deg);
+  }
 
-	&:after {
-		// Blood
-		$w: 28px;
-		$h: 6px;
-		content: '';
-		display: block;
-		width: $w;
-		height: $h;
-		position: absolute;
-		left: 50%;
-		margin-left: - 150px;
-		top: $from-top + 18px;
+  .mound_spade {
+    $handle-height: 30px;
 
-		z-index: 2;
-		background: $col-blood;
-		border-radius: 100%;
-		transform: rotate(-15deg);
-		box-shadow: -($w * 2) ($h * 2) 0 1px $col-blood, -($w * 4.5) ($h) 0 2px $col-blood, -($w * 7) ($h * 4) 0 3px $col-blood,
-	}
-}
+    display: block;
+    width: 35px;
+    height: 30px;
+    position: absolute;
+    right: 50%;
+    top: 42%;
+    margin-right: -250px;
 
-.mound_text {
-	transform: rotate(6deg);
-}
+    z-index: 0;
+    transform: rotate(35deg);
+    background: $col-blood;
 
-.mound_spade {
-	$handle-height: 30px;
+    &:before,
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+    }
 
-	display: block;
-	width: 35px;
-	height: 30px;
-	position: absolute;
-	right: 50%;
-	top: 42%;
-	margin-right: -250px;
+    &:before {
+      width: 40%;
+      height: $handle-height;
+      bottom: 98%;
+      left: 50%;
+      margin-left: -20%;
 
-	z-index: 0;
-	transform: rotate(35deg);
-	background: $col-blood;
+      background: $col-blood;
+    }
 
-	&:before,
-	&:after {
-		content: '';
-		display: block;
-		position: absolute;
-	}
+    &:after {
+      width: 100%;
+      height: 30px;
+      top: -$handle-height - 25px;
+      left: 0%;
+      box-sizing: border-box;
 
-	&:before {
-		width: 40%;
-		height: $handle-height;
-		bottom: 98%;
-		left: 50%;
-		margin-left: -20%;
-
-		background: $col-blood;
-	}
-
-	&:after {
-		width: 100%;
-		height: 30px;
-		top: -$handle-height - 25px;
-		left: 0%;
-		box-sizing: border-box;
-
-		border: 10px solid $col-blood;
-		border-radius: 4px 4px 20px 20px;
-	}
-}
+      border: 10px solid $col-blood;
+      border-radius: 4px 4px 20px 20px;
+    }
+  }
 </style>

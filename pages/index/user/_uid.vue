@@ -166,7 +166,7 @@ export default class User extends Vue {
           description: this.userForm.description
         }
         if (this.userForm.password) {
-          data.password =this.userForm.password
+          data.password = this.userForm.password
         }
         request.updateUserInfo(this.uid, data).then(() => {
           this.$refs.form.resetFields()

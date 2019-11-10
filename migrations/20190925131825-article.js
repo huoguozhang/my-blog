@@ -23,10 +23,14 @@ module.exports = {
       },
       summary: Sequelize.STRING,
       created_time: Sequelize.DATE,
-      updated_time: Sequelize.DATE
+      updated_time:{
+        type: Sequelize.DATE,
+        detaultValue: Sequelize.NOW
+      }
     },
     {
-      charset: 'utf8'
+      charset: 'utf8',
+      updatedAt: false
     }
   ),
 

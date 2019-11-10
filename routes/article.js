@@ -11,7 +11,7 @@ const Routes = [
     method: 'POST',
     handler: async (request, h) => {
       const { userId } = request.auth.credentials
-      const res = await models.article.create({ ...request.payload, author: userId })
+      const res = await models.article.create({ ...request.payload, author: userId, updated_time: new Date() })
       return h.response(res).code(201)
     },
     config: {
@@ -209,6 +209,7 @@ const Routes = [
       const { userId } = request.auth.credentials
       const data = await models.article.update(
         {
+          updated_time: new Date(),
           ...request.payload
         },
         {
