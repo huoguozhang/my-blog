@@ -23,7 +23,7 @@ module.exports = {
       },
       summary: Sequelize.STRING,
       created_time: Sequelize.DATE,
-      updated_time:{
+      updated_time: {
         type: Sequelize.DATE,
         detaultValue: Sequelize.NOW
       }

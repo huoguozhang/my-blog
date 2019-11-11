@@ -571,7 +571,7 @@ export default {
           sanitize: false,
           ...this.markedOptions
         })
-      }, 30)
+      }, 500)
       this.indexLength = this.value.split('\n').length
       const height1 = this.indexLength * 22
       const height2 = this.$refs.textarea.scrollHeight
