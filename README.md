@@ -685,5 +685,6 @@ validate: {
 
 #### 3 参考
 [掘金小册: 叶盛飞 《基于 hapi 的 Node.js 小程序后端开发实践指南》](https://juejin.im/book/5b63fdba6fb9a04fde5ae6d0)
+
 ps:欢迎点赞 ^_^
 **github**: [https://github.com/huoguozhang/my-blog](https://github.com/huoguozhang/my-blog)
