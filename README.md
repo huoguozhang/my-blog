@@ -10,21 +10,23 @@
 3. npm run server or npm run dev
 
 #### 实现功能：
--  用户: 登录、注册、用户资料修改，用户详情页面，类似于简书的
+-  用户: 登录、注册、用户资料修改，用户详情页面，类似于简书的，文章删除
 
-![用户页面.jpg](http://118.24.115.89/api/uploads/2ba5ccf0-0373-11ea-8a29-8568213b8375.jpg)
+![用户页面.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d1eb61dd4?w=2602&h=1372&f=jpeg&s=216790)
 -  文章：文章详情页面，查看，评论，点赞和踩，文章阅读次数统计
 
-![文章详情.jpg](http://118.24.115.89/api/uploads/43658330-0373-11ea-8a29-8568213b8375.jpg)
+![文章详情.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d20a5d6e8?w=2558&h=1474&f=jpeg&s=162321)
 -  文章： 所有文章，支持分页和按关键词、时间查找
+![所有文章.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d1f16aa99?w=2556&h=1412&f=jpeg&s=142021)
+-  文章书写：支持markdown和图片拖拽上传
 
-![所有文章.jpg](http://118.24.115.89/api/uploads/678e41c0-0373-11ea-8a29-8568213b8375.jpg)
--  首页:  文章推荐，作者推荐，首页轮播
-![首页.jpg](http://118.24.115.89/api/uploads/75729f70-0373-11ea-8a29-8568213b8375.jpg)
+![](https://user-gold-cdn.xitu.io/2019/11/12/16e5fbc9a6940cf7?w=2732&h=1320&f=png&s=512597)
+-  首页:  文章推荐，作者推荐，首页轮播，顶部搜索文章和用户
+![首页.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d214c91fa?w=1000&h=542&f=jpeg&s=92150)
 
 -  ssr  效果预览：
 类似于知乎的
-![ssr.jpg](http://118.24.115.89/api/uploads/30bb4390-0374-11ea-8a29-8568213b8375.jpg)
+![ssr.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d1ff7a560?w=2854&h=1454&f=jpeg&s=344332)
 - seo 效果：
 待补充
 
@@ -670,7 +672,7 @@ validate: {
 ```
 
 # 3 最后
-
+欢迎到线上地址体验完整功能
 #### 1 踩坑总结:
 
 - 碰到接口500的情况，可以在model的操作后面捕获错误,比如models.findAll().catch(e => console.log(e))
@@ -686,5 +688,5 @@ validate: {
 #### 3 参考
 [掘金小册: 叶盛飞 《基于 hapi 的 Node.js 小程序后端开发实践指南》](https://juejin.im/book/5b63fdba6fb9a04fde5ae6d0)
 
-ps:欢迎点赞 ^_^
+ps:欢迎点赞star ^_^
 **github**: [https://github.com/huoguozhang/my-blog](https://github.com/huoguozhang/my-blog)
