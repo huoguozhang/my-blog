@@ -4,6 +4,15 @@
   "description": "My amazing Nuxt.js project",
   "author": "zlj",
   "private": true,
+  "keywords": [
+    "vue",
+   "hapi",
+    "nuxt",
+    "博客"，
+    "orm",
+    "sequelize",
+    "简书"
+  ],
   "scripts": {
     "commit": "git-cz",
     "precommit": "lint-staged",
