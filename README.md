@@ -10,23 +10,23 @@
 3. npm run server or npm run dev
 
 #### 实现功能：
--  用户: 登录、注册、用户资料修改，用户详情页面，类似于简书的，文章删除
+-  用户: 登录、注册、用户资料修改，详情页面，类似于简书的文章数量、总字数、收获的喜欢总数，文章删除。
 
-![用户页面.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d1eb61dd4?w=2602&h=1372&f=jpeg&s=216790)
+![用户页面.jpg](https://upload-images.jianshu.io/upload_images/6036420-e48a23b57b3b4692?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 -  文章：文章详情页面，查看，评论，点赞和踩，文章阅读次数统计
 
-![文章详情.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d20a5d6e8?w=2558&h=1474&f=jpeg&s=162321)
+![文章详情.jpg](https://upload-images.jianshu.io/upload_images/6036420-15f16a93f8ff14ca?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 -  文章： 所有文章，支持分页和按关键词、时间查找
-![所有文章.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d1f16aa99?w=2556&h=1412&f=jpeg&s=142021)
+![所有文章.jpg](https://upload-images.jianshu.io/upload_images/6036420-364e463a81b62ff2?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 -  文章书写：支持markdown和图片拖拽上传
 
-![](https://user-gold-cdn.xitu.io/2019/11/12/16e5fbc9a6940cf7?w=2732&h=1320&f=png&s=512597)
+![image](https://upload-images.jianshu.io/upload_images/6036420-75ca7d753e6544db?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 -  首页:  文章推荐，作者推荐，首页轮播，顶部搜索文章和用户
-![首页.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d214c91fa?w=1000&h=542&f=jpeg&s=92150)
+![首页.jpg](https://upload-images.jianshu.io/upload_images/6036420-8ff57f2d6da1da16?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 -  ssr  效果预览：
 类似于知乎的
-![ssr.jpg](https://user-gold-cdn.xitu.io/2019/11/12/16e5fa3d1ff7a560?w=2854&h=1454&f=jpeg&s=344332)
+![ssr.jpg](https://upload-images.jianshu.io/upload_images/6036420-36e48e517c74edd8?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 - seo 效果：
 待补充
 
@@ -75,6 +75,7 @@ hapi[官方文档](https://hapi.dev/tutorials/?lang=en_US)已经说了很多了(
 4. 执行增删改查代码更简洁清晰
 5. 其他
 
+**注意**：用orm在执行sql操作时，相当于我们用jquery执行dom操作，api简单了，但还是需要对原来的有点了解
 ### sequelize
 [sequelize](https://sequelize.org/master/index.html)就是node.js的promise orm工具,同时也支持其他数据库.
 #### 使用
@@ -352,6 +353,9 @@ db.article.hasMany(db.article_like)
 db.article_like.belongsTo(db.article)
 module.exports = db
 ```
+9. 本项目用到的功能
+
+   多表查询、单表增删改查、模型统一配置、迁移和种子填充、事务（删除文章的时候，把文章相关的数据：评论，阅读，点赞数据也一起删了。）等。
 
 ## 2.2 Joi 请求参数校验
 
