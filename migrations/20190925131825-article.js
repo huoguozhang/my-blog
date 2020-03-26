@@ -17,13 +17,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
-<<<<<<< HEAD
-=======
       read_num: {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
->>>>>>> fef507c01002fa4490966f98248097320647c335
       summary: Sequelize.STRING,
       created_time: Sequelize.DATE,
       updated_time: {
