@@ -12,6 +12,7 @@ const Routes = [
     handler: async (request, h) => {
       const { userId } = request.auth.credentials
       const res = await models.article.create({ ...request.payload, author: userId, updated_time: new Date() })
+        .catch(e => console.log(e))
       return h.response(res).code(201)
     },
     config: {
