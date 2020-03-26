@@ -4,8 +4,6 @@
   "description": "My amazing Nuxt.js project",
   "author": "zlj",
   "private": true,
-<<<<<<< HEAD
-=======
   "keywords": [
     "vue",
    "hapi",
@@ -15,7 +13,6 @@
     "sequelize",
     "简书"
   ],
->>>>>>> fef507c01002fa4490966f98248097320647c335
   "scripts": {
     "commit": "git-cz",
     "precommit": "lint-staged",
