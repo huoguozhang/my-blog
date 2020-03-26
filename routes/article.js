@@ -87,12 +87,8 @@ const Routes = [
       if (is_rand && !is_latest) {
         findObj.order = Sequelize.fn('RAND')
       }
-      const totalCount = await models.article.count(countObj).catch(e => {
-        console.log(e)
-      })
-      const results = await models.article.findAll(findObj).catch(e => {
-        console.log(e)
-      })
+      const totalCount = await models.article.count(countObj)
+      const results = await models.article.findAll(findObj)
       results.forEach((row) => {
         const data = row.dataValues
         data.comment_count = data.comments.length

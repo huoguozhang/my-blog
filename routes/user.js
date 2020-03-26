@@ -113,8 +113,6 @@ module.exports = [
         attributes: {
           exclude: ['password']
         }
-      }).catch(e => {
-        console.log(e)
       })
       await queryUserTotalLikeWordArticle(users)
       return h.response(users)
