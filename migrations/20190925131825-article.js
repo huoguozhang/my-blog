@@ -17,10 +17,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      read_num: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      },
       summary: Sequelize.STRING,
       created_time: Sequelize.DATE,
       updated_time: {

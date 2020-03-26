@@ -38,6 +38,8 @@ build/Release
 node_modules/
 jspm_packages/
 uploads/
+.env.dev
+.env.prop
 # TypeScript v1 declaration files
 typings/
 
