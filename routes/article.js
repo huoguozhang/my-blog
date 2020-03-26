@@ -43,6 +43,8 @@ const Routes = [
           where: {
             ...wrapSearchQuery(search, ['nickname', 'description'])
           }
+        }).catch(e => {
+          console.log(e)
         })
         whereObj.author = {
           [Op.or]: matchUsers.map(v => v.uid)
@@ -85,8 +87,12 @@ const Routes = [
       if (is_rand && !is_latest) {
         findObj.order = Sequelize.fn('RAND')
       }
-      const totalCount = await models.article.count(countObj)
-      const results = await models.article.findAll(findObj)
+      const totalCount = await models.article.count(countObj).catch(e => {
+        console.log(e)
+      })
+      const results = await models.article.findAll(findObj).catch(e => {
+        console.log(e)
+      })
       results.forEach((row) => {
         const data = row.dataValues
         data.comment_count = data.comments.length
