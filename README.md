@@ -144,6 +144,7 @@ HOST = 127.0.0.1
 PORT = 80
 #  端口最好就为80，不然axios url要改为绝对地址
 # MySQL 数据库链接配置
+本项目部署到腾讯云，已经关闭了3306端口
 MYSQL_HOST = 111.111.111.111
 MYSQL_PORT = 3306
 MYSQL_DB_NAME = 数据库名
@@ -244,7 +245,7 @@ module.exports = {
 sequelize db:seed:all
 ```
 查看数据库user表就多了一些记录，其他的操作类似于迁移，更多的操作可以看文档
-7 定义模型
+7 定义模型 （数据库的）
  user表 models/user.js
 ```
 const moment = require('moment')
@@ -359,7 +360,7 @@ module.exports = db
 
 ## 2.2 Joi 请求参数校验
 
-joi可以对请求参数进行校验
+joi可以对请求参数进行校验, 参数数据格式是否正确，参数是否为空等。
 #### 使用：
 1. 安装
 ```
@@ -375,7 +376,8 @@ routes/user.js
 ```
 const models = require('../models')
 const Joi = require('@hapi/joi')
-{
+在hapi初始化时，注册这些路由
+[{
     method: 'POST',
     path: '/api/user/login',
     handler: async (request, h) => {
@@ -418,7 +420,8 @@ const Joi = require('@hapi/joi')
         }
       }
     }
-  },
+  }
+  ]
 
 ```
 ## 2.4 接口文档swagger
