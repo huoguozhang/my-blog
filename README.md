@@ -1,6 +1,6 @@
 # 前言:
 #### 预览：
-
+**⚠️注意**: 腾讯云到期了不能预览了😳，下文提及到腾讯云的链接都不可用了
 -  **本站预览:** [腾讯云ip](http://118.24.115.89)、域名[zhanglijian.top](http://zhanglijian.top)
 -  **github**:[https://github.com/huoguozhang/my-blog](https://github.com/huoguozhang/my-blog)
 
